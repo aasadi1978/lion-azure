@@ -5,9 +5,10 @@ from lion.logger.exception_logger  import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from lion.logger.exception_logger import log_exception
 from lion.ui.ui_params import UI_PARAMS
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class Resources(LION_SQLALCHEMY_DB.Model):
+class Resources(BASE, GroupScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'resources'

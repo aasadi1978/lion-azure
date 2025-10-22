@@ -2,9 +2,10 @@ from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 from pickle import dumps as pickle_dumps, loads as pickle_loads
+from lion.orm_azure.scoped_mixins import BASE, UserScopedBase
 
 
-class PickleDumps(LION_SQLALCHEMY_DB.Model):
+class PickleDumps(BASE, UserScopedBase):
 
     __tablename__ = 'azure_sql_db'
     __bind_key__ = 'lion_db'

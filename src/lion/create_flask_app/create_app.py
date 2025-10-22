@@ -99,7 +99,7 @@ class CreateAPP:
             bcrypt = Bcrypt(lion_app)
 
             self._initialized = True
-            init_azure_auth(lion_app)
+            # init_azure_auth(lion_app)
 
             self._app = lion_app
             self._bcrypt = bcrypt

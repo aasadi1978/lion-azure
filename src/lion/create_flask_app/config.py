@@ -7,7 +7,7 @@ from lion.config import paths
 from lion.bootstrap.user_region_and_language import get_lang, get_rgn
 from lion.bootstrap.constants import (LION_MASTER_DATABASE_NAME, LION_OPTIMIZATION_DATABASE_NAME, LION_SCHEDULE_DATABASE_NAME, 
                                       LION_TEMP_SCENARIO_DATABASE_NAME, LION_USER_DATABASE_NAME)
-from lion.create_flask_app.azure import azure_connection
+from lion.create_flask_app.azure_db_connection import azure_connection
 
 
 def configure_lion_app() -> dict:
@@ -41,6 +41,7 @@ def configure_lion_app() -> dict:
             environ['is_azure_sql_db_connected'] = 'TRUE'
 
         user_group = getenv('LION_USER_GROUP_NAME', "")
+        lion_config.update({'LION_OBJECT_ID': getenv('LION_OBJECT_ID', getenv('LION_USER_ID', ''))})
         lion_config.update({'LION_USER_GROUP_NAME': user_group})
         lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else get_rgn(user_group)})
         lion_config.update({'LION_USER_LANGUAGE_NAME': lion_config.get("LION_USER_LANGUAGE_NAME", "") if len(lion_config.get("LION_USER_LANGUAGE_NAME", "")) >= 2 else get_lang(user_group)})

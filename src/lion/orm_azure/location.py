@@ -11,9 +11,10 @@ from pandas import DataFrame, read_excel
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.is_file_updated import is_file_updated
 from cachetools import TTLCache
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class Location(LION_SQLALCHEMY_DB.Model):
+class Location(GroupScopedBase, BASE):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'location'

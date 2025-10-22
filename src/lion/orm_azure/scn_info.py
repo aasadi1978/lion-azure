@@ -3,18 +3,18 @@ from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from pickle import dumps as pickle_dumps
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
+from lion.logger.exception_logger import log_exception
 
-from lion.logger.exception_logger  import log_exception
 
-
-class ScnInfo(LION_SQLALCHEMY_DB.Model):
+class ScnInfo(BASE, GroupScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'scn_info'
 
     scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, autoincrement=True)
-    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False)
-    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False)
+    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
+    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
     scn_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
     user_id = LION_SQLALCHEMY_DB.Column(
         LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')

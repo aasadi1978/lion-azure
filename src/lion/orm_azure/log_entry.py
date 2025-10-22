@@ -5,21 +5,22 @@ from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from sqlalchemy.exc import SQLAlchemyError
 import logging
+from lion.orm_azure.scoped_mixins import BASE, UserScopedBase
 
 
 
-class LogEntry(LION_SQLALCHEMY_DB.Model):
+class LogEntry(BASE, UserScopedBase):
     """
     Logs application events to the database. Each log entry includes a timestamp, log level, message, and user ID.
     Status.log info.
     """
 
-    __bind_key__ = 'lion_db'
+    __bind_key__ = 'azure_sql_db'
     __tablename__ = 'logger'
 
     timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, nullable=True, default=datetime.now(), primary_key=True)
     level = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=True, default='INFO')
-    message = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=True)
+    message = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True)
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config.get('LION_USER_ID'))
 
     def __init__(self, **attrs):

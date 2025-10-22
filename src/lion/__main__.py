@@ -8,6 +8,7 @@ from waitress import serve
 import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
 from lion.create_flask_app.create_tables import create_all
 from lion.migeration.upgrade_dbs import upgrade_master_data
+from lion.orm_azure.local_to_azure import copy_data_to_azure
 from lion.routes.blueprints import register_blueprints
 from lion.utils.find_available_port import get_port
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -28,6 +29,7 @@ def main():
     register_blueprints(app=LION_FLASK_APP)
     RETTRIEVELIONVERSION.initialize()
     initial_load(app=LION_FLASK_APP)
+    copy_data_to_azure(app=LION_FLASK_APP)
     start_app(app=LION_FLASK_APP)
 
 def initial_load(app: Flask):

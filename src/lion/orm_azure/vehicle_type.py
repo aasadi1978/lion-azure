@@ -1,10 +1,12 @@
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class VehicleType(LION_SQLALCHEMY_DB.Model):
+class VehicleType(BASE, GroupScopedBase):
 
+    __bind_key__ = 'azure_sql_db'
     __tablename__ = 'vehicle_type'
 
     vehicle_code = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False,

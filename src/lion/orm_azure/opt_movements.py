@@ -6,20 +6,21 @@ from lion.bootstrap.constants import MIN_REPOS_MOVEMENT_ID, INIT_LOADED_MOV_ID
 from lion.orm.user_params import UserParams
 from lion.logger.exception_logger import log_exception
 from lion.logger.status_logger import log_message
+from lion.orm_azure.scoped_mixins import BASE, UserScopedBase
 
 # Base = declarative_base()
 
 
-class OptMovements(LION_SQLALCHEMY_DB.Model):
+class OptMovements(BASE, UserScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'lion_optimization_db'
 
     shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=0)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
-    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='reserved')
-    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
-    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
+    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='reserved')
+    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
+    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
 
     timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, nullable=False)
 
@@ -538,8 +539,3 @@ class OptMovements(LION_SQLALCHEMY_DB.Model):
             log_message(
                 f'The table {cls.__tablename__} has been successfully cleared!')
 
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()

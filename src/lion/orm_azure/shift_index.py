@@ -10,15 +10,16 @@ from lion.ui.ui_params import UI_PARAMS
 from lion.utils.split_list import split_list
 from lion.logger.status_logger import log_message
 from cachetools import TTLCache
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 dct_cached_data = TTLCache(maxsize=100, ttl=900)
 
-class ShiftIndex(LION_SQLALCHEMY_DB.Model):
+class ShiftIndex(BASE, GroupScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'shift_index'
 
-    shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False,
+    shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False,
                           primary_key=True)
 
     ctrl_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)

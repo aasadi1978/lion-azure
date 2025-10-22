@@ -1,19 +1,21 @@
 import logging
 from typing import List, Set
+from cachetools import TTLCache
+from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
-from sqlalchemy.exc import SQLAlchemyError
-from cachetools import TTLCache
 from lion.orm.shift_movement_entry import ShiftMovementEntry
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class Changeover(LION_SQLALCHEMY_DB.Model):
+class Changeover(GroupScopedBase, BASE):
 
     __bind_key__ = LION_FLASK_APP.config.get(
         'LION_USER_SPECIFIED_BIND', 'azure_sql_db')
-    __tablename__ = 'local_changeovers'
+    
+    __tablename__ = 'changeovers'
 
     dct_co_cache = TTLCache(maxsize=100, ttl=900)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)

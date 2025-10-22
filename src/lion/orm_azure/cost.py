@@ -1,8 +1,8 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class Cost(LION_SQLALCHEMY_DB.Model):
+class Cost(GroupScopedBase, BASE):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'Cost'

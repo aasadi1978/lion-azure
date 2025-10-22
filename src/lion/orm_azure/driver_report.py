@@ -1,8 +1,9 @@
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class DriverReport(LION_SQLALCHEMY_DB.Model):
+class DriverReport(GroupScopedBase, BASE):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'driver_report'

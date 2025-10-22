@@ -16,17 +16,18 @@ from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
 from lion.config.paths import LION_HOME_PATH
 from lion.ui.ui_params import UI_PARAMS
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 
-class DriversInfo(LION_SQLALCHEMY_DB.Model):
+class DriversInfo(BASE, GroupScopedBase):
 
-    __bind_key__ = LION_FLASK_APP.config.get('LION_USER_SPECIFIED_BIND', 'azure_sql_db')
-    __tablename__ = 'local_drivers_info'
+    __bind_key__ = 'azure_sql_db'
+    __tablename__ = 'drivers_info'
 
     """
-    This table contains detail such as start position, abse location, oeprator name etc
+    This table contains detail such as start position, absolute location, operator name etc
     per shiftname in the schedule (replaceing dct_drivers)
     """
 

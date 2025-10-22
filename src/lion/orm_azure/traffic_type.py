@@ -1,9 +1,10 @@
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class TrafficType(LION_SQLALCHEMY_DB.Model):
+class TrafficType(BASE, GroupScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'traffic_type'
@@ -11,7 +12,7 @@ class TrafficType(LION_SQLALCHEMY_DB.Model):
     traffic_type = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False,
                              primary_key=True)
     traffic_type_color = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
-    abbr = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
+    abbr = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
 

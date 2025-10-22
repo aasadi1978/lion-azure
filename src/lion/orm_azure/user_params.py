@@ -1,19 +1,20 @@
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.orm_azure.scoped_mixins import BASE, UserScopedBase
 
 
-class UserParams(LION_SQLALCHEMY_DB.Model):
+class UserParams(BASE, UserScopedBase):
 
     # This tells SQLAlchemy to use the lion_user_db for this model
-    __bind_key__ = 'lion_db'
+    __bind_key__ = 'azure_sql_db'
     __tablename__ = 'user_params'
 
-    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False, primary_key=True)
-    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False)
-    html_element_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT)
+    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, primary_key=True)
+    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
+    html_element_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255))
     category = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(200), nullable=False, default='General')
-    default_value = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False, default='General')
+    default_value = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='General')
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
 

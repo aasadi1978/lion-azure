@@ -7,8 +7,9 @@ from lion.orm.location import Location
 from lion.logger.exception_logger import log_exception
 from lion.logger.exception_logger  import log_exception
 from cachetools import TTLCache
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
-class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
+class RuntimesMileages(BASE, GroupScopedBase):
 
     __bind_key__ = 'azure_sql_db'
     __tablename__ = 'runtimes'

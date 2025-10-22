@@ -15,12 +15,13 @@ from lion.logger.status_logger import log_message
 from lion.runtimes.runtime_mileage_fetcher import UI_RUNTIMES_MILEAGES
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils import dict2class
+from lion.orm_azure.scoped_mixins import BASE, GroupScopedBase
 
 
-class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
+class ShiftMovementEntry(BASE, GroupScopedBase):
 
-    __bind_key__ = LION_FLASK_APP.config.get('LION_USER_SPECIFIED_BIND', 'azure_sql_db')
-    __tablename__ = 'local_movements'
+    __bind_key__ = 'azure_sql_db'
+    __tablename__ = 'movements'
 
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
     extended_str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='')
@@ -859,8 +860,3 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
 
         return dict_movements_data
         
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()

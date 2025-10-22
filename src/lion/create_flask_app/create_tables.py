@@ -43,6 +43,7 @@ def create_all(app: Flask):
             from lion.orm_azure.user_directory import UserDirectory
             from lion.orm_azure.user_params import UserParams as AzureUserParams
             from lion.orm_azure.log_entry import LogEntry as AzureLogEntry
+            from lion.orm_azure.user import User
 
         LION_SQLALCHEMY_DB.create_all()
 

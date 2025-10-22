@@ -4,11 +4,11 @@ from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
-from lion.orm_azure.scoped_mixins import BASE
 
-class User(BASE):
 
-    __bind_key__ = 'azure_sql_db'
+
+class User(LION_SQLALCHEMY_DB.Model):
+
     __tablename__ = 'user'
 
     user_ladp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True)
