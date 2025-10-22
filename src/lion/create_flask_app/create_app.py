@@ -8,6 +8,7 @@ from flask_bcrypt import Bcrypt
 import warnings
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.create_flask_app.config import LION_CONFIG
+from lion.auth.azure_auth import init_azure_auth
 
 warnings.filterwarnings("ignore")
 
@@ -97,10 +98,11 @@ class CreateAPP:
             LION_SQLALCHEMY_DB.init_app(lion_app)
             bcrypt = Bcrypt(lion_app)
 
+            self._initialized = True
+            init_azure_auth(lion_app)
+
             self._app = lion_app
             self._bcrypt = bcrypt
-
-            self._initialized = True
 
             if self.is_app_valid():
                 logging.info(f"Flask app and Bcrypt instances created successfully for {getproctitle()}")

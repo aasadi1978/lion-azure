@@ -6,6 +6,7 @@ from lion.routes.routes_ui import ui_bp
 from lion.routes.routes_optimization import optim_bp
 from lion.routes.routes_statusbar import statusbar_bp
 from lion.routes.routes_docs import user_docs_blueprint
+from lion.auth.azure_auth import auth_bp
 
 # with LION_FLASK_APP.app_context():
 def register_blueprints(app: Flask = current_app):
@@ -18,3 +19,4 @@ def register_blueprints(app: Flask = current_app):
     app.register_blueprint(statusbar_bp)
     app.register_blueprint(optim_bp)
     app.register_blueprint(user_docs_blueprint)
+    app.register_blueprint(auth_bp)

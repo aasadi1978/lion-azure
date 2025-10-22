@@ -21,23 +21,3 @@ class TempScnInfo(LION_SQLALCHEMY_DB.Model):
         except Exception as e:
             log_exception(popup=False, remarks='failed to get scn_name')
             return str(e)[:30]
-
-class AzureScnInfo(LION_SQLALCHEMY_DB.Model):
-
-    __bind_key__ = 'azure_sql_db'
-    __tablename__ = 'scn_info'
-
-    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, primary_key=True)
-    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
-
-    def __init__(self, param, val):
-        self.param = param
-        self.val = val
-
-    @classmethod
-    def scn_name(cls):
-        try:
-            return cls.query.filter(cls.param == 'scn_name').first().val
-        except Exception as e:
-            log_exception(popup=False, remarks='failed to get scn_name')
-            return str(e)[:30]

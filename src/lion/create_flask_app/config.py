@@ -1,5 +1,7 @@
 import logging
-from os import getenv
+from os import environ, getenv
+
+from flask import session
 from lion.bootstrap import LION_BOOTSTRAP_CONFIG as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
 from lion.config import paths
 from lion.bootstrap.user_region_and_language import get_lang, get_rgn
@@ -33,7 +35,11 @@ def configure_lion_app() -> dict:
             'SQLALCHEMY_BINDS': {key: f"sqlite:///{path}" for key, path in db_paths.items()}
             })
 
-        lion_config['SQLALCHEMY_BINDS']['azure_sql_db'] = azure_connection()
+        azure_con_str = azure_connection()
+        if azure_con_str:
+            lion_config['SQLALCHEMY_BINDS']['azure_sql_db'] = azure_con_str
+            environ['is_azure_sql_db_connected'] = 'TRUE'
+
         user_group = getenv('LION_USER_GROUP_NAME', "")
         lion_config.update({'LION_USER_GROUP_NAME': user_group})
         lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else get_rgn(user_group)})

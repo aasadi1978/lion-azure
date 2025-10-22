@@ -75,7 +75,7 @@ set /p push_confirm=Do you want to push now? (y/n):
 if /i "%push_confirm%"=="y" (
     
     echo Pushing to remote repository origin
-    git push origin main
+    git push origin master
     if errorlevel 1 (
         echo Push failed. Please check the error messages above.
         exit /b 1
@@ -84,7 +84,7 @@ if /i "%push_confirm%"=="y" (
     )
 
     echo Pushing to remote repository - origin_private
-    git push origin_private main
+    git push origin_private master
     if errorlevel 1 (
         echo Push failed. Please check the error messages above.
         exit /b 1

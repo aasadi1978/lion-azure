@@ -12,7 +12,7 @@ from lion.utils.kill_file import kill_file
 from lion.logger.exception_logger import log_exception
 from lion.orm.location import Location
 from lion.create_flask_app.create_app import LION_FLASK_APP
-from flask import Blueprint, redirect, render_template, request, url_for
+from flask import Blueprint, g, jsonify, redirect, render_template, request, session, url_for
 
 from lion.orm.drivers_info import DriversInfo
 from lion.utils.get_week_num import get_week_num
@@ -24,9 +24,22 @@ from lion.utils.popup_notifier import show_error, show_popup
 top_blueprint = Blueprint('lion', __name__)
 
 @top_blueprint.route('/')
-def index():
-    # ui is the blueprint name for the routes_ui.py file
+def home():
+    user = session.get("user")
+    if not user:
+        return redirect("/login")
+    
     return redirect(url_for('ui.loading_schedule'))
+
+@top_blueprint.route("/userinfo")
+def userinfo():
+    user = session.get("user")
+    return jsonify({
+        "user_id": user.get("sub"),
+        "email": user.get("preferred_username"),
+        "groups": user.get("groups", [])
+    })
+
 
 @top_blueprint.route('/display-schedule-docs', methods=['GET'])
 def disp_schedule_docs():
