@@ -1,0 +1,48 @@
+{% extends "base.html" %} {% block NewContent %}
+
+<div class="card-body">
+  <div
+    class="card-header"
+    style="
+      background-color: blueviolet;
+      color: white;
+      text-align: center;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 1.5rem;
+      font-weight: bold;
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: auto;
+    "
+  >
+    Status Page
+  </div>
+  <ul class="timeline timeline-simple">
+    {% for msg in options.status %}
+    <label
+      style="
+        font-family: 'Courier New', Courier, monospace;
+        color: antiquewhite;
+        font-size: 1.2rem;
+      "
+      >{{ msg }}</label
+    >
+    {% endfor %}
+  </ul>
+</div>
+
+<!-- <div>
+  <div class="col-lg-18 col-sm-6">
+    <div class="card card-timeline card-plain">
+      <div class="card-body">
+        <ul class="timeline timeline-simple">
+          {% for msg in options.status %}
+          <h3>{{ msg }}</h3>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+{% endblock %}

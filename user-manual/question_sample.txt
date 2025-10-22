@@ -1,0 +1,82 @@
+I am using sphinx in python to genenrate documentation.
+
+this is my index.rst:
+
+Linehaul Optimization for Network (LION)
+========================================
+
+.. toctree::
+   :maxdepth: 3
+   :caption: Contents:
+
+.. Indices and tables
+.. ==================
+
+.. * :ref:`genindex`
+.. * :ref:`modindex`
+.. * :ref:`search`
+
+Welcome to LION's documnetation. Linehaul Optimization for Network, or LION for short, is an in-house state of the art logistics 
+optimization tool within **FedEx Express** that is designed to help efficiently manage resources and drivers. The tool uses advanced 
+algorithms and mathematical optimization techniques to identify the most efficient assignment of drivers to vehicles between 
+different locations, considering factors such as driver location, distance and runtimes, labor regulations and driver availability. 
+Key features includes but not limited to:
+
+- Improved efficiency & Compliance Validation with all key processes automated.
+- Interactive Shift Details to speed up network changes.
+- Improved  Communication between teams with tailor made documentation and driver plans.
+- Effortless Data Sharing, Extraction and Reporting.
+ 
+Buttons
+=======
+:imgPath:: /buttons1.png
+   :alt: Reboot LION; Refresh all; Update LION
+   :align: center
+
+Logfile:
+--------------
+Open status.log in browser to review potential unreported errors. If a user sees LION is 
+not doing what it should be doing,without any notification, this is the page to review to see things has gone wrong 
+under the hood
+
+Un/fix selected
+-------------------
+   To fix or unfix a subset of tours, use can hold CTRL key and select shifts to be fixed or unfixed.
+   Once done with selection process, user can press this button and LION will fix the tours whicha re 
+   not fixed, and unfix, fixed ones.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+this is my conf.py for configuration:
+
+project = 'Line-haul Optimization for Network (LION)'
+copyright = '2024, Alireza Asadi'
+author = 'Alireza Asadi'
+release = 'Jan. 01, 2024'
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = ['sphinx.ext.autodoc']
+templates_path = ['_templates']
+exclude_patterns = []
+
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = 'classic'
+html_static_path = ['_static']
+html_css_files = [path.join('_static', 'custom.css'),
+                  path.join('_static', 'alabaster.css'),
+                  path.join('_static', 'basic.css'),
+                  path.join('_static', 'classic.css')]
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+I execute sphinx-build -b html . _build to generate an output
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The output is all under Linehaul Optimization for Network (LION). How can I create multiple sub categories. I also want to add a logo to title

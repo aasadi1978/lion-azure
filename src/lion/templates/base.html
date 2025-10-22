@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script>
+      window.options = {};
+    </script>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <script src="/static/js/get-config.js"></script>
+    <script src="/static/js/get-options.js"></script>
+
+    <link rel="shortcut icon" href="/static/images/lion.ico" />
+
+    <link
+      href="https://use.fontawesome.com/releases/v5.0.6/css/all.css"
+      rel="stylesheet"
+    />
+    <!-- Nucleo Icons -->
+    <link rel="stylesheet" href="/static/css/nucleo-icons.css" />
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="/static/css/black-dashboard.css" />
+    <link rel="stylesheet" href="/static/css/lion-specific.css" />
+
+    <!-- For cloud icon for sharepoint icon -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css"
+    />
+
+    <script type="text/javascript" src="/static/js/udf-funcs.js"></script>
+    <script type="text/javascript" src="/static/js/disp_popup.js"></script>
+
+    <script
+      type="text/javascript"
+      src="/static/js/run_optimization_async.js"
+    ></script>
+
+    <script type="text/javascript" src="/static/js/py2js.js"></script>
+    <script src="/static/js/get-options.js"></script>
+
+    {% block NewLinks %}
+    <!-- Styles are inserted here. -->
+    {% endblock %} {% block NewScriptsTop %}
+    <!-- Styles are inserted here. -->
+    {% endblock %}
+
+    <style>
+      div.footer {
+        color: azure;
+        width: 100%;
+        padding: 9px 0 9px 0;
+        text-align: center;
+        /* font-size: 65%; */
+      }
+
+      div.footer a {
+        color: #b13cd4;
+        text-decoration: underline;
+      }
+
+      .datepicker {
+        z-index: 1151 !important;
+      }
+
+      .bs-searchbox > .form-control {
+        /* This style overwrites the live-search-box font color which was invisible */
+        color: rgb(6, 35, 58);
+      }
+    </style>
+
+    {% block NewStyle %}
+    <!-- Styles are inserted here.  -->
+    {% endblock %}
+  </head>
+
+  <body class="card">
+    <div class="card-body">
+      <nav class="navbar navbar-expand-lg navbar-absolute navbar-transparent">
+        <div class="container-fluid">
+          <div class="navbar-wrapper">
+            <a class="navbar-brand" href="/"> {{ Title }} </a>
+          </div>
+          <div class="collapse navbar-collapse" id="navigation">
+            <ul class="navbar-nav ml-auto">
+              <li class="separator d-lg-none"></li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+      <div
+        class="modal modal-search fade"
+        id="searchModal"
+        tabindex="-1"
+        role="dialog"
+        aria-labelledby="searchModal"
+        aria-hidden="true"
+      >
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <input
+                type="text"
+                class="form-control"
+                id="inlineFormInputGroup"
+                placeholder="SEARCH"
+              />
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
+                <i class="tim-icons icon-simple-remove"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        {% block NewContent %}
+        <!-- New content is inserted here -->
+        {% endblock %}
+      </div>
+      <!-- Footer here -->
+      <div class="footer" role="contentinfo">
+        <span>
+          &#169; Copyright 2024 Road Network Planning &amp; Engineering | FedEx
+          Express Europe | Taurusavenue 111 | 2132 LS Hoofddorp | The
+          Netherlands - All rights reserved
+        </span>
+
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+          "
+        >
+          <span>Developer and technical support: </span>
+          <span>
+            <i class="fas fa-envelope"></i>
+            <a href="mailto:alireza.asadi@fedex.com">alireza.asadi@fedex.com</a>
+          </span>
+          <span>
+            <i class="fas fa-phone"></i>
+            +31 6 29 44 91 90
+          </span>
+        </div>
+      </div>
+      <!-- Footer end -->
+    </div>
+
+    <div
+      class="customContextMenu"
+      id="id-customContextMenu-shift"
+      style="
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ddd;
+      "
+    >
+      <ul>
+        <li id="id-execute-add-to-basket">Add to basket</li>
+        <li id="id-execute-rem-from-basket">Remove from basket</li>
+        <li id="id-execute-modify-driver-info">View/Modify driver info</li>
+        <li id="id-preview-driver-plan-rightclick">Preview driver plan</li>
+        <!-- <li id="id-draw-tour-rightclick">Visualise on map</li> -->
+        <li id="id-add-a-note-rightclick">Add a note</li>
+        <li id="id-refresh-shift-rightclick">Refresh</li>
+        <li id="id-delete-shift-rightclick">Delete</li>
+        <li id="id-un-fix-shift-rightclick">Un/Fix</li>
+        <li id="id-export-driver-plan-rightclick">Export driver plan (pdf)</li>
+      </ul>
+    </div>
+
+    <div style="display: none">
+      <input type="text" id="id-right-clicked-movement-id" />
+      <input type="text" id="id-right-clicked-movement-lhid" />
+      <input type="text" id="id-right-clicked-movement-traffic-type" />
+      <input type="text" id="id-right-clicked-movement-vehicle-type" />
+      <input type="text" id="id-right-clicked-movement-tu-dest" />
+      <input type="text" id="id-right-clicked-movement-depday" />
+    </div>
+
+    <div
+      class="customContextMenu"
+      id="id-customContextMenu-movement"
+      style="
+        display: none;
+        position: absolute;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ddd;
+      "
+    >
+      <ul>
+        <li id="id-propose-shift-right-click" style="display: none">
+          Propose shift
+        </li>
+        <li id="id-modify-mov-right-click">Modify</li>
+        <li id="id-del-mov-right-click">Delete</li>
+      </ul>
+    </div>
+
+    <script>
+      document
+        .getElementById('id-execute-add-to-basket')
+        .addEventListener('click', function () {
+          add_shifts_to_my_basket((get_right_click_id = true));
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-execute-rem-from-basket')
+        .addEventListener('click', function () {
+          remove_shifts_from_my_basket((get_right_click_id = true));
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-execute-modify-driver-info')
+        .addEventListener('click', function () {
+          document.getElementById('id-insert-driver-frame').style.display =
+            'block';
+          document.getElementById('id-driver-info-message-lbl').innerText = '';
+          get_driver_info((d = ''), (get_right_click_id = true));
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-preview-driver-plan-rightclick')
+        .addEventListener('click', function () {
+          window.open('/view_report_wait/' + 'rightclicked', '_blank');
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-export-driver-plan-rightclick')
+        .addEventListener('click', function () {
+          export_driver_plan_rightclick();
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-add-a-note-rightclick')
+        .addEventListener('click', function () {
+          disp_note_win_div();
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-delete-shift-rightclick')
+        .addEventListener('click', function () {
+          remove_shift_rightclick();
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-un-fix-shift-rightclick')
+        .addEventListener('click', function () {
+          unfix_shift_rightclick();
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      // document
+      //   .getElementById('id-draw-tour-rightclick')
+      //   .addEventListener('click', function () {
+      //     draw_tour_rightclick();
+      //     document.getElementById('id-customContextMenu-shift').style.display =
+      //       'none';
+      //   });
+
+      document
+        .getElementById('id-propose-shift-right-click')
+        .addEventListener('click', function () {
+          propose_shifts((right_clicked = true));
+          document.getElementById(
+            'id-customContextMenu-movement'
+          ).style.display = 'none';
+        });
+
+      document
+        .getElementById('id-del-mov-right-click')
+        .addEventListener('click', function () {
+          delete_movement_rightclick();
+          document.getElementById(
+            'id-customContextMenu-movement'
+          ).style.display = 'none';
+        });
+
+      document
+        .getElementById('id-refresh-shift-rightclick')
+        .addEventListener('click', function () {
+          refresh_shift_rightclick();
+          document.getElementById('id-customContextMenu-shift').style.display =
+            'none';
+        });
+
+      document
+        .getElementById('id-modify-mov-right-click')
+        .addEventListener('click', function () {
+          document.getElementById('id-mov-loc-string-modify').value =
+            document.getElementById('id-right-clicked-movement-lhid').value;
+          selectElement(
+            (id = 'id-mov-traffic-type-modify'),
+            (valueToSelect = document.getElementById(
+              'id-right-clicked-movement-traffic-type'
+            ).value)
+          );
+          selectElement(
+            (id = 'id-mov-vehicle-type-modify'),
+            (valueToSelect = document
+              .getElementById('id-right-clicked-movement-vehicle-type')
+              .value.split('.')[0])
+          );
+          selectElement(
+            (id = 'id-modify-mov-dep-day'),
+            (valueToSelect = document.getElementById(
+              'id-right-clicked-movement-depday'
+            ).value)
+          );
+          selectElement(
+            (id = 'id-mov-tu-dest-modify'),
+            (valueToSelect = document.getElementById(
+              'id-right-clicked-movement-tu-dest'
+            ).value)
+          );
+
+          disp_mov_modify_movement_details();
+          document.getElementById(
+            'id-customContextMenu-movement'
+          ).style.display = 'none';
+        });
+    </script>
+
+    <!--   Core JS Files   -->
+    <script src="/static/js/core/jquery.min.js"></script>
+    <script src="/static/js/core/popper.min.js"></script>
+    <script src="/static/js/core/bootstrap.min.js"></script>
+    <script src="/static/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+    <script src="/static/js/plugins/moment.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-switch.js"></script>
+    <script src="/static/js/plugins/sweetalert2.min.js"></script>
+    <script src="/static/js/plugins/jquery.tablesorter.js"></script>
+    <script src="/static/js/plugins/jquery.validate.min.js"></script>
+    <script src="/static/js/plugins/jquery.bootstrap-wizard.js"></script>
+    <script src="/static/js/plugins/bootstrap-selectpicker.js"></script>
+    <script src="/static/js/plugins/bootstrap-tagsinput.js"></script>
+    <script src="/static/js/plugins/jasny-bootstrap.min.js"></script>
+    <script src="/static/js/plugins/jquery-jvectormap.js"></script>
+    <script src="/static/js/plugins/nouislider.min.js"></script>
+    <script src="/static/js/plugins/chartjs.min.js"></script>
+    <script src="/static/js/plugins/bootstrap-notify.js"></script>
+    <script src="/static/js/black-dashboard.min.js"></script>
+
+    <script
+      type="text/javascript"
+      src="/static/js/load_filtered_schedule.js"
+    ></script>
+
+    {% block NewScript %}
+    <!-- New scripts will be inserted here. Do not move this block as the core scripts have to be executed first -->
+    {% endblock %}
+
+    <script src="/static/js/streaming.js"></script>
+    <script src="/static/js/connection-check.js"></script>
+    <script src="/static/js/connection-status.js"></script>
+  </body>
+</html>

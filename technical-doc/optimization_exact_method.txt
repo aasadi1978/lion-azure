@@ -1,0 +1,173 @@
+WorkInProgress: Driver Scheduling - Exact method
+===================================================
+
+.. contents::
+  :local:
+  :depth: 2
+
+This is work-in-progress document which provides the formulation for scheduling drivers for movements. 
+The objective is to minimize the number of drivers used and idle time, with the ability to 
+dynamically add empty movements if required. The formulation includes the necessary constraints 
+and decision variables for solving the problem using Gurobi.
+
+Abstract
+---------
+
+In the logistics and transportation industry, efficiently assigning drivers to truck movements is a critical challenge that directly impacts operational 
+costs and service quality. This document addresses the problem of optimal movement-driver assignment, where each movement involves a truck with a predefined 
+departure time, origin, and destination. The objective is to minimize the number of drivers utilized, overall idle time, and empty mileage, while adhering 
+to a set of business rules and constraints related to labor regulations. These constraints include limits on driving and working hours, mandatory return to the base location, and 
+specific break requirements. To solve this problem, we employ a mixed-integer programming (MIP) approach solved using Gurobi optimization software. Our model 
+incorporates various real-world constraints such as turn-around times, break schedules, and empty movements. The results demonstrate the effectiveness
+of the proposed MIP model in optimizing driver schedules, thereby reducing operational inefficiencies and enhancing the overall performance of the transportation network.
+
+**Keywords:** optimization, mixed integer programming, MIP, driver scheduling, Gurobi
+
+
+Problem statement
+-----------------
+
+Let a list :math:`M` of loaded movements be given. By definition, a movement refers to a truck with a predefined departure time, origin and 
+destination. This means that these attributes cannot be modified when modeling. The problem is to find the optimal movement-driver assignment.
+Every driver can drive multiple movement in one shift. The relationship between drivers and shifts is assumed to be 1-1. 
+
+
+- **Business rules and constraints:**
+
+  - Maximum legal driving time per shift is 9 hours.
+  - Maximum legal working time per shift is 12 hours.
+  - Before every departure, a *non-driving turn-around time* is allocated per location to allow the driver to complete paperwork and other 
+    tasks. This turn-around time typically lasts for 15 minutes. It is important to note that this time is considered as working time and is 
+    taken into account when calculating *period of availablity* (POA) of the driver on that location.
+  - Upon arrival at a location, a *driving turn-around time* is allocated to allow the driver to fully stop. 
+    This turn-around time typically lasts for 10 minutes and is considered as part of the driver's driving time.
+  - The last two bullet points are considered as constraints for the model which indicates that the driver has to wait at 
+    least 25 minutes between two consecutive movements. This 25 minutes is called *turn-around time*
+  - According to labor regulations, a 60-minute break must be taken by the driver every 4.5 hours of driving. This means that if a driver drives two 
+    consecutive movements and the total driving time, including the driving turn-around time (10 minutes), exceeds 4.5 hours, the driver must take a break 
+    between the two movements.
+  - According to labor regulations, a 30-minute break must be taken by the driver every 6 hours of working time, unless he has already taken a 60-minute break.
+  - Every driver has to come back to his base location after his shift. If the destination of the last movement is not the base location, the driver 
+    has to drive empty back to his base location.
+  - Every shift starts at driver's base location. This means that if the first loaded movement of a shift is not from driver's base location, he has to drive 
+    empty to the origin of the first movement.
+  - Each shift begins and ends with a 30-minute debriefing period. This time is considered as working time and included in the calculation of the 
+    required working time for breaks.
+  - If it is cost efficient, empty movements can be added to extend the shift of a driver. This means that, once driver arrived at the destination of a 
+    loaded movement, he can drive an empty to the location of the next loaded movement.
+  - If break is required, it has to be provided at a location. This means that the driver cannot take a break on the road and the transfer time 
+    between two consecutive movements should be long enough to provide the break, i.e., 60 minutes for driving break and 25 minutes *turn-around time*.
+
+- **Objective:**
+   The objective is to run all loaded movements such that the total number of utilized drivers, overall idle time and empty mileages are minimized.
+
+
+Sets and Indices
+----------------
+
+- :math:`D`: Set of drivers
+- :math:`M`: Set of loaded movements
+- :math:`L`: Set of locations
+- :math:`T`: Set of time periods
+- :math:`B_d`: Base location for driver :math:` d \in D`
+- :math:`E`: Set of potential empty movements (dynamically generated)
+
+
+Parameters
+-----------
+
+- :math:`\text{driving_time}(j)`: Driving time for movement :math:`j \in M \cup E`
+- :math:`\text{turnaround_time} = 25`: Minimum time between two consecutive movements
+- :math:`\text{max_shift_hours} = 12`: Maximum shift length in hours
+- :math:`\text{max_driving_hours} = 9`: Maximum driving hours in a shift
+- :math:`\text{break_time} = 60`: Break time required every 4.5 hours of driving
+- :math:`\text{work_break} = 30`: Work break required every 6 hours of working time
+- :math:`\text{break_interval} = 4.5`: Interval after which break is needed
+- :math:`\text{driving_break_interval} = 6`: Interval after which work break is needed
+- :math:`\text{idle_time}_{ij}`: Idle time between movement :math:`i` and :math:`j`
+- :math:`\text{travel_time}_{ij}`: Travel time between location of movement :math:`i` and :math:`j`
+
+Decision Variables
+------------------
+
+- :math:`x_{djt}`: Binary variable that equals 1 if driver :math:`d` drives movement :math:`j`  (loaded or empty) at time slot :math:`t`, otherwise 0.
+- :math:`y_d`: Binary variable that equals 1 if driver :math:`d` is used, otherwise 0.
+- :math:`s_j`: Continuous variable for start time of movement :math:`j`.
+- :math:`e_j`: Continuous variable for end time of movement :math:`j`.
+
+Objective Function
+------------------
+
+Minimize the total number of drivers used and the total idle time:
+
+.. math::
+
+   Minimize \quad \sum_{d \in D} y_d + \lambda \sum_{d \in D} \sum_{j \in M \cup E} \text{idle_time}_{dj} + \mu \sum_{j \in E} \text{cost}(j) \sum_{d \in D} \sum_{t \in T} x_{djt}
+
+Constraints
+-----------
+
+1. **Driver Assignment**
+
+   Each loaded movement is assigned to exactly one driver:
+
+   .. math::
+
+      \sum_{d \in D} \sum_{t \in T} x_{djt} = 1 \quad \forall j \in M
+
+2. **One Movement at a Time per Driver**
+
+   A driver can only drive one movement at a time:
+
+   .. math::
+
+      \sum_{j \in M \cup E} x_{djt} \leq 1 \quad \forall d \in D, \forall t \in T
+
+3. **Driving Time Constraint**
+
+   Each driver cannot drive more than 9 hours in a shift:
+
+   .. math::
+
+      \sum_{j \in M \cup E} \text{driving_time}(j) \sum_{t \in T} x_{djt} \leq 9 \quad \forall d \in D
+
+4. **Shift Length Constraint**
+
+   Drivers must return to their base location after their shift:
+
+   .. math::
+
+      \sum_{j \in M \cup E} (e_j - s_j) \sum_{t \in T} x_{djt} + \text{travel_time}(j, B_d) \leq 12 \quad \forall d \in D
+
+5. **Turnaround Time**
+
+   Turnaround time between consecutive movements:
+
+   .. math::
+
+      e_{j-1} + \text{turnaround_time} \leq s_j \quad \forall j \in M \cup E, j-1 \in M \cup E
+
+6. **Start and End Times**
+
+   Movements must respect start and end times:
+
+   .. math::
+
+      s_j + \text{driving_time}(j) + 10 \leq e_j \quad \forall j \in M \cup E
+
+7. **Break Time for Driving**
+
+   Drivers must take a 60-minute break every 4.5 hours of driving:
+
+   .. math::
+
+      \sum_{j \in M \cup E} \text{driving_time}(j) \sum_{t \in T} x_{djt} \leq 4.5 \quad \forall d \in D
+
+8. **Work Break Time**
+
+   Drivers must take a 30-minute break every 6 hours of work, unless a 60-minute break was already taken:
+
+   .. math::
+
+      \sum_{j \in M \cup E} (e_j - s_j) \sum_{t \in T} x_{djt} + \text{work_break} \leq 6 \quad \forall d \in D
+

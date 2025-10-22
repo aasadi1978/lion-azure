@@ -1,0 +1,288 @@
+<!-- <script>
+  let options =
+    window.config && window.config.options ? window.config.options : {};
+</script> -->
+
+<style>
+  .col-md-3 {
+    color: azure;
+  }
+</style>
+<div class="card">
+  <div
+    class="card popup-div-no-img"
+    id="id-insert-driver-frame"
+    style="
+      display: none;
+      height: 65vh;
+      width: 60vw;
+      background-image: url(/static/images/FDX-Truck-blur.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="row card-body">
+      <button
+        class="btn btn-success"
+        onclick="minimize_popup(divid='id-insert-driver-frame', height='60vh')"
+        style="align-content: flex-end"
+      >
+        Min/Max
+      </button>
+
+      <button
+        class="btn btn-danger"
+        onclick="hidePopup('id-insert-driver-frame')"
+        style="align-content: flex-end"
+      >
+        Close
+      </button>
+    </div>
+
+    <div class="card-header">
+      <h3 class="card-title fdxfont">Add/modify a shift</h3>
+    </div>
+
+    <div class="card-body">
+      <!-- <button class="btn btn-danger" onclick="hidePopup('id-insert-driver-frame')">Close</button> -->
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label fdxfont"
+          style="font-size: 22px; color: white"
+          >New operator:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-new-supplier" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >ShiftName:</label
+        >
+        <div class="col-md-3">
+          <input
+            type="text"
+            class="form-control"
+            id="id-drivername-driversetup"
+            style="color: aliceblue"
+          />
+        </div>
+        <div class="col-md-3" id="id-shift-double-man-lbl"></div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >Rename to:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-rename-shift-to" />
+        </div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >Controlled by:</label
+        >
+        <div class="col-md-3">
+          <div class="dropdown">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-ctrl-by-loc-driversetup"
+              data-actions-box="true"
+              title="Controlled by"
+            >
+              {% for loc in options.no_cust_locations %}
+              <option
+                value="{{ loc.split(' - ')[0] }}"
+                style="font-size: 1.2em"
+              >
+                {{ loc }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3" id="id-current-ctrlby"></div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >Operator:</label
+        >
+        <div class="col-md-3">
+          <div class="dropdown">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-operator-driversetup"
+              data-actions-box="true"
+              title="Operator"
+            >
+              {% for opt in options.operators %}
+              <option value="{{ opt }}" style="font-size: 1.2em">
+                {{ opt }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div
+          class="col-md-3"
+          id="id-current-operator"
+          style="font-size: 22px; color: white"
+        ></div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >Pick a start location:</label
+        >
+        <div class="col-md-3">
+          <div class="dropdown">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-start-loc-code-driversetup"
+              data-actions-box="true"
+              title="Start location"
+            >
+              {% for loc in options.all_locs %}
+              <option
+                value="{{ loc.split(' - ')[0] }}"
+                style="font-size: 1.2em"
+              >
+                {{ loc }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3" id="id-current-start-loc"></div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+          >Pick a Vehicle:</label
+        >
+        <div class="col-md-3">
+          <div class="dropdown">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-shift-vehicle-type"
+              data-actions-box="true"
+              title="Vehicle"
+            ></select>
+          </div>
+        </div>
+        <div class="col-md-3" id="id-shift-vehicle-lbl"></div>
+      </div>
+
+      <div class="row">
+        <label
+          class="col-md-3 col-form-label"
+          style="font-size: 22px; color: white"
+        >
+          Running weekdays:</label
+        >
+        <div class="col-md-3">
+          <div class="dropdown">
+            <select
+              class="selectpicker"
+              multiple
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-shift-running-weekday"
+              title="Weekdays"
+            >
+              <option value="Mon" style="font-size: 1.2em">Monday</option>
+              <option value="Tue" style="font-size: 1.2em">Tuesday</option>
+              <option value="Wed" style="font-size: 1.2em">Wednesday</option>
+              <option value="Thu" style="font-size: 1.2em">Thursday</option>
+              <option value="Fri" style="font-size: 1.2em">Friday</option>
+              <option value="Sun" style="font-size: 1.2em">Sunday</option>
+            </select>
+          </div>
+        </div>
+        <div class="col-md-3" id="id-lbl-shift-running-weekday"></div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-3">
+          <p class="category" style="font-size: 22px; color: white">
+            Double man
+          </p>
+          <input
+            type="checkbox"
+            class="bootstrap-switch"
+            data-on-label="ON"
+            data-off-label="OFF"
+            id="id-double-man-shift"
+          />
+        </div>
+        <div class="col-md-3">
+          <p class="category" style="font-size: 22px; color: white">
+            Home-base
+          </p>
+          <input
+            type="checkbox"
+            checked
+            class="bootstrap-switch"
+            data-on-label="ON"
+            data-off-label="OFF"
+            id="id-hbr-rule-applied"
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        <button class="btn btn-success" onclick="handle_drivers_info()">
+          Save
+        </button>
+      </div>
+      <div class="col-md-3">
+        <button
+          class="btn btn-danger"
+          onclick="remove_shift()"
+          title="This will remove the shift from the specified weekdays schedule"
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+
+    <div class="row">
+      <label
+        class="col-md-12 col-form-label"
+        id="id-driver-info-message-lbl"
+      ></label>
+    </div>
+  </div>
+</div>

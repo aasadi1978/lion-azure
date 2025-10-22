@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lion-agent"
+version = "1.0"
+description = "An agent orchestinating LION to keep it up and running and ensuring its being up to date"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+  { name = "Alireza Asadi", email = "alireza.asadi@fedex.com" }
+]
+
+dependencies = [
+  "psutil~=7.1.0"
+]
+
+[project.scripts]
+lion_agent = "lion_orchestrator.orchestrator:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["lion_orchestrator", "lion_orchestrator.*"]

@@ -1,0 +1,7 @@
+# Include non-Python assets
+recursive-include src/lion/templates *
+recursive-include src/lion/static *
+recursive-include src/lion/sqldb *
+
+# We ship README, etc.:
+include README.md

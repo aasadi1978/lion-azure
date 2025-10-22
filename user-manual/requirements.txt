@@ -1,0 +1,3 @@
+sphinx
+bs4
+docutils

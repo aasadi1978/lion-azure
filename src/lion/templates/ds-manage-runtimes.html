@@ -1,0 +1,309 @@
+<!-- <script>
+  let options =
+    window.config && window.config.options ? window.config.options : {};
+</script> -->
+
+<div class="card">
+  <div
+    class="card popup-div-no-img"
+    id="id-manage-runtimes"
+    style="
+      display: none;
+      width: 70vw;
+      background-image: url(/static/images/FDX-Truck-blur.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="card-header">
+      <h3 class="card-title fdxfont">Manage Runtimes and Mileages</h3>
+    </div>
+
+    <!-- <div class="popup-header">Manage Runtimes and Mileages</div> -->
+    <button
+      class="btn btn-danger"
+      onclick="hidePopup('id-manage-runtimes')"
+      style="align-content: flex-end"
+    >
+      Close
+    </button>
+
+    <div class="col-md-7 row">
+      <label
+        class="col-md-4 col-form-label"
+        style="color: white; font-size: 18px"
+        >Location:
+      </label>
+      <div class="col-md-4 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          multiple
+          data-live-search="true"
+          data-style="btn btn-info"
+          title="Location"
+          data-size="7"
+          id="id-loc-code-runtime"
+          data-actions-box="true"
+        >
+          {%for loc in options.all_locs %}
+          <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+            {{ loc }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-7 row" style="justify-content: left">
+      <label
+        class="col-md-4 col-form-label"
+        style="color: white; font-size: 18px"
+        >Location Type:
+      </label>
+      <div class="col-md-4 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          multiple
+          data-live-search="true"
+          data-style="btn btn-info"
+          title="LocationType"
+          data-size="7"
+          id="id-loc-type-runtimes"
+          data-actions-box="true"
+        >
+          <option value="Customer" id="id-customer" style="font-size: 1.2em">
+            Customer
+          </option>
+          <option value="Gateway" id="id-gateway" style="font-size: 1.2em">
+            Gateway
+          </option>
+          <option value="Hub" id="id-hub" style="font-size: 1.2em">Hub</option>
+          <option value="Port" id="id-port" style="font-size: 1.2em">
+            Port
+          </option>
+          <option value="Station" id="id-station" style="font-size: 1.2em">
+            Station
+          </option>
+          <option value="Swap" id="id-swap" style="font-size: 1.2em">
+            Swap
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div class="col-md-7 row">
+      <label
+        class="col-md-4 col-form-label"
+        style="color: white; font-size: 18px"
+      >
+        loc_strings (Ex. DZ5.KG4;CY4.ZLX):
+      </label>
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          id="id-loc-strings"
+          placeholder="ADX.DZ5;kg4.dz5"
+          style="font-size: 18px"
+          value=""
+          title="This option pulls data from LION; No data will be retuend if location does not exist!"
+        />
+      </div>
+    </div>
+
+    <div class="col-md-7 row" style="display: none">
+      <label
+        class="col-md-4 col-form-label"
+        style="color: white; font-size: 18px"
+      >
+        Geocode/postcode string (';' seperated):
+      </label>
+      <div class="col-md-7">
+        <input
+          type="text"
+          class="form-control"
+          id="id-stops-string-for-egis"
+          placeholder="52.03375558360, 4.3004232263;52.5784984132, -1.57067109174"
+          style="font-size: 18px"
+          value=""
+          title="This option pulls data directly from eGIS using geocodes; could be different from existing data in LION!"
+        />
+      </div>
+    </div>
+
+    <div class="row">
+      <label
+        class="col-sm-2 col-form-label"
+        style="color: aliceblue; font-family: FedEx Sans; font-size: 18px"
+        >Overwrite existing lanes</label
+      >
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        id="id-chkbox-overwrite-existinglanes-runtimes"
+      />
+    </div>
+
+    <div class="card-body row">
+      <button
+        class="btn btn-success btnrows2"
+        style="padding: 5px 45px; width: 250px"
+        id="id-get-egis-runtimes"
+        onclick="dumpEmapsData()"
+        ,
+        ,
+        title="Generates input data for the eGIS app. The lanes xlsx file, namely, Lanes.xlsx will be dumped in eGIS_PE\user\user_name directory in eGIS sharepoint."
+      >
+        eMAPS data
+      </button>
+
+      <button
+        class="btn btn-success btnrows2"
+        style="padding: 5px 45px; width: 250px"
+        onclick="updateRuntimes()"
+        id="id-update-egis-runtimes"
+      >
+        Import runtimes
+      </button>
+
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 250px"
+        id="id-extract-run-times"
+        onclick="extract_runtimes()"
+      >
+        Export runtimes
+      </button>
+    </div>
+
+    <!-- <div class="card"> -->
+    <div class="card-header">
+      <h4 class="card-title fdxfont" id="id-modify-runtimes-header">
+        Ad-hoc runtimes update
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <div class="col-md-9">
+        <div class="row">
+          <label
+            class="col-sm-2 col-form-label"
+            style="color: white; font-size: 18px"
+          >
+            loc_strings:
+          </label>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              id="id-loc-strings-to-change-runtimes"
+              placeholder="ADX.DZ5"
+              style="font-size: 18px"
+              value=""
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <label
+            class="col-sm-2 col-form-label"
+            style="color: white; font-size: 18px"
+          >
+            Miles:
+          </label>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              id="id-miles-runtime-change"
+              placeholder="52"
+              style="font-size: 18px"
+              value=""
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <label
+            class="col-sm-2 col-form-label"
+            style="color: white; font-size: 18px"
+          >
+            DrivingTime:
+          </label>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              id="id-drivingtime-runtime-change"
+              placeholder="48"
+              style="font-size: 18px"
+              value=""
+            />
+          </div>
+        </div>
+
+        <div class="row">
+          <label
+            class="col-sm-2 col-form-label"
+            style="color: aliceblue; font-family: FedEx Sans; font-size: 18px"
+            >Vehicle Type</label
+          >
+          <div class="dropdown" vertical-align="left">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="5"
+              id="id-selected-travelMode-runtime-change"
+              data-actions-box="true"
+            >
+              <option value="Truck" style="font-size: 1.2em">
+                Tractor-trailer 2/3 Axles 80m3
+              </option>
+              <option value="Van" style="font-size: 1.2em">Van</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <label
+            class="col-sm-2 col-form-label"
+            style="color: aliceblue; font-family: FedEx Sans; font-size: 18px"
+            >Both directions</label
+          >
+          <input
+            type="checkbox"
+            checked
+            class="bootstrap-switch"
+            data-on-label="ON"
+            data-off-label="OFF"
+            id="id-chkbox-runtime-change"
+          />
+        </div>
+
+        <button
+          class="btn btn-success btnrows2"
+          style="padding: 5px 45px; width: 250px"
+          onclick="update_user_defined_runtimes_mileages()"
+          id="id-button-runtime-change"
+        >
+          Update info
+        </button>
+      </div>
+    </div>
+    <!-- </div> -->
+  </div>
+</div>
+
+<script>
+  var input_obj = document.getElementById('id-loc-strings');
+  input_obj.addEventListener('keyup', function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      extract_runtimes();
+    }
+  });
+</script>

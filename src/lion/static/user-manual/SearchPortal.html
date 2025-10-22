@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SearchPortal &#8212; LION 2025-10-17 09:51  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=68fd729e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/basic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/classic.css" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/searchtools.js"></script>
+    <script src="_static/js/update_user_comments.js"></script>
+    
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Navicon" href="navicon.html" />
+    <link rel="prev" title="Buttons" href="Buttons.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="navicon.html" title="Navicon"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Buttons.html" title="Buttons"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-17 09:51  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SearchPortal</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="searchportal">
+<span id="search-portal"></span><h1>SearchPortal<a class="headerlink" href="#searchportal" title="Link to this heading">¶</a></h1>
+<a class="reference internal image-reference" href="_images/search-portal-2.png"><img alt="" class="align-center" src="_images/search-portal-2.png" style="width: 940px; height: 120px;" />
+</a>
+<section id="masterplan-dropdown">
+<h2>MasterPlan-Dropdown<a class="headerlink" href="#masterplan-dropdown" title="Link to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="_images/master-plan-dropdown.png"><img alt="" class="align-center" src="_images/master-plan-dropdown.png" style="width: 940px; height: 300px;" />
+</a>
+<p>On click, the list of all master plans available in <em>LION_SHARED_DIR\MasterPlanFiles</em> will be displayed, sorted based of creation timestamp.
+These master plans is visible for all users, and no distribution is required. The final driver plan is generated using master plan which
+is shared with stations, hubs and other stakeholders, including ROCS team.</p>
+</section>
+<section id="shift-string-dropdown">
+<h2>Shift string-Dropdown<a class="headerlink" href="#shift-string-dropdown" title="Link to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="_images/shift-string-dropdown.png"><img alt="" class="align-center" src="_images/shift-string-dropdown.png" style="width: 940px; height: 300px;" />
+</a>
+<p>A list of movements and corresponding shifts are available to select from in the case user is interested in a subset of the schedule
+running certain lane, managed by certain location, etc. Type your keyword in the search bar and then select from the proposed options
+within the drop-down list. The press <em>Load data</em> to load underlying shifts</p>
+</section>
+<section id="movement-bucket-dropdown">
+<h2>Movement bucket-Dropdown<a class="headerlink" href="#movement-bucket-dropdown" title="Link to this heading">¶</a></h2>
+<p><strong>Pending Movements for Scheduling</strong>:</p>
+<p>In the scheduling process, you may encounter movements that haven’t been planned yet. These movements are
+accessible for manual intervention in the <em>Movements Bucket</em> dropdown list. Once a movement is selected, it will be transferred to the “Movement Dump”
+area.</p>
+<p><strong>Key Points</strong>:</p>
+<ul class="simple">
+<li><p><em>Unique Identification</em>: Each movement in LION is associated with a distinct digital movement ID.</p></li>
+<li><p><em>Movement Management</em>: Transferring a movement to the Movement Dump area will remove it from the list of unplanned movements.</p></li>
+</ul>
+<p>Please ensure careful handling of movements to maintain an efficient and error-free scheduling process.</p>
+</section>
+<section id="changeovers-dropdown">
+<h2>Changeovers-Dropdown<a class="headerlink" href="#changeovers-dropdown" title="Link to this heading">¶</a></h2>
+<p>List of changeovers available in the selected wekkday. After selection of a changeover from the list, the underlying shifts
+carrying the selected changeover will be loaded by pushing the button <em>Load data</em>.</p>
+</section>
+<section id="load-data-button">
+<h2>Load data-button<a class="headerlink" href="#load-data-button" title="Link to this heading">¶</a></h2>
+<p>This button loads the schedule based on the filters set by user. To provide user with flexibility in filtering data, user has to manually
+set and clear undesired filters before loading data (pushing <em>Load data</em> button).</p>
+</section>
+<section id="my-basket-button">
+<h2>My basket-button<a class="headerlink" href="#my-basket-button" title="Link to this heading">¶</a></h2>
+<p>This button can be used to collect a list of shifts for processing. User can hold <code class="docutils literal notranslate"><span class="pre">CTRL</span></code> key and select the shifts to be processed.</p>
+<a class="reference internal image-reference" href="_images/ctrl-selected-shifts.png"><img alt="" class="align-center" src="_images/ctrl-selected-shifts.png" style="width: 940px; height: 300px;" />
+</a>
+<p>Once done with selection, this button can be pressed to send the selected shifts into the basket. If there are already shifts in the
+basket, the total number shifts in basket will be displayed on the button (In the example above, although four shifts are selected,
+but we see five on the button as there was already a shift in the basket).</p>
+<p><strong>NOTE</strong>: If no shift is selected by user, and the button is pressed, all of the shifts on the current page will be added to the basket</p>
+</section>
+<section id="load-basket-button">
+<h2>Load basket-button<a class="headerlink" href="#load-basket-button" title="Link to this heading">¶</a></h2>
+<p>Once user was done with adding shifts to the basket, this button can be used to load all shifts in the basket.</p>
+</section>
+<section id="empty-basket-button">
+<h2>Empty basket-button<a class="headerlink" href="#empty-basket-button" title="Link to this heading">¶</a></h2>
+<p>Delete all shifts from the basket. Please note that no shift or movement will be deleted from the schedule.</p>
+</section>
+<section id="utilisation-slider">
+<h2>Utilisation-Slider<a class="headerlink" href="#utilisation-slider" title="Link to this heading">¶</a></h2>
+<a class="reference internal image-reference" href="_images/utilisation-slider.png"><img alt="" class="align-center" src="_images/utilisation-slider.png" style="width: 940px; height: 300px;" />
+</a>
+<p>This slider can be used to set filter on the shifts with a certain range of utilisation. By definition, <em>Utilisation</em> is the total loaded movements driving time
+divided by the entire shift. For example, the shift <em>AE4.S9</em> belew, has only one loaded movement from <em>EMA</em> to <em>LHR</em> which is 2 hours and 40 minutes driving time.
+Considering that the total shift is 12 hours, the utilisation of <em>AE4.S9</em> will then be <code class="docutils literal notranslate"><span class="pre">22%</span></code>.</p>
+<a class="reference internal image-reference" href="_images/utilisation-example.png"><img alt="" class="align-center" src="_images/utilisation-example.png" style="width: 940px; height: 300px;" />
+</a>
+</section>
+<section id="runtimes-data-set">
+<span id="runtimes-scn-dropdown"></span><h2>Runtimes Data Set<a class="headerlink" href="#runtimes-data-set" title="Link to this heading">¶</a></h2>
+<p>Given the presence of multiple mileage and runtime scenarios influenced by various parameters, including maximum speed, the user has the option to select a specific scenario for analysis and scheduling. This enables the
+examination of the effects related to the chosen scenario. For instance, by recreating a schedule assuming a maximum speed of 44 mph, the user can assess its impact on the
+required number of drivers and the overall network cost.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo of LION 2025-10-17 09:51"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">SearchPortal</a><ul>
+<li><a class="reference internal" href="#masterplan-dropdown">MasterPlan-Dropdown</a></li>
+<li><a class="reference internal" href="#shift-string-dropdown">Shift string-Dropdown</a></li>
+<li><a class="reference internal" href="#movement-bucket-dropdown">Movement bucket-Dropdown</a></li>
+<li><a class="reference internal" href="#changeovers-dropdown">Changeovers-Dropdown</a></li>
+<li><a class="reference internal" href="#load-data-button">Load data-button</a></li>
+<li><a class="reference internal" href="#my-basket-button">My basket-button</a></li>
+<li><a class="reference internal" href="#load-basket-button">Load basket-button</a></li>
+<li><a class="reference internal" href="#empty-basket-button">Empty basket-button</a></li>
+<li><a class="reference internal" href="#utilisation-slider">Utilisation-Slider</a></li>
+<li><a class="reference internal" href="#runtimes-data-set">Runtimes Data Set</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="Buttons.html"
+                          title="previous chapter">Buttons</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="navicon.html"
+                          title="next chapter">Navicon</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/SearchPortal.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="navicon.html" title="Navicon"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Buttons.html" title="Buttons"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-17 09:51  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">SearchPortal</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 alireza.asadi@fedex.com | Road Network Planning &amp; Engineering | FedEx Express Europe | Taurusavenue 111 | 2132 LS Hoofddorp | The Netherlands.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,88 @@
+from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
+from lion.logger.exception_logger  import log_exception
+
+
+class TrafficType(LION_SQLALCHEMY_DB.Model):
+
+    __tablename__ = 'traffic_type'
+
+    traffic_type = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False,
+                             primary_key=True)
+    traffic_type_color = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
+    abbr = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
+
+    @classmethod
+    def update(cls, **kwargs):
+
+        try:
+
+            vname = kwargs.get('traffic_type',  '')
+            color_code = kwargs.get('traffic_type_color',  '')
+
+            existing_obj = TrafficType.query.filter_by(
+                traffic_type=vname
+            ).first()
+
+            if existing_obj is None:
+
+                new_obj = TrafficType(
+                    traffic_type=vname,
+                    traffic_type_color=color_code
+                )
+                LION_SQLALCHEMY_DB.session.add(new_obj)
+                LION_SQLALCHEMY_DB.session.commit()
+
+        except Exception:
+            LION_SQLALCHEMY_DB.session.rollback()
+            log_exception()
+
+    @classmethod
+    def dct_short_names(cls):
+
+        dct = {}
+        try:
+            objs = cls.query.all()
+
+            if objs:
+                for obj in objs:
+
+                    if obj.abbr:
+                        dct[obj.traffic_type] = obj.abbr
+                    else:
+                        dct[obj.traffic_type] = obj.traffic_type
+
+            return dct
+
+        except Exception:
+            LION_SQLALCHEMY_DB.session.rollback()
+            log_exception()
+
+        return {}
+
+    @classmethod
+    def dict_traffic_type(cls):
+        """
+        Returns a dict with vehicle code as keys and color code in values
+        """
+        try:
+            objs = TrafficType.query.all()
+            return {obj.traffic_type: obj.traffic_type_color for obj in objs}
+
+        except Exception:
+            return {}
+
+    @classmethod
+    def get_traffic_type_color(cls, traffic_type):
+
+        try:
+            existing_obj = TrafficType.query.filter_by(
+                traffic_type=traffic_type
+            ).first()
+
+            if existing_obj is not None:
+                return existing_obj.traffic_type_color
+            else:
+                return '#000000'
+
+        except Exception:
+            return '#000000'

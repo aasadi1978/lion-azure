@@ -1,0 +1,17 @@
+<button onclick="showFancyAlert()">Show Fancy Alert</button>
+
+<script>
+  function showFancyAlert() {
+    Swal.fire({
+      title: 'Fancy Alert!',
+      text: 'This is a fancy alert.',
+      icon: 'success',
+      confirmButtonColor: '#FF6600',
+      background: '#4D148C',
+      customClass: {
+        title: 'fancy-alert-title',
+        content: 'fancy-alert-content'
+      }
+    });
+  }
+</script>

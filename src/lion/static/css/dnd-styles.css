@@ -1,0 +1,78 @@
+/* basic positioning */
+.legend {
+    list-style: none;
+    align-content: stretch;
+  }
+
+  .stickynote {
+    background-color: rgb(247, 231, 167);
+    font-family: Segoe UI;
+    color: black;
+  }
+
+  #info {
+    font-size: 20px;
+  }
+
+  .btnrows2 {
+    width: 220px;
+    padding: 5px 45px;
+    font-size: 14px
+  }
+
+  .btnrows2b {
+    width: 220px;
+    padding: 5px 35px;
+    font-size: 16px
+  }
+
+  .btn2 {
+    background-color: #9f09b0;
+    width: 220px;
+    padding: 5px 45px;
+    font-size: 14px
+  }
+
+  .btn-search-row {
+    width: 160px;
+    height: 30px;
+    padding: 5px 20px;
+    font-size: 14px;
+  }
+
+  .fdxfont {
+    font-family: FedEx Sans;
+  }
+
+  .col-form-label {
+    font-family: FedEx Sans;
+  }
+
+  .card-title {
+    font-family: FedEx Sans;
+  }
+
+  .category {
+    font-family: FedEx Sans;
+    font-size: 15px;
+  }
+
+  .legend li {
+    margin-right: 5vw;
+  }
+
+  .legend span {
+    border: 1px solid #ccc;
+    float: left;
+    width: 15px;
+    height: 15px;
+    margin: 2px;
+  }
+
+  .form-control {
+    font-size: 1.2em;
+  }
+
+  .btn {
+    color: black
+  }

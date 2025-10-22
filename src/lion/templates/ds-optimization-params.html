@@ -1,0 +1,619 @@
+<!-- <script>
+  let options =
+    window.config && window.config.options ? window.config.options : {};
+</script> -->
+
+<div
+  class="card popup-div-no-img"
+  id="id-manage-optimization"
+  style="
+    height: 95vh;
+    display: none;
+    background-image: url(/static/images/office-fdx-blur-4.png);
+    /* background-image: url(/static/images/liege-optimization.png); */
+    background-repeat: no-repeat;
+    background-size: 100% 95vh;
+  "
+>
+  <div class="card-header">
+    <h2 class="card-title">Optimization parameters</h2>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-sm-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Max empty movement duration (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-maxreposdrivmin"
+        placeholder="150"
+        style="font-size: 18px"
+        value="180"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-sm-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Downtime between movements (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-maxcontime"
+        placeholder="180"
+        style="font-size: 18px"
+        value="180"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Shift duration (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-maxtourdur"
+        style="font-size: 18px"
+        value="720"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Legal driving time per driver (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-maxdrivingdur"
+        style="font-size: 18px"
+        value="540"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Working time before break (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-workingtimeb4break"
+        style="font-size: 18px"
+        value="360"
+        disabled
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Working time break (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-minbreaktimeworking"
+        style="font-size: 18px"
+        value="30"
+        disabled
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Driving time before break (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-drivingtimeb4break"
+        style="font-size: 18px"
+        value="270"
+        disabled
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Driving Break time (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-minbreaktime"
+        style="font-size: 18px"
+        value="60"
+        disabled
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Double-man shift dur (min):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-dblman-shift-dur"
+        style="font-size: 18px"
+        value="990"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Empty departure downtimes (min) (Ex. 0,60):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-empty-mov-downtime"
+        style="font-size: 18px"
+        value="0,60"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      MaxDownTime and MaxReposMin (Ex. 90,90):
+    </label>
+    <div class="col-md-3 form-group">
+      <input
+        type="text"
+        class="form-control"
+        id="id-maxdowntime-maxrepostime-II"
+        style="font-size: 18px"
+        title="These values are used when a large number of movements have to be processed. We override default values for performance purposes."
+        value="90,90"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Vehicle:
+    </label>
+    <div class="col-md-3 dropdown" vertical-align="left" style="width: 17.85%">
+      <select
+        class="selectpicker"
+        data-live-search="true"
+        data-style="btn btn-primary"
+        data-size="7"
+        id="id-vehicle-type-optimization"
+        data-actions-box="true"
+        disabled
+      >
+        <option value="1" selected>Tractor-trailer 2/3 Axles 80m3</option>
+        <option value="4">Van</option>
+        <option value="2">Truck 12 ton</option>
+        <option value="3">Truck 7.5 ton</option>
+        <option value="7">Truck 18 Ton</option>
+        <option value="6">18 Ton + Drop-body</option>
+        <option value="10">Unit + Long D/D Trailer</option>
+        <option value="9">Unit + Long Trailer</option>
+        <option value="8">Unit + D/D Trailer</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Solver:
+    </label>
+    <div class="col-md-3 dropdown" vertical-align="left" style="width: 17.85%">
+      <select
+        class="selectpicker"
+        data-live-search="true"
+        data-style="btn btn-primary"
+        data-size="7"
+        id="id-select-mip-solver"
+        data-actions-box="true"
+      >
+        <option value="Gurobi" selected>Gurobi</option>
+        <option value="or_tools">OR-Tools/CBC</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label fdxfont"
+      style="color: white; font-size: 18px"
+      >Optimization days:
+    </label>
+    <div
+      class="col-md-3 dropdown bootstrap-select"
+      vertical-align="left"
+      style="width: 17.85%"
+    >
+      <select
+        class="selectpicker"
+        multiple
+        data-style="btn btn-primary"
+        data-size="7"
+        title="Weekdays which the optimized schedule will be considered valid"
+        id="id-wkdays-to-copy-schedule"
+        style="color: black; font-size: 18px"
+      >
+        <option value="Mon" selected style="font-size: 14px">Mon</option>
+        <option value="Tue" selected style="font-size: 14px">Tue</option>
+        <option value="Wed" selected style="font-size: 14px">Wed</option>
+        <option value="Thu" selected style="font-size: 14px">Thu</option>
+        <option value="Fri" selected style="font-size: 14px">Fri</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label fdxfont"
+      style="color: white; font-size: 18px"
+      >Locs with no driver:
+    </label>
+    <div class="col-md-3 dropdown" vertical-align="left" style="width: 17.85%">
+      <select
+        class="selectpicker"
+        multiple
+        data-live-search="true"
+        data-style="btn btn-info"
+        title="Location"
+        data-size="7"
+        id="id-loc-code-with-no-driver"
+        data-actions-box="true"
+      >
+        {%for loc in options.all_locs %}
+        <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+          {{ loc }}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Schedule Employed:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        title="If enabled, movements lasting longer than 270 minutes will be scheduled for a double-man shift."
+        id="id-schedule-employed"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Apply maximum resources per loc:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        id="id-apply-max-resource-per-loc"
+        title=""
+        checked
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      User loaded movements:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        checked
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        id="id-user-loaded-movements"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Run extended optimisation:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        title="Considers top closest driver locations for all loaded movements. Extended runtime."
+        id="id-run-extended-optimisation"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Refresh runtimes and mileages:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        checked
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        id="id-recalc-runtimes-mileages"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Exclude double-man shifts:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        title="If enabled, all double-man shifts will be excluded from the optimization process, meaning they will fall outside the scope!"
+        id="id-excl-double-man-shifts"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Schedule Double-man movements:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        checked
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        title="If enabled, movements lasting longer than 270 minutes will be scheduled for a double-man shift."
+        id="id-schedule-double-man-movements"
+      />
+    </div>
+  </div>
+
+  <div class="col-md-7 row">
+    <label
+      class="col-md-5 col-form-label"
+      style="color: white; font-size: 18px"
+    >
+      Exclude infeasible shifts:
+    </label>
+    <div class="form-group">
+      <input
+        type="checkbox"
+        class="bootstrap-switch"
+        data-on-label="ON"
+        data-off-label="OFF"
+        id="id-excl-infeas-shifts"
+      />
+    </div>
+  </div>
+
+  <!-- <div class="col-md-3 form-group">
+    <input
+      type="text"
+      class="form-control"
+      id="id-maxdowntime-maxrepostime-II"
+      style="font-size: 18px"
+      title="These values are used when a large number of movements have to be processed. We override default values for performance purposes."
+      value="90,90"
+    />
+  </div> -->
+
+  <div class="col-md-10 row">
+    <div class="col-md-10 row">
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 250px"
+        onclick="fresh_start()"
+        id="id-opt-clear-fresh-start"
+        title="This will reset the optimization process and all existing data, including movements and resources."
+      >
+        Fresh Start
+      </button>
+
+      <div class="col-md-3 form-group" style="display: none">
+        <input
+          class="form-control"
+          type="file"
+          id="formFile"
+          accept=".xlsm, .xlsx"
+        />
+      </div>
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 250px"
+        id="id-opt-uploadBtn"
+        title="Upload an excel file containing movements info and resources file"
+      >
+        Upload supplementary files
+      </button>
+
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 200px"
+        onclick="run_optimization()"
+        id="id-opt-run-btn"
+      >
+        Optimize
+      </button>
+
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 200px"
+        onclick="run_optimization(endpoint='/run-optimization-detached')"
+        id="id-opt-run-btn"
+      >
+        Optimize detached
+      </button>
+
+      <button
+        class="btn btn-primary btnrows2"
+        style="padding: 5px 45px; width: 200px"
+        onclick="run_optimization(endpoint='/run-optimize-delta-movements')"
+        id="id-opt-run-delta-btn"
+        title="Reads Movements from DELTA Output and runs the optimization process."
+      >
+        Optimize DELTA Output
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="extract_movements_to_process()"
+        style="padding: 5px 45px; width: 250px"
+      >
+        Extract movements
+      </button>
+      <button
+        class="btn btn-danger btnrows2"
+        onclick="hidePopup('id-manage-optimization')"
+        style="align-content: flex-end"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const fileInput = document.getElementById('formFile');
+    const uploadBtn = document.getElementById('id-opt-uploadBtn');
+
+    uploadBtn.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+
+        // document.getElementById('id-opt-run-btn').disabled = true;
+
+        fetch('/upload-external-file', {
+          method: 'POST',
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // document.getElementById('id-opt-run-btn').disabled =
+            //   data.code !== 200;
+
+            if (data.code === 400) {
+              hidePopup('id-manage-optimization');
+              create_popup(
+                (title = 'Uploading file'),
+                (message = data.message)
+              );
+            } else {
+              alert(data.message + ' You can now run the optimization.');
+            }
+          })
+          .catch((error) => {
+            console.error('Error uploading file:', error);
+            hidePopup('id-manage-optimization');
+            // document.getElementById('id-opt-run-btn').disabled = false;
+            create_popup(
+              (title = 'Uploading file'),
+              (message = 'Failed to upload file.')
+            );
+          });
+      }
+    });
+  </script>
+</div>

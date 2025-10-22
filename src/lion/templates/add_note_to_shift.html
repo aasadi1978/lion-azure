@@ -1,0 +1,69 @@
+<div
+    class="card popup-div-no-img"
+    id="id-note-to-driver-parent"
+    style="
+        display: none;
+        height: 30vh;
+        width: 50vw;
+        background-image: url(/static/images/fdx-truck-1.pptx.png);
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center center;
+    "
+>
+    <div class="card-header">
+        <div class="row">
+            <button
+                class="btn btn-success btn-sm"
+                style="padding: 5px 50px"
+                onclick="save_note()"
+            >
+                Update note
+            </button>
+            <button
+                class="btn btn-danger btn-sm"
+                style="padding: 5px 50px"
+                onclick="un_hide_div(elementId='id-note-to-driver-parent')"
+            >
+                Close
+            </button>
+            <label class="col-1 col-form-label" style="color: white"
+                >Driver:
+            </label>
+            <input
+                type="text"
+                class="col-2 form-control fdxfont"
+                id="id-driver-to-add-note"
+            />
+        </div>
+    </div>
+    <div class="card-body">
+        <p
+            class="form-control fdxfont"
+            contenteditable="true"
+            id="id-driver-note"
+            onclick="speechRecognition_drivernote(this)"
+            style="
+                overflow: auto;
+                height: 5em;
+                font-size: 1.2em;
+                background-color: rgb(247, 231, 167);
+                color: black;
+            "
+        ></p>
+    </div>
+    <button
+        class="btn btn-success btn-sm fa fa-microphone"
+        id="id-start-speech-driver-note"
+        style="font-size: 14px"
+    >
+        &nbsp Record
+    </button>
+    <button
+        class="btn btn-danger btn-sm fa fa-microphone"
+        id="id-stop-speech-driver-note"
+        style="font-size: 14px"
+    >
+        &nbsp Stop
+    </button>
+</div>

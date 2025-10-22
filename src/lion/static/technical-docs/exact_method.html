@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>WorkInProgress: Driver Scheduling - Exact method &#8212; LION 2025-10-12 17:56  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=5987881c" />
+    <link rel="stylesheet" type="text/css" href="_static/css/basic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/classic.css" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/searchtools.js"></script>
+    <script src="_static/js/update_user_comments.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Driver Scheduling MIP Formulation" href="optimization.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="optimization.html" title="Driver Scheduling MIP Formulation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-12 17:56  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">WorkInProgress: Driver Scheduling - Exact method</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="workinprogress-driver-scheduling-exact-method">
+<h1>WorkInProgress: Driver Scheduling - Exact method<a class="headerlink" href="#workinprogress-driver-scheduling-exact-method" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#abstract" id="id1">Abstract</a></p></li>
+<li><p><a class="reference internal" href="#problem-statement" id="id2">Problem Statement</a></p></li>
+<li><p><a class="reference internal" href="#business-rules-and-constraints" id="id3">Business Rules and Constraints</a></p></li>
+<li><p><a class="reference internal" href="#model" id="id4">Model</a></p></li>
+<li><p><a class="reference internal" href="#sets" id="id5">Sets</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id6">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#decision-variables" id="id7">Decision Variables</a></p></li>
+<li><p><a class="reference internal" href="#objective-function" id="id8">Objective Function</a></p></li>
+<li><p><a class="reference internal" href="#constraints" id="id9">Constraints</a></p>
+<ul>
+<li><p><a class="reference internal" href="#movement-assignment" id="id10">Movement Assignment</a></p></li>
+<li><p><a class="reference internal" href="#shift-duration" id="id11">Shift Duration</a></p></li>
+<li><p><a class="reference internal" href="#driving-time" id="id12">Driving Time</a></p></li>
+<li><p><a class="reference internal" href="#working-time" id="id13">Working Time</a></p></li>
+<li><p><a class="reference internal" href="#base-location" id="id14">Base Location</a></p></li>
+<li><p><a class="reference internal" href="#turn-around-time" id="id15">Turn-Around Time</a></p></li>
+<li><p><a class="reference internal" href="#empty-movements" id="id16">Empty Movements</a></p></li>
+<li><p><a class="reference internal" href="#driver-utilization" id="id17">Driver Utilization</a></p></li>
+<li><p><a class="reference internal" href="#driver-availability" id="id18">Driver Availability</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#gurobi" id="id19">Gurobi</a></p></li>
+</ul>
+</nav>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is a work-in-progress document that presents an exact method for formulating driver scheduling for movements. Please note that this
+document is still under development and is subject to change. The content provided does not guarantee its correctness.</p>
+</div>
+<section id="abstract">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Abstract</a><a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
+<p>In the logistics and transportation industry, efficiently assigning drivers to truck movements is a critical challenge that directly impacts operational
+costs and service quality. This document addresses the problem of optimal movement-driver assignment, where each movement involves a truck with a predefined
+departure time, origin, and destination. The objective is to minimize the number of drivers utilized, overall idle time, and empty mileage, while adhering
+to a set of business rules and constraints related to labor regulations. These constraints include limits on driving and working hours, mandatory return to the base location, and
+specific break requirements. To solve this problem, we employ a mixed-integer programming (MIP) approach solved using Gurobi optimization software. Our model
+incorporates various real-world constraints such as turn-around times, break schedules, and empty movements. The results demonstrate the effectiveness
+of the proposed MIP model in optimizing driver schedules, thereby reducing operational inefficiencies and enhancing the overall performance of the transportation network.</p>
+<p><strong>Keywords:</strong> optimization, mixed integer programming, MIP, driver scheduling, Gurobi</p>
+</section>
+<section id="problem-statement">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Problem Statement</a><a class="headerlink" href="#problem-statement" title="Link to this heading">¶</a></h2>
+<p>Let a list <span class="math notranslate nohighlight">\(M\)</span> of loaded movements be given. By definition, a movement refers to a truck with a predefined departure time, origin, and destination. This means that these attributes cannot be modified when modeling. The problem is to find the optimal movement-driver assignment. Every driver can drive multiple movements in one shift. The relationship between drivers and shifts is assumed to be 1-1.</p>
+</section>
+<section id="business-rules-and-constraints">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Business Rules and Constraints</a><a class="headerlink" href="#business-rules-and-constraints" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Maximum legal driving time per shift is 9 hours.</p></li>
+<li><p>Maximum legal working time per shift is 12 hours.</p></li>
+<li><p>Before every departure, a <em>non-driving turn-around time</em> is allocated per location to allow the driver to complete paperwork and other tasks. This turn-around time typically lasts for 15 minutes. It is important to note that this time is considered as working time and is taken into account when calculating <em>period of availability</em> (POA) of the driver at that location.</p></li>
+<li><p>Upon arrival at a location, a <em>driving turn-around time</em> is allocated to allow the driver to fully stop. This turn-around time typically lasts for 10 minutes and is considered part of the driver’s driving time.</p></li>
+<li><p>The last two bullet points are considered constraints for the model, indicating that the driver has to wait at least 25 minutes between two consecutive movements. This 25 minutes is called <em>turn-around time</em>.</p></li>
+<li><p>Every driver has to come back to his base location after his shift. If the destination of the last movement is not the base location, the driver has to drive empty back to his base location.</p></li>
+<li><p>Every shift starts at the driver’s base location. This means that if the first loaded movement of a shift is not from the driver’s base location, he has to drive empty to the origin of the first movement.</p></li>
+<li><p>Each shift begins and ends with a 30-minute debriefing period.</p></li>
+<li><p>If it is cost-efficient, empty movements can be added to extend the shift of a driver. This means that once a driver arrives at the destination of a loaded movement, he can drive empty to the location of the next loaded movement.</p></li>
+</ul>
+</section>
+<section id="model">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Model</a><a class="headerlink" href="#model" title="Link to this heading">¶</a></h2>
+</section>
+<section id="sets">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Sets</a><a class="headerlink" href="#sets" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(M\)</span>: Set of movements</p></li>
+<li><p><span class="math notranslate nohighlight">\(M^\prime\)</span>: Set of empty movements</p></li>
+<li><p><span class="math notranslate nohighlight">\(L\)</span>: Set of locations</p></li>
+<li><p><span class="math notranslate nohighlight">\(S\)</span>: Set of shifts. We can assume that the number of shifts does not exceed the number of loaded movements, i.e., <span class="math notranslate nohighlight">\(|S| \leq |M|\)</span></p></li>
+</ul>
+</section>
+<section id="parameters">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(t_m^{dep}\)</span>: Departure time of movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(o_m\)</span>: Origin location of movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(d_m\)</span>: Destination location of movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{m}^{drive}\)</span>: Driving time for movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(c_m\)</span>: Cost of movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{loc}^{poa}\)</span>: Non-driving turn-around time (15 minutes)</p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{loc}^{driving}\)</span>: Driving turn-around time (10 minutes)</p></li>
+<li><p><span class="math notranslate nohighlight">\(c_{ij}^{empty}\)</span>: Cost of driving empty from location <span class="math notranslate nohighlight">\(i\)</span> to location <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{ij}^{empty}\)</span>: Driving time for empty movement from location <span class="math notranslate nohighlight">\(i\)</span> to location <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(n_l\)</span>: Number of available drivers at location <span class="math notranslate nohighlight">\(l\)</span></p></li>
+</ul>
+</section>
+<section id="decision-variables">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Decision Variables</a><a class="headerlink" href="#decision-variables" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(x_{lm}\)</span>: Binary variable equal to 1 if a driver at location <span class="math notranslate nohighlight">\(l\)</span> is assigned to movement <span class="math notranslate nohighlight">\(m\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(x_{m}\)</span>: Binary variable equal to 1 if loaded movement <span class="math notranslate nohighlight">\(m\)</span> is scheduled, otherwise 0</p></li>
+<li><p><span class="math notranslate nohighlight">\(y_{lij}\)</span>: Binary variable equal to 1 if a driver at location <span class="math notranslate nohighlight">\(l\)</span> drives empty from location <span class="math notranslate nohighlight">\(i\)</span> to location <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{ij}\)</span>: Binary variable equal to 1 if shift <span class="math notranslate nohighlight">\(i\)</span> departs from location <span class="math notranslate nohighlight">\(j\)</span>, 0 otherwise</p></li>
+<li><p><span class="math notranslate nohighlight">\(S_j\)</span>: Binary variable equal to 1 if shift <span class="math notranslate nohighlight">\(j\)</span> is utilized, 0 otherwise</p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{shift}^{start_l}\)</span>: Continuous variable representing the start time of the shift for a driver at location <span class="math notranslate nohighlight">\(l\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{shift}^{end_l}\)</span>: Continuous variable representing the end time of the shift for a driver at location <span class="math notranslate nohighlight">\(l\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{empty}^{start_lij}\)</span>: Continuous variable representing the start time of the empty movement for a driver at location <span class="math notranslate nohighlight">\(l\)</span> from location <span class="math notranslate nohighlight">\(i\)</span> to location <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(t_{empty}^{end_lij}\)</span>: Continuous variable representing the end time of the empty movement for a driver at location <span class="math notranslate nohighlight">\(l\)</span> from location <span class="math notranslate nohighlight">\(i\)</span> to location <span class="math notranslate nohighlight">\(j\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(u_l\)</span>: Binary variable equal to 1 if a driver at location <span class="math notranslate nohighlight">\(l\)</span> is utilized in any shift, 0 otherwise</p></li>
+</ul>
+</section>
+<section id="objective-function">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Objective Function</a><a class="headerlink" href="#objective-function" title="Link to this heading">¶</a></h2>
+<p>Minimize the total number of utilized drivers, overall idle time, and empty mileages:</p>
+<div class="math notranslate nohighlight">
+\[\min \sum_{l \in L} u_l + \alpha \sum_{l \in L} \left( t_{shift}^{end_l} - t_{shift}^{start_l} - \sum_{m \in M} t_{m}^{drive} x_{lm} - \sum_{i \in L} \sum_{j \in L} t_{ij}^{empty} y_{lij} \right) + \beta \sum_{l \in L} \sum_{i \in L} \sum_{j \in L} c_{ij}^{empty} y_{lij}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\alpha\)</span> and <span class="math notranslate nohighlight">\(\beta\)</span> are weighting factors to balance the importance of idle time and empty mileage.</p>
+</section>
+<section id="constraints">
+<h2><a class="toc-backref" href="#id9" role="doc-backlink">Constraints</a><a class="headerlink" href="#constraints" title="Link to this heading">¶</a></h2>
+<section id="movement-assignment">
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">Movement Assignment</a><a class="headerlink" href="#movement-assignment" title="Link to this heading">¶</a></h3>
+<p>Each movement must be assigned to exactly one shift:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{j \in S} x_{mj} \leq x_m, \quad \forall m \in M\]</div>
+<p>If a movement is assigned to a shift, the shift must be utilized:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{m \in M} x_{mj} = S_j, \quad \forall j \in S\]</div>
+<p>If a shift is utilized, the shift must be assigned to at least one driver location:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{l \in L} s_{lj} = S_j, \quad \forall j \in S\]</div>
+</section>
+<section id="shift-duration">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Shift Duration</a><a class="headerlink" href="#shift-duration" title="Link to this heading">¶</a></h3>
+<p>Ensure the shift duration does not exceed 12 hours:</p>
+<div class="math notranslate nohighlight">
+\[S_{j}^{end} - S_{j}^{start} \leq 12, \quad \forall j \in S\]</div>
+</section>
+<section id="driving-time">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Driving Time</a><a class="headerlink" href="#driving-time" title="Link to this heading">¶</a></h3>
+<p>Total driving time within a shift must not exceed 9 hours:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{m \in M} t_{m}^{drive} x_{mj} + \sum_{i \in L} \sum_{j \in L} t_{ij}^{empty} y_{lij} \leq 9, \quad \forall j \in S\]</div>
+</section>
+<section id="working-time">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Working Time</a><a class="headerlink" href="#working-time" title="Link to this heading">¶</a></h3>
+<p>Total working time (including non-driving turn-around time) within a shift must not exceed 12 hours:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{m \in M} (t_{m}^{drive} + t_{loc}^{poa}) x_{lm} + \sum_{i \in L} \sum_{j \in L} (t_{ij}^{empty} + t_{loc}^{poa}) y_{lij} \leq 12, \quad \forall l \in L\]</div>
+</section>
+<section id="base-location">
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">Base Location</a><a class="headerlink" href="#base-location" title="Link to this heading">¶</a></h3>
+<p>Ensure that each shift starts and ends at the driver’s base location:</p>
+<div class="math notranslate nohighlight">
+\[t_{shift}^{start_l} = t_{m}^{dep} - (t_{m}^{drive} + t_{loc}^{poa} + t_{loc}^{driving}), \quad \forall l \in L \text{ if the first movement } m \text{ is not from base location}\]</div>
+<div class="math notranslate nohighlight">
+\[t_{shift}^{end_l} = t_{m}^{dep} + t_{m}^{drive} + t_{loc}^{poa} + t_{loc}^{driving}, \quad \forall l \in L \text{ if the last movement } m \text{ is not to base location}\]</div>
+</section>
+<section id="turn-around-time">
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">Turn-Around Time</a><a class="headerlink" href="#turn-around-time" title="Link to this heading">¶</a></h3>
+<p>Enforce a minimum turn-around time of 25 minutes between consecutive movements:</p>
+<div class="math notranslate nohighlight">
+\[t_{m}^{dep} - (t_{m'}^{dep} + t_{m'}^{drive} + t_{loc}^{driving}) \geq 25, \quad \forall l \in L, \forall m, m' \in M \text{ where } x_{lm} = 1 \text{ and } x_{lm'} = 1\]</div>
+</section>
+<section id="empty-movements">
+<h3><a class="toc-backref" href="#id16" role="doc-backlink">Empty Movements</a><a class="headerlink" href="#empty-movements" title="Link to this heading">¶</a></h3>
+<p>Generate and schedule empty movements if cost-efficient:</p>
+<div class="math notranslate nohighlight">
+\[t_{empty}^{start_lij} = t_{m}^{dep} + t_{m}^{drive} + t_{loc}^{driving}, \quad \forall l \in L, \forall m \in M \text{ if } y_{lij} = 1 \text{ and } d_m = i\]</div>
+<div class="math notranslate nohighlight">
+\[t_{empty}^{end_lij} = t_{empty}^{start_lij} + t_{ij}^{empty}, \quad \forall l \in L, \forall i, j \in L \text{ if } y_{lij} = 1\]</div>
+</section>
+<section id="driver-utilization">
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Driver Utilization</a><a class="headerlink" href="#driver-utilization" title="Link to this heading">¶</a></h3>
+<p>Link driver utilization to the assignment of movements:</p>
+<div class="math notranslate nohighlight">
+\[u_l \geq x_{lm}, \quad \forall l \in L, \forall m \in M\]</div>
+</section>
+<section id="driver-availability">
+<h3><a class="toc-backref" href="#id18" role="doc-backlink">Driver Availability</a><a class="headerlink" href="#driver-availability" title="Link to this heading">¶</a></h3>
+<p>Ensure the number of utilized drivers does not exceed the available drivers at each location:</p>
+<div class="math notranslate nohighlight">
+\[\sum_{m \in M} x_{lm} \leq n_l, \quad \forall l \in L\]</div>
+</section>
+</section>
+<section id="gurobi">
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Gurobi</a><a class="headerlink" href="#gurobi" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">gurobipy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">gp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">gurobipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">GRB</span>
+
+<span class="c1"># Create a new model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="s2">&quot;SequentialMovements&quot;</span><span class="p">)</span>
+
+<span class="c1"># Example sets and parameters (replace with actual data)</span>
+<span class="n">L</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;l1&quot;</span><span class="p">,</span> <span class="s2">&quot;l2&quot;</span><span class="p">]</span>  <span class="c1"># Locations</span>
+<span class="n">M</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;m1&quot;</span><span class="p">,</span> <span class="s2">&quot;m2&quot;</span><span class="p">,</span> <span class="s2">&quot;m3&quot;</span><span class="p">]</span>  <span class="c1"># Movements</span>
+<span class="n">origins</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m1&quot;</span><span class="p">:</span> <span class="s2">&quot;loc1&quot;</span><span class="p">,</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span> <span class="s2">&quot;loc2&quot;</span><span class="p">,</span> <span class="s2">&quot;m3&quot;</span><span class="p">:</span> <span class="s2">&quot;loc3&quot;</span><span class="p">}</span>  <span class="c1"># Movement origins</span>
+<span class="n">destinations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m1&quot;</span><span class="p">:</span> <span class="s2">&quot;loc2&quot;</span><span class="p">,</span> <span class="s2">&quot;m2&quot;</span><span class="p">:</span> <span class="s2">&quot;loc3&quot;</span><span class="p">,</span> <span class="s2">&quot;m3&quot;</span><span class="p">:</span> <span class="s2">&quot;loc1&quot;</span><span class="p">}</span>  <span class="c1"># Movement destinations</span>
+
+<span class="c1"># Decision variables</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVars</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">vtype</span><span class="o">=</span><span class="n">GRB</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">)</span>
+<span class="n">z</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">addVars</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">vtype</span><span class="o">=</span><span class="n">GRB</span><span class="o">.</span><span class="n">BINARY</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;z&quot;</span><span class="p">)</span>
+
+<span class="c1"># Big-M value (should be large enough to enforce the constraint, replace with an appropriate value)</span>
+<span class="n">M_value</span> <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="c1"># Adding the sequential movement constraints</span>
+<span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">L</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">M</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">m_prime</span> <span class="ow">in</span> <span class="n">M</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span> <span class="o">!=</span> <span class="n">m_prime</span><span class="p">:</span>
+                <span class="c1"># z[l, m, m&#39;] can only be 1 if both x[l, m] and x[l, m&#39;] are 1</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;z_x1_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m_prime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">x</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;z_x2_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m_prime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">addConstr</span><span class="p">(</span><span class="n">z</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">x</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">]</span> <span class="o">+</span> <span class="n">x</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;z_x3_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m_prime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+                <span class="c1"># Big-M constraints to enforce the origin-destination constraint</span>
+                <span class="n">model</span><span class="o">.</span><span class="n">addConstr</span><span class="p">((</span><span class="n">origins</span><span class="p">[</span><span class="n">m_prime</span><span class="p">]</span> <span class="o">==</span> <span class="n">destinations</span><span class="p">[</span><span class="n">m</span><span class="p">])</span> <span class="o">*</span> <span class="n">z</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">m_prime</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">M_value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;od_</span><span class="si">{</span><span class="n">l</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">m_prime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1"># Add other constraints and objective as needed</span>
+
+<span class="c1"># Optimize the model</span>
+<span class="n">model</span><span class="o">.</span><span class="n">optimize</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo of LION 2025-10-12 17:56"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">WorkInProgress: Driver Scheduling - Exact method</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#problem-statement">Problem Statement</a></li>
+<li><a class="reference internal" href="#business-rules-and-constraints">Business Rules and Constraints</a></li>
+<li><a class="reference internal" href="#model">Model</a></li>
+<li><a class="reference internal" href="#sets">Sets</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#decision-variables">Decision Variables</a></li>
+<li><a class="reference internal" href="#objective-function">Objective Function</a></li>
+<li><a class="reference internal" href="#constraints">Constraints</a><ul>
+<li><a class="reference internal" href="#movement-assignment">Movement Assignment</a></li>
+<li><a class="reference internal" href="#shift-duration">Shift Duration</a></li>
+<li><a class="reference internal" href="#driving-time">Driving Time</a></li>
+<li><a class="reference internal" href="#working-time">Working Time</a></li>
+<li><a class="reference internal" href="#base-location">Base Location</a></li>
+<li><a class="reference internal" href="#turn-around-time">Turn-Around Time</a></li>
+<li><a class="reference internal" href="#empty-movements">Empty Movements</a></li>
+<li><a class="reference internal" href="#driver-utilization">Driver Utilization</a></li>
+<li><a class="reference internal" href="#driver-availability">Driver Availability</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#gurobi">Gurobi</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="optimization.html"
+                          title="previous chapter">Driver Scheduling MIP Formulation</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/exact_method.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="optimization.html" title="Driver Scheduling MIP Formulation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-12 17:56  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">WorkInProgress: Driver Scheduling - Exact method</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 alireza.asadi@fedex.com | Road Network Planning &amp; Engineering | FedEx Express Europe | Taurusavenue 111 | 2132 LS Hoofddorp | The Netherlands.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

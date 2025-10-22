@@ -1,0 +1,6 @@
+from lion.delta_suite.create_movements.MovementScheduling import generate_movements
+from lion.delta_suite.create_movements.MovementSchedulingFirstSector import process_first_sector_flow
+
+
+process_first_sector_flow()
+generate_movements()

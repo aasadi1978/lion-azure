@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Encyclopedia &#8212; LION 2025-10-17 09:51  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=68fd729e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/basic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/classic.css" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/searchtools.js"></script>
+    <script src="_static/js/update_user_comments.js"></script>
+    
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Labor regulations" href="regulations.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="Troubleshooting"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="regulations.html" title="Labor regulations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-17 09:51  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Encyclopedia</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="encyclopedia">
+<h1>Encyclopedia<a class="headerlink" href="#encyclopedia" title="Link to this heading">¶</a></h1>
+<section id="movement">
+<span id="id1"></span><h2>Movement<a class="headerlink" href="#movement" title="Link to this heading">¶</a></h2>
+<p>In transportation and logistics, a <code class="docutils literal notranslate"><span class="pre">Movement</span></code> refers to the complete journey of a vehicle from its point of origin to its destination.
+It encompasses all aspects of the transit, including the vehicle’s departure time from the origin, the route taken, and the arrival time at the
+destination. This term is broadly applicable to various modes of transportation, such as cars, trucks, trains, ships, and aircraft. Each movement is
+characterized by its unique set of parameters such as distance, duration, and the nature of goods or passengers being transported, providing a
+comprehensive overview of the transit process.</p>
+</section>
+<section id="changeover">
+<span id="id2"></span><h2>Changeover<a class="headerlink" href="#changeover" title="Link to this heading">¶</a></h2>
+<p>In the realm of transportation, a <code class="docutils literal notranslate"><span class="pre">Changeover</span></code> or a <code class="docutils literal notranslate"><span class="pre">multi-leg</span> <span class="pre">movement</span></code>, refers to a sequence of interconnected
+<a class="reference internal" href="#movement"><span class="std std-ref">movements</span></a>, where each <a class="reference internal" href="#movement"><span class="std std-ref">movement</span></a> is linked to the next by specific departure and arrival times. These sequences are carefully coordinated to ensure smooth
+transitions between each leg of the journey. The timing between successive movements, known as <em>changeover time</em>, is critical. It allows
+time to process and exchange trailer between drivers. However, if one movement in the sequence is delayed, it might necessitate the adjustment of subsequent
+movements to maintain the integrity of the overall schedule.</p>
+<p>In FedEx, the creation of changeovers primarily addresses challenges associated with lengthy (exceeding 4.5 hours of driving time)
+and time-sensitive movements. Consider, for instance, the transportation of a unit from Kingsbury, UK, to Edinburgh, UK.
+This journey exceeds six hours, making it impractical to complete in compliance with <a class="reference internal" href="regulations.html#regulations"><span class="std std-ref">regulations</span></a> without being double-manned.
+To circumvent this issue, a changeover is strategically implemented. A typical solution involves establishing a transfer point,
+such as in Preston. Here, coordinators can efficiently arrange for the continuation of the journey, managing connections and transfers to
+prevent delays. This system ensures that longer journeys remain feasible and compliant with <a class="reference internal" href="regulations.html#regulations"><span class="std std-ref">regulations</span></a> within operational constraints.</p>
+<p>Let us deep dive in the Preston example. Assume that the above mentioned changeover involves two linked movements (M1 and M2):</p>
+<ul class="simple">
+<li><p>M1: The first movement is from Kingsbury to Preston. The truck departs at 22:00 and arrives at 00:25 the next day.</p></li>
+<li><p>M2: The second movement, from Preston to Edinburgh, begins shortly after. This truck is scheduled to leave Preston at 00:40 and
+reach Edinburgh at 04:50.</p></li>
+</ul>
+<p>Between these two movements, there is a planned 15-minute changeover time, specifically allocated for transferring
+the trailer. This changeover time is crucial for ensuring a smooth transition between the movements.</p>
+<p>Imagine a situation where the first truck, designated for the Preston leg of a journey, experiences a delay of an hour.
+Consequently, the schedule for the subsequent movement, heading towards Edinburgh, must be recalibrated where possible. This rescheduling
+is essential to guarantee that the trailer departs for Edinburgh on time. Such a cascade of delays and the required adjustments
+in the timings of successive movements epitomize what we term a <em>Changeover</em> in truck transportation. Essentially, a Changeover is
+the coordination and realignment of sequential movements to ensure timely deliveries, despite disruptions or delays in earlier segments.</p>
+<p>In the context of LION, a changeover is displayed by its location string. In the example above, the loc_string would be <code class="docutils literal notranslate"><span class="pre">KG4.PN4.EDH.2200</span></code>.
+Every changeover, has a final destination called <em>Transportation Unit</em> or <code class="docutils literal notranslate"><span class="pre">TU</span></code> Destination which is a location where the trailer is destined for.</p>
+</section>
+<section id="tour-shift">
+<span id="tour"></span><h2>Tour (Shift)<a class="headerlink" href="#tour-shift" title="Link to this heading">¶</a></h2>
+<p>A tour or shift, in the Context of LION, is a sequence of <a class="reference internal" href="#movement"><span class="std std-ref">Movement</span></a> s that are conducted by a single driver. This definition
+emphasizes the role of the driver in connecting each movement in the sequence.</p>
+</section>
+<section id="traffic-type">
+<span id="id3"></span><h2>Traffic Type<a class="headerlink" href="#traffic-type" title="Link to this heading">¶</a></h2>
+<p>In the context of transportation, particularly within a transportation or logistics company like FedEx Express, the term <strong>Traffic Type</strong> refers to the
+classification of a transportation lane or route based on the nature of the cargo movement or the mode of transport being used. This classification
+helps in organizing and managing the logistics process more efficiently. Here’s a brief explanation of some of traffic types:</p>
+<ol class="arabic simple">
+<li><p><strong>Air Exports</strong>: These are lanes/movements for goods being exported out of a country from Origin to an air gateway where they
+are either loose loaded or caged.</p></li>
+<li><p><strong>Air Export - ULDs</strong>: These are lanes / movements for goods being exported out of a country from Origin to an air gateway in ULD’s</p></li>
+<li><p><strong>Air Exports - ADR</strong>: These are lanes / movements for goods being exported out of a country
+from Origin to an air gateway but require an ADR qualified driver (dangerous goods)</p></li>
+<li><p><strong>Air Import</strong>: These are lanes / movements for goods being imported into a country from an air gateway to a destination where
+they are either loose loaded or caged</p></li>
+<li><p><strong>Air Import - ULD</strong>: These are lanes / movements for goods being imported into a country from an air gateway to a destination in ULD’s</p></li>
+<li><p><strong>B Service</strong>: These are lanes / movements for goods that have a 2 day service for sorting the next shift</p></li>
+<li><p><strong>Empty</strong>: An empty movement is essentially a repositioning movement where an empty trailer is left in exchange for a loaded trailer</p></li>
+<li><p><strong>Empty - Cages</strong>: An empty movement is essentially a repositioning movement where an empty trailer is left in exchange for a
+loaded trailer but the location it goes to requires cages replenished</p></li>
+<li><p><strong>Empty - palletts</strong>: An empty movement is essentially a repositioning movement where an empty trailer is left in exchange for a
+loaded trailer but the location it goes to requires palletts replenished</p></li>
+<li><p><strong>Empty - ULDs</strong>: An empty movement is essentially a repositioning movement where an empty trailer is left in exchange for
+a loaded trailer but the location it goes to requires ULD’s replenished</p></li>
+<li><p><strong>Empty Double Deck</strong>: Same as empty but it’s a double deck trailer</p></li>
+<li><p><strong>Express</strong>: These are lanes / movments that carry domestic shipments for next day delivery</p></li>
+<li><p><strong>Express - ADR</strong>: These are lanes / movments that carry domestic shipments for next day delivery but require an ADR qualifies driver (dangerous goods)</p></li>
+<li><p><strong>Express - Scottish</strong>: These are lanes / movments that carry domestic shipments for next day delivery containing Scottish deadline traffic. Scottish is
+only permitted on designated lines as there is an earlier cut off time so the hubs can identify these and prioritise them for sorting</p></li>
+<li><p><strong>Express Double Deck</strong>: These are lanes / movments that carry domestic shipments for next day delivery but are on a double deck trailer</p></li>
+<li><p><strong>Express Double Deck - Scottish</strong>: These are lanes / movments that carry domestic shipments for next day delivery containing Scottish
+deadline traffic but are on a double deck trailer. Scottish is only permitted on designated lines as there
+is an earlier cut off time so the hubs can identify these and prioritise them for sorting</p></li>
+<li><p><strong>Returns</strong>: A loaded trailer containing shioments to be returned to a specific customer</p></li>
+<li><p><strong>Road Exports</strong>: These are lanes / movements for goods being exported out of a country from Origin to a road transit hub</p></li>
+<li><p><strong>Road Imports</strong>: These are lanes / movements for goods being imported into a country from a road transit hub to a destination</p></li>
+<li><p><strong>Shuttle</strong>: These are lanes / movements for goods being shuttled between locations where the origin does not have a connection to the destination</p></li>
+<li><p><strong>Shuttle - Scottish</strong>: These are lanes / movements for Scottish goods being shuttled between locations where the origin does not have a connection to
+Scotland. This allows the receiving hub to prioritise the trailer for sorting</p></li>
+<li><p><strong>Solo</strong>: This is where a tractor unit travels on its own with no trailer attached</p></li>
+</ol>
+<p>Each of these traffic types has its unique requirements, regulations, and operational procedures. By categorizing lanes
+into these types, a transportation company can better streamline its operations, allocate resources, and provide specialized services
+according to the specific needs of each lane.</p>
+</section>
+<section id="controlling-location-station">
+<span id="ctrl-loc"></span><h2>Controlling location (Station)<a class="headerlink" href="#controlling-location-station" title="Link to this heading">¶</a></h2>
+<p>The controlling location (station) refers to the site responsible for managing drivers and additional resources to
+and from the customer’s location. From <em>Driver Plan</em> reporting perspective, any departure and arrival information from and to
+customer’s location will be shared with the controlling station.</p>
+</section>
+<section id="latitude-and-longitude">
+<span id="lat-lon"></span><h2>Latitude and longitude<a class="headerlink" href="#latitude-and-longitude" title="Link to this heading">¶</a></h2>
+<p>Latitude and longitude are a pair of numbers (coordinates) used to describe a position on the plane of a
+geographic coordinate system. The numbers are in decimal degrees format and range from -90 to 90 for latitude and
+-180 to 180 for longitude. For example, Washington DC has a latitude 38.8951 and longitude -77.0364.</p>
+<p>To obtain a location coordinates, you can go to <a class="reference external" href="https://maps.google.com">Goolge Maps</a>, search for the location.
+Once happy with the location and corresponding details, right click on the spot on the google map and copy the coordinates
+as displayed in the screen shot below. It is important to get these numbers as accurate as possible by zooming in and making sure
+that the right address and point is selected.</p>
+<a class="reference internal image-reference" href="_images/lat-lon.png"><img alt="" class="align-center" src="_images/lat-lon.png" style="width: 650px; height: 400px;" />
+</a>
+</section>
+<section id="turnaround-time">
+<span id="id4"></span><h2>Turnaround time<a class="headerlink" href="#turnaround-time" title="Link to this heading">¶</a></h2>
+<p>This term refers to the essential interval incorporated into each stopping point of a driver’s work cycle within a shift.
+It is composed of two distinct phases:</p>
+<ol class="arabic simple">
+<li><p><strong>Driving Turnaround Time</strong>: This is the time allocated for a driver to gradually reduce speed upon reaching a facility and
+to come to a complete halt within the premises. It ensures a smooth and safe transition from active driving to a stationary state.</p></li>
+<li><p><strong>Non-Driving Turnaround Time</strong>: After the Driving Turnaround Time, a designated period is provided for the driver to manage
+necessary administrative tasks. This includes processing paperwork relevant to the upcoming <a class="reference internal" href="#movement"><span class="std std-ref">movement</span></a>. This phase is
+crucial for the preparation required before embarking on the next segment of the journey. Additionally, this time may be utilized,
+if there are trailers to be swapped, for conducting vehicle or trailer checks prior to re-entering public highways. This ensures not only the administrative
+readiness but also the operational safety of the vehicle for the ensuing travel.</p></li>
+</ol>
+<p>Overall, Turnaround Time at each stopping point in a driver’s shift or tour integrates the transition from driving to rest
+(Driving Turnaround Time) and the preparation for the next driving segment (Non-Driving Turnaround Time), ensuring operational
+efficiency and safety.</p>
+</section>
+<section id="debrief-time">
+<span id="debrief"></span><h2>Debrief time<a class="headerlink" href="#debrief-time" title="Link to this heading">¶</a></h2>
+<p>Debrief time in the context of a transportation company is a designated period at the beginning and end of a shift where
+drivers can prepare for their workday and then later reflect on and discuss it. <em>Debreif time</em> is considered as part of “Duty” hours:</p>
+<ol class="arabic simple">
+<li><dl class="simple">
+<dt><strong>Pre-Shift Debrief (30 minutes at the beginning of the shift):</strong></dt><dd><ul class="simple">
+<li><p><strong>Purpose:</strong> This time is allocated for preparing for the day’s work. It often involves reviewing the day’s schedule, checking vehicles or equipment,
+and discussing any important updates or safety reminders.</p></li>
+<li><p><strong>Activities:</strong> Employees might review their routes, receive any last-minute changes, check the condition of their vehicle, and
+ensure they have all necessary equipment. It’s also a time for supervisors to communicate any relevant information about the day’s tasks.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>Post-Shift Debrief (30 minutes at the end of the shift):</strong></dt><dd><ul class="simple">
+<li><p><strong>Purpose:</strong> This period is for reflecting on the day’s work, discussing any challenges or incidents, and providing feedback. It’s an opportunity
+to learn from the day’s experiences.</p></li>
+<li><p><strong>Activities:</strong> Employees may report on the status of their tasks, any issues encountered, and suggestions for improvement. It’s
+also a time to complete any necessary paperwork and ensure that vehicles and equipment are left in good condition for the next shift.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ol>
+<p>Effective communication, safety, and continuous learning is critical. It’s not just about the tasks but also about engaging with colleagues and
+supervisors to share experiences and gain insights.</p>
+</section>
+<section id="egis">
+<span id="id5"></span><h2>eGIS<a class="headerlink" href="#egis" title="Link to this heading">¶</a></h2>
+<p>Please Consulte <a class="reference internal" href="#esri-egis"><span class="std std-ref">Esri Geographic Information Systems (eGIS)</span></a></p>
+</section>
+<section id="esri-geographic-information-systems-egis">
+<span id="esri-egis"></span><h2>Esri Geographic Information Systems (eGIS)<a class="headerlink" href="#esri-geographic-information-systems-egis" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://www.esri.com/en-us/home">Esri</a> is a company specializing in Geographic Information Systems (GIS) software. They provide powerful
+mapping and analytics tools, known for their ArcGIS platform. Esri’s technology is used for visualizing, analyzing, and interpreting geographic
+data to understand relationships, patterns, and trends. They serve a wide range of industries and purposes, offering solutions for location intelligence
+and spatial analytics, thereby aiding in decision-making and problem-solving.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo of LION 2025-10-17 09:51"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Encyclopedia</a><ul>
+<li><a class="reference internal" href="#movement">Movement</a></li>
+<li><a class="reference internal" href="#changeover">Changeover</a></li>
+<li><a class="reference internal" href="#tour-shift">Tour (Shift)</a></li>
+<li><a class="reference internal" href="#traffic-type">Traffic Type</a></li>
+<li><a class="reference internal" href="#controlling-location-station">Controlling location (Station)</a></li>
+<li><a class="reference internal" href="#latitude-and-longitude">Latitude and longitude</a></li>
+<li><a class="reference internal" href="#turnaround-time">Turnaround time</a></li>
+<li><a class="reference internal" href="#debrief-time">Debrief time</a></li>
+<li><a class="reference internal" href="#egis">eGIS</a></li>
+<li><a class="reference internal" href="#esri-geographic-information-systems-egis">Esri Geographic Information Systems (eGIS)</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="regulations.html"
+                          title="previous chapter">Labor regulations</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="troubleshooting.html"
+                          title="next chapter">Troubleshooting</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/encyclopedia.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="troubleshooting.html" title="Troubleshooting"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="regulations.html" title="Labor regulations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-17 09:51  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Encyclopedia</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 alireza.asadi@fedex.com | Road Network Planning &amp; Engineering | FedEx Express Europe | Taurusavenue 111 | 2132 LS Hoofddorp | The Netherlands.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

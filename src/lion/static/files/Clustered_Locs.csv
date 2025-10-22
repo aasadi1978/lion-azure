@@ -1,0 +1,103 @@
+loc_code,utcdiff,loc_type,active,location_name,latitude,longitude,town,postcode,country_code,chgover_driving_min,chgover_non_driving_min,dep_debrief_time,arr_debrief_time,remarks,turnaround_min,icon,ctrl_depot,update_on,cluster
+ADX,0,Station,1,CANNOCK,52.6783394255883,-1.94082976031003,CANNOCK,WS7 3FX,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",ADX,20230421,6
+FKH,0,Station,1,WARRINGTON,53.4080592670519,-2.53408159090608,FDX WARRINGTON,WA1 4RW,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",FKH,,2
+LHR,0,Station,1,LONDON HEATHROW AIR HUB,51.4532411506524,-0.442609171389405,TNT LONDON HEATHROW AIR HUB,TW14 8NT,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LHR,,3
+UHF,0,Station,1,FELTHAM,50.9298909548325,-0.198279913071997,Feltham,TW14 0SL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",UHF,,1
+ZFC,0,Hub,1,STOKE ROAD HUB,53.0467252002818,-2.23720230523391,FDX STOKE ROAD HUB,ST5 7RB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",ZFC,,2
+BZ4,0,Station,1,BASILDON,51.5885179881567,0.51925651993978,TNT BASILDON,SS13 1EB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BZ4,,1
+SIGM,0,Customer,1,SIGMA,51.0307021746394,-2.27525618644378,SIGMA,SP8 4XT,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/blue-pin 25px.png', 'width': 35, 'height': 24}",BOH,,5
+SOU,0,Station,1,SOUTHAMPTON,50.9408242899987,-1.47759406943807,TNT SOUTHAMPTON,SO16 0WB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SOU,,3
+SWI,0,Station,1,SWINDON,51.5910057479042,-1.74735701427123,FDX SWINDON,SN3 4AJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SWI,,3
+SL4,0,Station,1,SLOUGH,51.5221530094477,-0.63199204155436,TNT SLOUGH,SL1 4NJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SL4,,3
+MC4,0,Station,1,BREDBURY MANCHESTER,53.4307631691134,-2.12493581911053,TNT MANCHESTER - BREDBURY,SK6 2RF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MC4,,2
+LCY,0,Station,1,LONDON CITY,51.4928014249606,-0.0782001697092376,TNT LONDON CITY,SE1 5SF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LCY,,1
+SWS,0,Station,1,SWANSEA,51.6418531234588,-3.99025223370717,FDX SWANSEA,SA5 4HF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SWS,,5
+SZD,0,Station,1,SHEFFIELD,53.4024334446352,-1.41634791793114,FDX SHEFFIELD,S9 2DN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SZD,,7
+RH4,0,Station,1,ROTHERHAM,53.4275302484134,-1.2429100816068,TNT ROTHERHAM,S66 8QN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",RH4,,7
+LGW,0,Station,1,CRAWLEY,51.1318491143414,-0.1718468367271,TNT CRAWLEY,RH10 9TN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LGW,,1
+PN4,0,Station,1,PRESTON,53.7009810152523,-2.7301758247013,TNT PRESTON,PR26 7UX,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",PN4,,2
+BQC,0,Station,1,LAUNCESTON,50.6255107685766,-4.37407672924545,FDX LAUNCESTON,PL15 7PF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BQC,,5
+CSA,0,Station,1,HUNTINGDON,52.339017325485,-0.189994203612984,FDX CAMBRIDGE,PE29 7DF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CSA,,1
+GLA,0,Station,1,PAISLEY GLASGOW,55.8433324517653,-4.47897184704286,TNT GLASGOW PAISLEY,PA1 2FB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",GLA,,4
+MT4,0,Station,1,MILTON,51.622458710513,-1.29933055647288,TNT MILTON,OX14 4TH,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MT4,,3
+PK4,0,Station,1,PARK ROYAL,51.5261949463076,-0.258459551746693,TNT PARK ROYAL,NW10 6PU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",PK4,,1
+NWI,0,Station,1,SNETTERTON,52.4704985868525,0.959617053131434,FDX SNETTERTON,NR16 2JU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",NWI,,1
+WB4,0,Station,1,WELLINGBOROUGH,52.3100852389538,-0.729594979380552,TNT WELLINGBOROUGH,NN8 6TZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",WB4,,3
+NT4,0,Station,1,NOTTINGHAM,52.9361678037576,-1.16818189102231,TNT NOTTINGHAM,NG2 1RX,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",NT4,,6
+GW4,0,Station,1,BELLSHILL GLASGOW,55.8253521750105,-4.0387038673139,TNT GLASGOW BELLSHILL,ML4 3LU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",GW4,,4
+HAM6,0,Swap,1,HAMILTON SERVICES,55.78676309,-4.035092257,HAMILTON SERVICES,ML3 6JW,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 15px.png', 'width': 20, 'height': 18}",HAM6,,4
+LODG,0,Customer,1,CAIRNLODGE SERVICES,55.58514316,-3.824693031,CAIRNLODGE SERVICES,ML11 0RJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/blue-pin 25px.png', 'width': 35, 'height': 24}",LODG,,4
+ZLX,0,Hub,1,MARSTON GATE ROAD HUB,52.0315633932732,-0.59171329802372,FDX MARSTON GATE ROAD HUB,MK43 0YL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",ZLX,,3
+MK4,0,Station,1,MILTON KEYNES,52.0517931367885,-0.70922182000373,TNT MILTON KEYNES,MK15 0DQ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MK4,,3
+MS4,0,Station,1,MAIDSTONE,51.2971188037081,0.476004322326279,TNT MAIDSTONE,ME20 7TR,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MS4,,1
+KE4,0,Station,1,AYLESFORD,51.302920443118,0.499275244943768,FDX AYLESFORD,ME20 7BU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",KE4,,1
+QQM,0,Gateway,1,MANCHESTER AIR HUB,53.3621586639689,-2.28854402884953,FDX MANCHESTER AIR HUB,M90 5UJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/icons8-airplane-take-off-30 orange.png', 'width': 30, 'height': 30}",QQM,,2
+MAN,0,Station,1,TRAFFORD PARK MANCHESTER,53.4636630511304,-2.31936024733271,TNT MANCHESTER - TRAFFORD PARK,M17 1PG,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MAN,,2
+LTN,0,Station,1,LUTON,51.9213687563339,-0.480270379655234,TNT LUTON,LU3 3AN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LTN,,3
+LDY,0,Station,1,WYKEBACK LEEDS,53.7884231440913,-1.49146004274553,FDX LEEDS,LS9 0AN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LDY,,7
+LBA,0,Station,1,GILDERSOME LEEDS,53.7511714394506,-1.62841251090779,TNT LEEDS,LS27 7JU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LBA,,7
+HC4,0,Station,1,HORNCASTLE,53.1650631336438,-0.170381083774412,TNT HORNCASTLE,LN10 6YQ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",HC4,,7
+LC4,0,Station,1,LEICESTER,52.6681638874381,-1.15701197863872,TNT LEICESTER,LE4 1ET,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LC4,,6
+LXL,0,Station,1,LIVERPOOL,53.3369729812055,-2.8546164377131,FDX LIVERPOOL,L24 1YD,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LXL,,2
+BY4,0,Station,1,BYFLEET,51.3493234517376,-0.47342276585116,TNT BYFLEET,KT14 7JT,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BY4,,3
+TT4,0,Station,1,THETFORD,52.4252503293524,0.747667542139502,FDX THETFORD,IP24 1HZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",TT4,,1
+BK4,0,Station,1,BARKING,51.5238362191324,0.104766767412567,FDX BARKING,IG11 0HZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BK4,,1
+AT4,0,Station,1,ALTON,51.1505122821149,-0.960460435471008,TNT ALTON,GU34 2QA,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",AT4,,3
+CAL,0,Station,1,CAMBERLEY,51.330550200767,-0.761016951560883,FDX CAMBERLEY,GU15 3 AD,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CAL,,3
+EXT,0,Station,1,BROADCLYST EXETER,50.7470897135845,-3.42751484240313,TNT EXETER,EX5 3DY,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",EXT,,5
+YEO,0,Station,1,GREENDALE EXETER,50.6989664097909,-3.39064825934597,FDX EXETER,EX5 1EW,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",YEO,,5
+ZLS,0,Station,1,ENFIELD,51.6628399440076,-0.0276280495380602,FDX ENFIELD,EN3 7ER,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",ZLS,,1
+EDH,0,Station,1,EDINBURGH,55.9516663531203,-3.35015173479108,TNT EDINBURGH,EH12 0AL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",EDH,20230522,4
+WOF,0,Station,1,WORCESTER,52.3257190339023,-2.21131539448299,TNT WORCESTER,DY10 4JB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",WOF,,6
+HW4,0,Station,1,HOWDEN,53.7366359833409,-0.881054744771656,FDX HOWDEN,DN14 7SE,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",HW4,,7
+TEJ,0,Station,1,TEESSIDE,54.5117455638243,-1.43308522415806,TNT TEESSIDE,DL2 1LU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",TEJ,,7
+NCL,0,Station,1,DURHAM,54.8346191621026,-1.47995222582303,TNT DURHAM,DH4 5PH,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",NCL,,7
+ESH,0,Station,1,GRETNA,54.998293814432,-3.05841085215239,FDX GRETNA,DG16 5JN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",ESH,,4
+EFFC,0,Swap,1,ECCLEFECHAN CHANGE-OVER,55.06805629,-3.281083335,ECCLEFECHAN CHANGE-OVER,DG11 3JD,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 15px.png', 'width': 20, 'height': 18}",EFFC,,4
+DZ5,0,Hub,1,DARTFORD ROAD HUB,51.4496067900205,0.228020993154733,Dartford,DA1 5AH,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",DZ5,,1
+BQH,0,Station,1,CRAYFORD,51.4601155341084,0.195417966445551,FDX CRAYFORD,DA1 4QN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BQH,,1
+AE4,0,Hub,1,ATHERSTONE ROAD HUB,52.5831121158468,-1.55423230177687,ATHERSTONE ROAD HUB,CV9 2RY,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",AE4,,6
+CY4,0,Station,1,CROYDON,51.387697464031,-0.141542754365867,TNT CROYDON,CR0 4TS,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CY4,,1
+S7H,0,Station,1,FDX STANSTED AIR HUB,51.8862684261704,0.251009548089268,Stansted,CM24 1FE,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",S7H,,1
+WXF,0,Station,1,CHELMSFORD,51.7301347410167,0.457602457123469,FDX CHELMSFORD,CM1 2QX,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",WXF,,1
+DS4,0,Station,1,DEESIDE,53.2296383160482,-3.01428783095838,FDX DEESIDE,CH5 2NR,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",DS4,,2
+LLT,0,Station,1,LLANTRISANT,51.5271900402577,-3.39843565166674,TNT LLANTRISANT,CF72 9EW,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LLT,,5
+BRS,0,Station,1,YATE BRISTOL,51.5347059041774,-2.43833596325465,TNT BRISTOL,BS37 5YS,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BRS,,5
+XWO,0,Station,1,CRIBBS CAUSEWAY BRISTOL,51.5222573995436,-2.60831484277709,FDX BRISTOL,BS10 7UB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",XWO,,5
+RB4,0,Station,1,RAMSBOTTOM,53.6461606511606,-2.31468575598144,FDX RAMSBOTTOM,BL0 9AL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",RB4,,2
+BOH,0,Station,1,POOLE,50.7378374842966,-1.97732346708085,FDX POOLE,BH17 0RY,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BOH,,5
+BA4,0,Station,1,BRADFORD,53.7585313581698,-1.68750874225316,TNT BRADFORD,BD11 2BZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BA4,,7
+CLKS,0,Customer,1,CLARKS INTERNATIONAL SHOES,51.12565,-2.75079,Street,BA16 0LN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/blue-pin 25px.png', 'width': 35, 'height': 24}",BRS,20230803,5
+KG4,0,Hub,1,KINGSBURY ROAD HUB,52.5816620611377,-1.65904361604066,KINGSBURY ROAD HUB,B78 2EX,GB,15,20,30,30,No remarks,35,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",KG4,20230414,6
+XHB,0,Station,1,BIRMINGHAM,52.5146708376539,-1.8909422089788,TNT BIRMINGHAM,B6 7EU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",XHB,,6
+QQN,0,Gateway,1,BIRMINGHAM AIR HUB,52.4470301946782,-1.75278860571392,FDX BIRMINGHAM AIR HUB,B26 3QD,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/icons8-airplane-take-off-30 orange.png', 'width': 30, 'height': 30}",QQN,,6
+ABZ,0,Station,1,ABERDEEN,57.1136063099147,-2.07761313689769,TNT ABERDEEN,AB12 3LL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",ABZ,,4
+LHR,0,Station,1,LONDON HEATHROW AIR HUB,51.4532411506524,-0.442609171389405,TNT LONDON HEATHROW AIR HUB,TW14 8NT,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LHR,,10
+UHF,0,Station,1,FELTHAM,50.9298909548325,-0.198279913071997,Feltham,TW14 0SL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",UHF,,9
+BZ4,0,Station,1,BASILDON,51.5885179881567,0.51925651993978,TNT BASILDON,SS13 1EB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BZ4,,14
+SOU,0,Station,1,SOUTHAMPTON,50.9408242899987,-1.47759406943807,TNT SOUTHAMPTON,SO16 0WB,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SOU,,13
+SWI,0,Station,1,SWINDON,51.5910057479042,-1.74735701427123,FDX SWINDON,SN3 4AJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SWI,,13
+SL4,0,Station,1,SLOUGH,51.5221530094477,-0.63199204155436,TNT SLOUGH,SL1 4NJ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",SL4,,10
+LCY,0,Station,1,LONDON CITY,51.4928014249606,-0.0782001697092376,TNT LONDON CITY,SE1 5SF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LCY,,11
+LGW,0,Station,1,CRAWLEY,51.1318491143414,-0.1718468367271,TNT CRAWLEY,RH10 9TN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LGW,,9
+CSA,0,Station,1,HUNTINGDON,52.339017325485,-0.189994203612984,FDX CAMBRIDGE,PE29 7DF,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CSA,,12
+MT4,0,Station,1,MILTON,51.622458710513,-1.29933055647288,TNT MILTON,OX14 4TH,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MT4,,13
+PK4,0,Station,1,PARK ROYAL,51.5261949463076,-0.258459551746693,TNT PARK ROYAL,NW10 6PU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",PK4,,11
+NWI,0,Station,1,SNETTERTON,52.4704985868525,0.959617053131434,FDX SNETTERTON,NR16 2JU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",NWI,,8
+WB4,0,Station,1,WELLINGBOROUGH,52.3100852389538,-0.729594979380552,TNT WELLINGBOROUGH,NN8 6TZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",WB4,,12
+ZLX,0,Hub,1,MARSTON GATE ROAD HUB,52.0315633932732,-0.59171329802372,FDX MARSTON GATE ROAD HUB,MK43 0YL,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",ZLX,,12
+MK4,0,Station,1,MILTON KEYNES,52.0517931367885,-0.70922182000373,TNT MILTON KEYNES,MK15 0DQ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MK4,,12
+MS4,0,Station,1,MAIDSTONE,51.2971188037081,0.476004322326279,TNT MAIDSTONE,ME20 7TR,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",MS4,,14
+KE4,0,Station,1,AYLESFORD,51.302920443118,0.499275244943768,FDX AYLESFORD,ME20 7BU,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",KE4,,14
+LTN,0,Station,1,LUTON,51.9213687563339,-0.480270379655234,TNT LUTON,LU3 3AN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",LTN,,12
+BY4,0,Station,1,BYFLEET,51.3493234517376,-0.47342276585116,TNT BYFLEET,KT14 7JT,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BY4,,10
+TT4,0,Station,1,THETFORD,52.4252503293524,0.747667542139502,FDX THETFORD,IP24 1HZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",TT4,,8
+BK4,0,Station,1,BARKING,51.5238362191324,0.104766767412567,FDX BARKING,IG11 0HZ,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BK4,,11
+AT4,0,Station,1,ALTON,51.1505122821149,-0.960460435471008,TNT ALTON,GU34 2QA,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",AT4,,10
+CAL,0,Station,1,CAMBERLEY,51.330550200767,-0.761016951560883,FDX CAMBERLEY,GU15 3 AD,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CAL,,10
+ZLS,0,Station,1,ENFIELD,51.6628399440076,-0.0276280495380602,FDX ENFIELD,EN3 7ER,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",ZLS,,11
+DZ5,0,Hub,1,DARTFORD ROAD HUB,51.4496067900205,0.228020993154733,Dartford,DA1 5AH,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/red-pin 25px.png', 'width': 25, 'height': 13}",DZ5,,11
+BQH,0,Station,1,CRAYFORD,51.4601155341084,0.195417966445551,FDX CRAYFORD,DA1 4QN,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",BQH,,11
+CY4,0,Station,1,CROYDON,51.387697464031,-0.141542754365867,TNT CROYDON,CR0 4TS,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",CY4,,11
+S7H,0,Station,1,FDX STANSTED AIR HUB,51.8862684261704,0.251009548089268,Stansted,CM24 1FE,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",S7H,,14
+WXF,0,Station,1,CHELMSFORD,51.7301347410167,0.457602457123469,FDX CHELMSFORD,CM1 2QX,GB,10,15,30,30,No remarks,25,"{'path': '/static/pushpins/orange-pin 15px.png', 'width': 15, 'height': 26}",WXF,,14

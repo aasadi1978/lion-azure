@@ -1,0 +1,106 @@
+<div class="card">
+  <div
+    class="card popup-div-no-img"
+    id="id-save-shift-data"
+    style="
+      display: none;
+      background-image: url(/static/images/FDX-Truck-blur.png);
+      width: 80vw;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="popup-header">Export schedule</div>
+
+    <button
+      class="btn btn-danger"
+      onclick="hidePopup('id-save-shift-data')"
+      style="align-content: flex-end"
+    >
+      Close
+    </button>
+
+    <div class="col-md-8 row">
+      <label
+        class="col-md-5 col-form-label fdxfont"
+        style="color: white; font-size: 20px"
+        >Scenario name
+      </label>
+      <input
+        type=" text"
+        class="col-md-7 form-control fdxfont"
+        id="id-scenario-name"
+        style="background-color: white; color: black; font-size: 1.2em"
+      />
+
+      <label
+        class="col-md-5 col-form-label fdxfont"
+        style="color: white; font-size: 20px"
+        >Password (optional)
+      </label>
+
+      <input
+        type="password"
+        class="col-md-7 form-control fdxfont"
+        id="id-scenario-pwd"
+        style="background-color: white; color: black; font-size: 1.2em"
+        placeholder="PWD entry will be required to open the schedule"
+      />
+
+      <label
+        class="col-md-5 col-form-label fdxfont"
+        style="color: white; font-size: 20px"
+        >Verify password
+      </label>
+      <input
+        type="password"
+        class="col-md-7 form-control fdxfont"
+        id="id-scenario-pwd-verification"
+        style="background-color: white; color: black; font-size: 1.2em"
+        placeholder="Re-enter password for verification"
+      />
+    </div>
+
+    <div class="col-md-8" style="justify-content: left">
+      <button
+        class="btn btn-success btn-sm fa fa-microphone"
+        id="id-start-speech-schedule-note"
+        style="font-size: 14px"
+      >
+        &nbsp Record
+      </button>
+      <button
+        class="btn btn-danger btn-sm fa fa-microphone"
+        id="id-stop-speech-schedule-note"
+        style="font-size: 14px"
+      >
+        &nbsp Stop
+      </button>
+
+      <div class="col-lg-15">
+        <p
+          class="form-control fdxfont"
+          contenteditable="true"
+          id="id-scenario-note"
+          onclick="speechRecognition_schedule_note(this)"
+          style="
+            overflow: auto;
+            height: 10em;
+            font-size: 1.2em;
+            background-color: rgb(247, 231, 167);
+            color: black;
+          "
+        ></p>
+      </div>
+
+      <button
+        class="btn btn-success"
+        onclick="export_schedule_as(is_master_plan=true)"
+        style="padding: 5px 45px"
+      >
+        Export
+      </button>
+    </div>
+  </div>
+</div>

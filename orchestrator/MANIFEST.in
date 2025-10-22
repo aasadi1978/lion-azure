@@ -1,0 +1,4 @@
+# Include non-Python assets
+# recursive-include src/lion/templates *
+
+include README.md

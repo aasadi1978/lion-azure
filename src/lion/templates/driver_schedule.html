@@ -1,0 +1,681 @@
+{% extends "base.html" %} {% block NewStyle %}
+<style>
+  .highcharts-menu-item {
+    font-size: 16px !important;
+    font-family: FedEx Sans !important;
+    font-weight: bold !important;
+  }
+
+  .fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: auto;
+  }
+
+  .popup-div {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+    background-image: url(/static/images/fdx-img-background-street-small.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+
+  .popup-div-no-img {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+  }
+
+  .popup-header {
+    padding: 10px;
+    background-color: #4d148c;
+    /* purple */
+    color: #fff;
+    /* white text */
+    font-size: 22px;
+    font-family: FedEx Sans;
+  }
+</style>
+{% endblock %} {% block NewScriptsTop %}
+<script>
+  document.addEventListener('optionsLoaded', () => {
+    let options = window.options;
+    if (options && Object.keys(options).length > 0) {
+      document.addEventListener('DOMContentLoaded', function () {
+        load_available_vehicle_types();
+        clear_selected_tours_to_take_action();
+        load_available_scenarios();
+        load_available_master_plans();
+        refresh_tour_string();
+        clear_user_changes();
+        connection_status();
+      });
+    }
+
+    window.utilisation_range = options.utilisation_range;
+    window.loc_string_spliter = '.';
+    window.selected_tours_to_take_action = [];
+    window.selected_movements_to_take_action = []; // [(t, m)]
+    window.n_all_drivers = options.n_all_drivers;
+    window.n_pages = options.n_pages;
+    window.n_drivers = options.n_drivers;
+    window.LION_BING_API_KEY = options.LION_BING_API_KEY;
+    window.currPage = options.page_num;
+    window.dct_user_changes = {
+      dct_timechanges: {},
+      dct_shiftchanges: {},
+      deletedshifts: [],
+    };
+    document.title = options.title;
+    window.default_title = options.title;
+
+    let slider2 = document.getElementById('id-utilisation-double-slider');
+    if (slider2 && !slider2.noUiSlider) {
+      noUiSlider.create(slider2, {
+        start: window.utilisation_range,
+        connect: true,
+        range: { min: 0, max: 100 },
+      });
+
+      slider2.noUiSlider.on('update', function (values) {
+        document.getElementById(
+          'id-slider-shift-utilisation-value'
+        ).innerText = `Time Utilisation: between ${Math.ceil(
+          values[0]
+        )}% and ${Math.ceil(values[1])}%`;
+      });
+
+      slider2.noUiSlider.on('end', function (values) {
+        set_utilisation_slider_range([
+          Math.ceil(Number(values[0])),
+          Math.ceil(Number(values[1])),
+        ]);
+      });
+    }
+
+    document.getElementById('id-page-number-disp').innerText =
+      '1/' + window.n_pages + ' pages (' + window.n_all_drivers + ' tours)';
+
+    // Execute a function when the user releases a key on the keyboard
+    document
+      .getElementById('id-jump-to-page')
+      .addEventListener('keyup', function (event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          let v = Number($('#id-jump-to-page').val());
+
+          if (Number.isInteger(v)) {
+            if (v <= window.n_pages && v > 0) {
+              update_page_num(v);
+              get_chart_data();
+            }
+          }
+        }
+      });
+
+    // Execute a function when the user releases a key on the keyboard
+    document
+      .getElementById('id-jump-to-page-II')
+      .addEventListener('keyup', function (event) {
+        if (event.keyCode === 13) {
+          event.preventDefault();
+          let v = Number($('#id-jump-to-page-II').val());
+
+          if (Number.isInteger(v)) {
+            if (v <= window.n_pages && v > 0) {
+              update_page_num(v);
+              get_chart_data();
+            }
+          }
+        }
+      });
+
+    document
+      .getElementById('id-page-number-disp')
+      .addEventListener('change', function (event) {
+        event.preventDefault();
+
+        let str_page = document.getElementById('id-page-number-disp').value;
+
+        let str_val = str_page.split('/')[0];
+        str_val = str_val.replace('Navigate plan: ', '');
+        window.currPage = Number(str_val);
+        update_page_num(window.currPage);
+        set_default_title();
+        get_chart_data();
+      });
+
+    let prebutton = document.getElementById('btn-Previous');
+    prebutton.onclick = function () {
+      prebutton.focus();
+      let curpg = window.currPage;
+      curpg--;
+      window.currPage = curpg;
+      update_page_num(curpg);
+      get_chart_data();
+    };
+
+    let nxtbutton = document.getElementById('btn-Next');
+    nxtbutton.onclick = function () {
+      nxtbutton.focus();
+      let curpg = window.currPage;
+      curpg++;
+      window.currPage = curpg;
+      update_page_num(curpg);
+      document.getElementById('btn-Previous').disabled = false;
+      get_chart_data();
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+      get_chart_data();
+    });
+
+    $(document).ready(function () {
+      refresh_options();
+    });
+
+    window.onload = function () {
+      document.getElementById('chart-assign-drivers').style.display = 'block';
+    };
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        show_popup((id = 'id-manage-optimization'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        show_popup('id-insert-movement-frame');
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        export_local_schedule();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        show_popup((id = 'id-insert-driver-frame'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+        e.preventDefault();
+        show_popup((id = 'id-insert-location-frame'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'r' || e.key === 'R')) {
+        e.preventDefault();
+        show_popup((id = 'id-manage-runtimes'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.altKey && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        document.getElementById('id-remove-map').click();
+        add_remove_map();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.keyCode === 116) {
+        e.preventDefault();
+        refresh_all();
+      }
+    });
+  });
+</script>
+
+<link rel="stylesheet" href="/static/css/dnd-styles.css" />
+<!-- Highcharts local libraries -->
+<script src="/static/js/highcharts-code/highcharts.js"></script>
+<script src="/static/js/highcharts-code/modules/xrange.js"></script>
+<script src="/static/js/highcharts-code/modules/draggable-points.js"></script>
+<script src="/static/js/highcharts-code/modules/exporting.js"></script>
+<script src="/static/js/highcharts-code/modules/accessibility.js"></script>
+<script src="/static/js/highcharts-code/modules/pattern-fill.js"></script>
+
+<script src="https://blacklabel.github.io/custom_events/js/customEvents.js"></script>
+<script src="https://code.iconify.design/iconify-icon/1.0.1/iconify-icon.min.js"></script>
+<link rel="stylesheet" href="/static/css/dnd-styles.css" />
+
+<!-- lion libraries /> -->
+<script src="/static/js/dnd-scripts.js" defer></script>
+<script src="/static/js/load_driver_shift_chart.js"></script>
+<script src="/static/js/process-user-changes.js"></script>
+
+<script type="text/javascript" src="/static/js/speechRecognitions.js"></script>
+<!-- <script type="text/javascript" src="/static/js/load_map.js"></script> -->
+
+{% endblock %} {% block NewContent %}
+
+<div id="id-hidden-divs">
+  {% include 'ds-export-schedule.html' %} {% include 'ds-modify-location.html'
+  %} {% include 'ds-manage-runtimes.html' %} {% include 'ds-modify-drivers.html'
+  %} {% include 'ds-add-movement.html' %} {% include
+  'ds-optimization-params.html' %} {% include 'add_note_to_shift.html' %} {%
+  include 'draw-shift.html' %} {% include
+  'weekly-driver-report-with-day-selection.html' %}
+</div>
+
+<div class="card" style="margin-top: -5.5%">
+  <div class="card-body">
+    {% include 'ds-actions-toolbox.html' %} {% include 'ds-search-toolbox.html'
+    %}
+
+    <div class="card" id="id-all_maps" style="margin-top: 0%">
+      <label
+        class="col-form-label"
+        style="
+          color: white;
+          font-size: 16px;
+          font-family: FedEx Sans;
+          display: none;
+        "
+        id="id-tooltip-info"
+        onclick="close_tooltip_lbl()"
+      ></label>
+
+      <div class="row col-lg-11" style="padding-bottom: 0.5%">
+        <button
+          class="btn btn-primary btn-search-row"
+          id="btn-Previous"
+          disabled
+        >
+          <i class="tim-icons icon-minimal-left"></i> Previous
+        </button>
+        <button class="btn btn-primary btn-search-row" id="btn-Next">
+          Next
+          <i class="tim-icons icon-minimal-right"></i>
+        </button>
+
+        <button
+          class="btn btn-primary btn-search-row"
+          onclick="load_my_basket_data()"
+          id="id-basket-btn"
+        >
+          <i class="tim-icons icon-cart"></i>My Basket
+        </button>
+
+        <button class="btn btn-warning btn-search-row" onclick="empty_basket()">
+          Empty basket
+        </button>
+        <button
+          class="btn btn-success btnrows2"
+          onclick="undo()"
+          style="padding: 5px 45px; width: 150px"
+        >
+          Undo
+        </button>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-mon-data"
+                value="Mon"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Mon
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-tue-data"
+                value="Tue"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Tue
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-wed-data"
+                value="Wed"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Wed
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-thu-data"
+                value="Thu"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Thu
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-fri-data"
+                value="Fri"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Fri
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-sun-data"
+                value="Sun"
+                style="transform: scale(1.5)"
+                onchange="load_weekday_filtered_shifts(day=this.value)"
+              />
+              <span class="form-check-sign"></span>
+              Sun
+            </label>
+          </div>
+        </div>
+
+        <div class="col-sm-1" style="margin-left: 0.5em; padding: auto">
+          <div class="form-check form-check-radio">
+            <label
+              class="form-check-label"
+              style="font-size: 1.5em; color: #fff"
+            >
+              <input
+                class="form-check-input"
+                type="radio"
+                name="weekdayRadioButton"
+                id="id-enable-full-week-data"
+                value="All"
+                checked
+                onchange="load_weekday_filtered_shifts(day='All')"
+                style="transform: scale(1.5)"
+              />
+              <span class="form-check-sign"></span>
+              All
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card col-md-12">
+        <div
+          class="col-md-1"
+          style="display: none; margin-left: 0.5em; padding: auto"
+        >
+          <p class="category">Enable Zoom</p>
+          <input
+            type="checkbox"
+            class="bootstrap-switch"
+            data-on-label="ON"
+            data-off-label="OFF"
+            id="id-enable-zoom-switch"
+            onchange="set_user_param(par='enable_zoom', html_element_id=this.id)"
+          />
+        </div>
+
+        <div class="col-md-1" style="display: none">
+          <p class="category">Hide map</p>
+          <input
+            type="checkbox"
+            checked
+            class="bootstrap-switch"
+            data-on-label="Yes"
+            data-off-label="No"
+            id="id-remove-map"
+            onchange="add_remove_map()"
+          />
+        </div>
+
+        <div class="col-md-1" style="display: none">
+          <p class="category">Labels</p>
+          <input
+            type="checkbox"
+            checked
+            class="bootstrap-switch"
+            data-on-label="ON"
+            data-off-label="OFF"
+            id="id-show-labels"
+            onchange="toggle_labels()"
+          />
+        </div>
+
+        <h4
+          class="card-title"
+          onclick="hide_progress_bar()"
+          id="id-progress-bar-hidden"
+          style="display: block"
+        >
+          Click here to unhide progress bar
+        </h4>
+        <div
+          class="row"
+          onclick="hide_progress_bar()"
+          id="id-progressbar"
+          style="
+            margin-bottom: 0.5px;
+            margin-top: 0.2px;
+            padding: 0.1em;
+            display: none;
+          "
+        >
+          <div
+            class="progress-container progress-primary"
+            style="display: flex; align-items: center"
+          >
+            <div class="col-md-8" style="flex: 1">
+              <div class="progress">
+                <div
+                  class="progress-bar progress-bar-warning"
+                  role="progressbar"
+                  aria-valuenow="0"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                  style="
+                    width: 0%;
+                    display: block !important;
+                    position: relative;
+                  "
+                  id="id-statusbar-dragdrop"
+                ></div>
+              </div>
+            </div>
+            <div class="row col-md-4" style="flex-shrink: 0; margin-left: 10px">
+              <span
+                id="id-time-elapsed-dragdrop"
+                style="font-weight: 10; color: #fff"
+              >
+                00:00
+              </span>
+
+              <div style="display: flex; align-items: center; gap: 7px">
+                <span
+                  id="id-statusbar-val-dragdrop"
+                  style="font-weight: 10; color: #fff"
+                  >0%
+                </span>
+                <span
+                  id="id-statusbar-info-dragdrop-1"
+                  style="font-weight: 10; color: #fff"
+                  >Ready!
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="row"
+        style="
+          margin-top: -20px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          margin-top: -1%;
+        "
+      >
+        <div
+          class="row col-sm-5"
+          id="id-status-info-all"
+          style="display: flex; align-items: center"
+        >
+          <span id="id-connection-health-icon"> </span>
+          <span
+            id="id-statusbar-info-dragdrop"
+            style="
+              font-weight: 10;
+              font-family: FedEx Sans;
+              font-size: 18px;
+              color: #fff;
+            "
+            >Ready!
+          </span>
+        </div>
+        <div id="id-disp-drag-full">
+          <div id="parent-chart-assign-drivers">
+            <div
+              id="chart-assign-drivers"
+              style="width: 70vw; height: 85vh; overflow: auto"
+            ></div>
+          </div>
+
+          <!-- <div
+            id="parent-draw-tour"
+            onclick="hide_map_on_click()"
+            title="Click to hide"
+          >
+            <div
+              id="tours_map"
+              style="
+                width: 15vw;
+                height: 85vh;
+                vertical-align: top;
+                display: none;
+              "
+            ></div>
+          </div> -->
+        </div>
+      </div>
+
+      <div class="row" id="id-disp-drag-double" style="display: none">
+        <div id="parent-chart-assign-drivers-asis">
+          <div
+            id="chart-assign-drivers"
+            style="width: 40vw; height: 85vh; overflow: auto"
+          ></div>
+        </div>
+
+        <div id="parent-chart-assign-drivers-tobe">
+          <div
+            id="chart-assign-drivers-tobe"
+            style="width: 40vw; height: 85vh; overflow: auto"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block NewScript %} {% endblock %}

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ shiftname }}</title>
+    <style>
+      .btn {
+        display: inline-block;
+        font-weight: 600;
+        color: #525f7f;
+        text-align: center;
+        vertical-align: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        background-color: transparent;
+        border: 1px solid transparent;
+        padding: 11px 40px;
+        font-size: 0.875rem;
+        line-height: 1.35em;
+        border-radius: 0.25rem;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+          border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .btn-success {
+        color: black;
+        background-color: #ff6600;
+        border-color: #ff6600;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11),
+          0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #4d148c;
+        color: white;
+      }
+
+      /* Responsive Image */
+      img {
+        /* max-width: 25rem; */
+        height: auto;
+      }
+
+      /* Typography */
+      body {
+        font-family: Fedex Sans;
+        font-size: 1rem; /* Consider using relative units like rem or em */
+      }
+
+      /* Mobile Friendly Table */
+      @media (max-width: 768px) {
+        /* Breakpoint for mobile devices */
+        table {
+          display: block;
+          width: 100%;
+          overflow-x: auto;
+        }
+        /* Larger touch targets for buttons */
+        .btn {
+          padding: 15px 40px;
+          font-size: 1rem;
+        }
+      }
+
+      @media print {
+        /* Set paper layout to landscape */
+        @page {
+          size: landscape;
+        }
+
+        /* Adjust the font size */
+        body {
+          font-size: 10px;
+        }
+
+        .btn {
+          padding: 15px 40px;
+          font-size: 1rem;
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="report-title">
+      <img src="/static/images/fdx.png" alt="fdx" style="width: 15rem" />
+      <img
+        src="/static/images/Gradient Organic Growth Icon Large.svg"
+        alt="noPrnt"
+        style="float: right; width: 5rem"
+      />
+
+      <h1
+        style="
+          text-align: center;
+          font-family: Fedex Sans;
+          font-size: 3em;
+          font-weight: bold;
+          color: #4d148c;
+        "
+      >
+        {{ top_report_title }}
+      </h1>
+    </div>
+    <div>
+      <button id="print-btn" class="btn btn-success" onclick="window.print()">
+        Print all
+      </button>
+    </div>
+
+    {% for report in report_data %}
+    <div id="id-my-report-{{ loop.index }}">
+      <h2>{{ report.report_title }} ({{ report.vehiclename }})</h2>
+      {{ report.table|safe }}
+      <p>Remarks: {{ report.remarks }}</p>
+      <p
+        style="
+          font-size: 16px;
+          font-family: Fedex Sans;
+          background-color: #999999;
+          color: white;
+        "
+      >
+        Created on {{ report.last_update }} by {{ report.user_name }}
+      </p>
+      <button
+        id="print-btn-{{ loop.index }}"
+        class="btn btn-success"
+        onclick="printDiv('id-my-report-{{ loop.index }}')"
+      >
+        Print
+      </button>
+    </div>
+    {% endfor %}
+  </body>
+
+  <script>
+    function printDiv(divId) {
+      var contentToPrint = document.getElementById(divId).outerHTML;
+      var printWindow = window.open('', '_blank');
+
+      printWindow.document.open();
+      printWindow.document.write(
+        '<html><head><title>Print</title></head><body>'
+      );
+
+      // Include the styles
+      printWindow.document.write('<style>');
+      printWindow.document.write(`
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4D148C;
+            color: white;
+        }
+
+        .btn {
+            display: none; 
+        }
+
+        @media print {
+            .print-content {
+                width: 100%;
+                height: auto;
+                overflow: visible;
+                font-size: 10px;
+            }
+
+            @page {
+                size: landscape;
+            }
+        }
+    `);
+      printWindow.document.write('</style>');
+
+      // Add the div content wrapped in a class for styling
+      printWindow.document.write(
+        '<div class="print-content">' + contentToPrint + '</div>'
+      );
+
+      printWindow.document.write('</body></html>');
+      printWindow.document.close();
+
+      // This delay ensures the content fully loads before the print dialog appears
+      setTimeout(function () {
+        printWindow.print();
+      }, 250);
+    }
+  </script>
+</html>

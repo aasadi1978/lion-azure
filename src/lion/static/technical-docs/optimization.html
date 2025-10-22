@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Driver Scheduling MIP Formulation &#8212; LION 2025-10-12 17:56  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=5987881c" />
+    <link rel="stylesheet" type="text/css" href="_static/css/basic.css" />
+    <link rel="stylesheet" type="text/css" href="_static/css/classic.css" />
+    
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/searchtools.js"></script>
+    <script src="_static/js/update_user_comments.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="WorkInProgress: Driver Scheduling - Exact method" href="exact_method.html" />
+    <link rel="prev" title="Troubleshooting" href="trouble_shooting.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="exact_method.html" title="WorkInProgress: Driver Scheduling - Exact method"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="trouble_shooting.html" title="Troubleshooting"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-12 17:56  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Driver Scheduling MIP Formulation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="driver-scheduling-mip-formulation">
+<h1>Driver Scheduling MIP Formulation<a class="headerlink" href="#driver-scheduling-mip-formulation" title="Link to this heading">¶</a></h1>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#abstract" id="id1">Abstract</a></p></li>
+<li><p><a class="reference internal" href="#problem-statement" id="id2">Problem statement</a></p></li>
+<li><p><a class="reference internal" href="#out-of-scope" id="id3">Out of scope</a></p></li>
+<li><p><a class="reference internal" href="#sets-and-indices" id="id4">Sets and Indices</a></p></li>
+<li><p><a class="reference internal" href="#parameters" id="id5">Parameters</a></p></li>
+<li><p><a class="reference internal" href="#decision-variables" id="id6">Decision Variables</a></p></li>
+<li><p><a class="reference internal" href="#mixed-integer-programming-model" id="id7">Mixed integer programming model</a></p></li>
+</ul>
+</nav>
+<section id="abstract">
+<h2><a class="toc-backref" href="#id1" role="doc-backlink">Abstract</a><a class="headerlink" href="#abstract" title="Link to this heading">¶</a></h2>
+<p>In the logistics and transportation industry, efficiently assigning drivers to truck movements is a critical challenge that directly impacts operational
+costs and service quality. This document addresses the problem of optimal movement-driver assignment, where each movement involves a truck with a predefined
+departure time, origin, and destination. The objective is to minimize the number of drivers utilized, overall idle time, and empty mileage, while adhering
+to a set of business rules and constraints related to labor regulations. These constraints include limits on driving and working hours, mandatory return to the base location, and
+specific break requirements. To solve this problem, we employ a mixed-integer programming (MIP) approach solved using Gurobi optimization software. Our model
+incorporates various real-world constraints such as turn-around times, break schedules, and empty movements. The results demonstrate the effectiveness
+of the proposed MIP model in optimizing driver schedules, thereby reducing operational inefficiencies and enhancing the overall performance of the transportation network.</p>
+<p><strong>Keywords:</strong> optimization, mixed integer programming, MIP, driver scheduling, Gurobi</p>
+</section>
+<section id="problem-statement">
+<h2><a class="toc-backref" href="#id2" role="doc-backlink">Problem statement</a><a class="headerlink" href="#problem-statement" title="Link to this heading">¶</a></h2>
+<p>Let a list <span class="math notranslate nohighlight">\(M\)</span> of loaded movements be given. By definition, a movement refers to a truck with a predefined departure time, origin and
+destination. This means that these attributes cannot be modified when modeling. The problem is to find the optimal movement-driver assignment.
+Every driver can drive multiple movement in one shift. The relationship between drivers and shifts is assumed to be 1-1.</p>
+<ul class="simple" id="business-rules-and-constraints">
+<li><p><strong>Business rules and constraints:</strong></p>
+<ul>
+<li><p>Maximum legal driving time per shift is 9 hours.</p></li>
+<li><p>Maximum legal working time per shift is 12 hours.</p></li>
+<li><p>Before every departure, a <em>non-driving turn-around time</em> is allocated per location to allow the driver to complete paperwork and other
+tasks. This turn-around time typically lasts for 15 minutes. It is important to note that this time is considered as working time and is
+taken into account when calculating <em>period of availablity</em> (POA) of the driver on that location.</p></li>
+<li><p>Upon arrival at a location, a <em>driving turn-around time</em> is allocated to allow the driver to fully stop.
+This turn-around time typically lasts for 10 minutes and is considered as part of the driver’s driving time.</p></li>
+<li><p>The last two bullet points are considered as constraints for the model which indicates that the driver has to wait at
+least 25 minutes between two consecutive movements. This 25 minutes is called <em>turn-around time</em></p></li>
+<li><p>Every driver has to come back to his base location after his shift. If the destination of the last movement is not the base location, the driver
+has to drive empty back to his base location.</p></li>
+<li><p>Every shift starts at driver’s base location. This means that if the first loaded movement of a shift is not from driver’s base location, he has to drive
+empty to the origin of the first movement.</p></li>
+<li><p>Each shift begins and ends with a 30-minute debriefing period. This time is considered as working time and included in the calculation of the
+required working time for breaks.</p></li>
+<li><p>If it is cost efficient, empty movements can be added to extend the shift of a driver. This means that, once driver arrived at the destination of a
+loaded movement, he can drive an empty to the location of the next loaded movement.</p></li>
+<li><p>According to labor regulations, a 60-minute break must be taken by the driver every 4.5 hours of driving. This means that if a driver drives two
+consecutive movements and the total driving time, including the driving turn-around time (10 minutes), exceeds 4.5 hours, the driver must take a break
+between the two movements.</p></li>
+<li><p>According to labor regulations, a 30-minute break must be taken by the driver every 6 hours of working time, unless he has already taken a 60-minute break.
+This means that if a driver works for 6 hours without taking a 60-minute break, he has to take a 30-minute break. This break can be taken at any location
+and is considered as working time.</p></li>
+<li><p>If break is required, it has to be provided at a location. This means that the driver cannot take a break on the road and the transfer time
+between two consecutive movements should be long enough to provide the break, i.e., 60 minutes for driving break and 25 minutes <em>turn-around time</em>.</p></li>
+</ul>
+</li>
+<li><p><strong>Objective:</strong>
+The objective is to run all loaded movements such that the total number of utilized drivers and empty mileages are minimized.</p></li>
+</ul>
+</section>
+<section id="out-of-scope">
+<h2><a class="toc-backref" href="#id3" role="doc-backlink">Out of scope</a><a class="headerlink" href="#out-of-scope" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Double-man shifts:</strong> This model assumes that each driver drives alone. Otherwise, majority of the labor regulations are not applicable.</p></li>
+<li><p><strong>Non-Articulated Truck vehicles:</strong> It is assumed that all movements are Artic movement and shifts cannot be splitted into two vehicle types.</p></li>
+<li><p><strong>Fixed shifts:</strong> Any shift fixed by the user</p></li>
+</ul>
+</section>
+<section id="sets-and-indices">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Sets and Indices</a><a class="headerlink" href="#sets-and-indices" title="Link to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(M\)</span>: Set of loaded movements</p></li>
+<li><p><span class="math notranslate nohighlight">\(D\)</span>: Set of driver (base) locations</p></li>
+<li><p><span class="math notranslate nohighlight">\(S\)</span>: Set of all (feasible) shifts construced using combinations of loaded and empty movements.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The set <span class="math notranslate nohighlight">\(S\)</span> is constructed as follows:</p>
+<ul class="simple">
+<li><p><em>Regionize loaded movements:</em> The best approach to label loaded movements is optimize the full set of movements without adding
+empty movements. This is because the number of loaded movements is usually much smaller than the number of potential empty movements. However,
+the optimization can be executed using small <a class="reference internal" href="#modeling-params"><span class="std std-ref">modelig parameters</span></a>, e.g., <span class="math notranslate nohighlight">\(MaxDownTimeHours=3\)</span> and <span class="math notranslate nohighlight">\(MaxEmtyHours=3\)</span>.</p></li>
+<li><p>Once categorization is complete, the set of feasible shifts can be constructed. The set of feasible shifts is the set of all
+combinations of loaded and empty movements that satisfy the <a class="reference internal" href="#business-rules-and-constraints"><span class="std std-ref">business rules related constraints</span></a>.
+To generate feasible shifts with combinations of loaded and empty movements, the following steps are taken:</p></li>
+<li><p>For each category, i.e., driver location:</p>
+<ul>
+<li><p>generate all empty movements departing from destination location of each loaded movement,
+departing after 25 minutes and 85 minutes after arrival time of the loaded movement. The number of generated empty movements can be
+managed using <a class="reference internal" href="#modeling-params"><span class="std std-ref">modelig parameters</span></a>.</p></li>
+<li><p>Once all loaded and empty movements are generated, a <em>connection tree</em> is constructed. The connection tree is a graph, denoted
+as <span class="math notranslate nohighlight">\(G(V, E)\)</span>, where <span class="math notranslate nohighlight">\(V\)</span> is the set of all movements and <span class="math notranslate nohighlight">\(E\)</span> is the set of connections between movements. A connection
+between two movements exists if the destination of one movement is the origin of another movement, and the downtime between these movements falls within a
+user-defined duration. The weight of a connection is determined by the downtime between the movements plus the driving time of the second
+movement. It is important to note that two empty movements cannot be connected.</p></li>
+<li><p>The connection tree is used to generate all feasible shifts. To this end, we use  <em>breath first search</em> (<a class="reference external" href="https://en.wikipedia.org/wiki/Breadth-first_search">BFS</a>) algorithm to traverse the connection tree. The BFS algorithm starts from a loaded movement and explores all possible paths to construct feasible shifts. When evaluating each shift
+for feasibility, overall cost is calculated by summing the cost of assigning a driver to the shift, i.e., fixed cost, and overall
+mileage cost. We do not take into account idle time as it is considered as period of availablity which is used to execute other
+tasks. All genenrated feasible shifts are stored in <span class="math notranslate nohighlight">\(S\)</span>.</p></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="parameters">
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Parameters</a><a class="headerlink" href="#parameters" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><strong>Labour Regulations Parameters:</strong></p>
+<ul class="simple">
+<li><p>Maximum legal driving time per shift: 9 hours</p></li>
+<li><p>Maximum legal working time per shift: 12 hours</p></li>
+</ul>
+</li>
+<li><p><strong>Location Parameters:</strong></p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(d_j\)</span>: Number of employed drivers at driver location <span class="math notranslate nohighlight">\(j \in D\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(D_{j}\)</span>: Maximum number of drivers at driver location <span class="math notranslate nohighlight">\(j \in D\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(c_{ij}\)</span>: The variable cost associated with assigning a driver from location <span class="math notranslate nohighlight">\(i \in D\)</span> to execute shift <span class="math notranslate nohighlight">\(j \in S\)</span>. Precisely speaking,
+this is the cost of deadheading per shift</p></li>
+<li><p><span class="math notranslate nohighlight">\(C_{i}\)</span>: The fix cost associated with hiring an employed driver at location <span class="math notranslate nohighlight">\(i \in D\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(C^\prime_{i}\)</span>: The fix cost associated with hiring an subcontractor driver at location <span class="math notranslate nohighlight">\(i \in D\)</span></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The number of employed drivers at each location is a parameter that can be used when utilizing all employed drivers is mandatory.
+Any extra drivers at a location can be covered by subcontractors.</p>
+</div>
+</li>
+</ul>
+<ul class="simple" id="modeling-params">
+<li><p><strong>Modeling parameters:</strong></p>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(MaxDownTimeHours\)</span>: Maximum downtime between consecutive movements, excluding turn-around time: e.g., 3 hours</p></li>
+<li><p><span class="math notranslate nohighlight">\(MaxEmtyHours\)</span>:Maximum duration of empty movements, excluding driving turn-around time: e.g., 3 hours</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="decision-variables">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">Decision Variables</a><a class="headerlink" href="#decision-variables" title="Link to this heading">¶</a></h2>
+<ul>
+<li><p><span class="math notranslate nohighlight">\(m_i\)</span>: Binary variable indicating whether the loaded movement <span class="math notranslate nohighlight">\(i \in M\)</span> is scheduled or not.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ideally, all loaded movements should be scheduled; however, due to constraints, some movements may not be scheduled. This makse
+the problem a <em>bi-objective</em> optimization problem, i.e., first maximize the total number scheduled loaded movements, and then minimize the total number
+of utilized drivers, etc.</p>
+</div>
+</li>
+<li><p><span class="math notranslate nohighlight">\(s_j\)</span>: Binary variable indicating whether shift <span class="math notranslate nohighlight">\(j \in S\)</span> is utilized or not.</p></li>
+<li><p><span class="math notranslate nohighlight">\(x_{ij}\)</span>: Binary variable indicating whether a driver from location <span class="math notranslate nohighlight">\(i \in D\)</span> drives the shift <span class="math notranslate nohighlight">\(j \in S\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(s_{ij}\)</span>: Binary variable indicating whether the loaded movement <span class="math notranslate nohighlight">\(i \in M\)</span> is scheduled in the shift <span class="math notranslate nohighlight">\(j \in S\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\epsilon_{i}\)</span>: Non-negative Integer variable indicating the number of employed drivers at location <span class="math notranslate nohighlight">\(i \in D\)</span>.</p></li>
+<li><p><span class="math notranslate nohighlight">\(\beta_{i}\)</span>: Non-negative Integer variable indicating the number of contractor drivers at location <span class="math notranslate nohighlight">\(i \in D\)</span>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The number of employed drivers at each location is a parameter that can be used when utilizing all employed drivers is mandatory.
+Any extra drivers at a location can be covered by subcontractors.</p>
+</div>
+</li>
+</ul>
+</section>
+<section id="mixed-integer-programming-model">
+<h2><a class="toc-backref" href="#id7" role="doc-backlink">Mixed integer programming model</a><a class="headerlink" href="#mixed-integer-programming-model" title="Link to this heading">¶</a></h2>
+<div class="math notranslate nohighlight" id="equation-objective-functions">
+<span class="eqno">(1)<a class="headerlink" href="#equation-objective-functions" title="Link to this equation">¶</a></span>\[\begin{split}\begin{aligned}
+\text{maximize} \quad &amp; \sum_{i \in M} m_i \\[10pt]
+\text{minimize} \quad &amp; \sum_{i \in D} (C_{i}\epsilon_{i} + C^\prime_{i}\beta_{i}) + \sum_{i \in D,\, j \in S} c_{ij}x_{ij}
+\end{aligned}\end{split}\]</div>
+<p><strong>Subject to</strong></p>
+<blockquote>
+<div><div class="math notranslate nohighlight" id="equation-mov-constraint">
+<span class="eqno">(2)<a class="headerlink" href="#equation-mov-constraint" title="Link to this equation">¶</a></span>\[\sum_{j \in S} s_{ij} = m_i, \quad \forall i \in M\]</div>
+<div class="math notranslate nohighlight" id="equation-employed-employed-subco-drivers-per-loc">
+<span class="eqno">(3)<a class="headerlink" href="#equation-employed-employed-subco-drivers-per-loc" title="Link to this equation">¶</a></span>\[\sum_{j \in S} x_{ij} = \epsilon_{i} + \beta_{i}, \quad \forall i \in D\]</div>
+<div class="math notranslate nohighlight" id="equation-max-employed-drivers-per-loc">
+<span class="eqno">(4)<a class="headerlink" href="#equation-max-employed-drivers-per-loc" title="Link to this equation">¶</a></span>\[\epsilon_{i} \leq d_{i}, \quad \forall i \in D\]</div>
+<div class="math notranslate nohighlight" id="equation-shift-utilized-by-one-driver">
+<span class="eqno">(5)<a class="headerlink" href="#equation-shift-utilized-by-one-driver" title="Link to this equation">¶</a></span>\[\sum_{i \in D} x_{ij} = s_j, \quad \forall j \in S\]</div>
+<div class="math notranslate nohighlight">
+\[X_i, \, S_j, \, m_i, \, x_{ij}, \, s_{ij} \in \{0, 1\}, \quad \epsilon, \beta \in \mathbb{Z}^{+}\]</div>
+</div></blockquote>
+<p>The objective function <a class="reference internal" href="#equation-objective-functions">(1)</a> is designed to optimize two objectives: maximizing the total number of scheduled movements
+and (then) minimizing the total number of utilized drivers and empty mileages. The constraint <a class="reference internal" href="#equation-mov-constraint">(2)</a> ensures that every movement is assigned to exactly one shift. In constraint <a class="reference internal" href="#equation-max-drivers-count">(7)</a>,
+it is ensured that the total number of shifts assigned to each driver location does not exceed the number of drivers.</p>
+<p>The constraint <a class="reference internal" href="#equation-shift-utilized-by-one-driver">(5)</a> ensures that if a driver is assigned to a shift, then the shift is utilized by one driver only.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This constraint is optional and can be used to ensure that all employed drivers are utilized. If including this constraint makes the
+model infeasible, sensitivity analysis techniques will be authomatically applied to identify which location(s)
+should have this constraint relaxed.</p>
+</div>
+<p>In order to ensure that all employed drivers are utilized, the equations <a class="reference internal" href="#equation-employed-employed-subco-drivers-per-loc">(3)</a> and <a class="reference internal" href="#equation-max-employed-drivers-per-loc">(4)</a> can
+be merged into the following constraints:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight" id="equation-employed-drivers-per-loc">
+<span class="eqno">(6)<a class="headerlink" href="#equation-employed-drivers-per-loc" title="Link to this equation">¶</a></span>\[\sum_{j \in S} x_{ij} = d_i + \beta_{i}, \quad \forall i \in D\]</div>
+</div></blockquote>
+<p>To constrain the total number of drivers per location, the following constraint is added:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight" id="equation-max-drivers-count">
+<span class="eqno">(7)<a class="headerlink" href="#equation-max-drivers-count" title="Link to this equation">¶</a></span>\[\epsilon_{i} + \beta_{i} \leq D_i, \quad \forall i \in D\]</div>
+</div></blockquote>
+<p>In the case, it is desirable to enforce the module to utilize all employed drivers, the equation <a class="reference internal" href="#equation-max-drivers-count">(7)</a> can be replaced with the following constraint:</p>
+<blockquote>
+<div><div class="math notranslate nohighlight" id="equation-max-drivers-count-i">
+<span class="eqno">(8)<a class="headerlink" href="#equation-max-drivers-count-i" title="Link to this equation">¶</a></span>\[\beta_{i} \geq D_i - d_i, \quad \forall i \in D\]</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The constraints <a class="reference internal" href="#equation-employed-drivers-per-loc">(6)</a> and <a class="reference internal" href="#equation-max-drivers-count">(7)</a> are optional and can be used to enforce a hard constraint on the total number of (
+employed or total) drivers per location. If including these constraints makes the model infeasible, sensitivity analysis techniques will be authomatically
+applied to identify which location(s) should have this constraint relaxed.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/logo.png" alt="Logo of LION 2025-10-12 17:56"/>
+            </a></p>
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Driver Scheduling MIP Formulation</a><ul>
+<li><a class="reference internal" href="#abstract">Abstract</a></li>
+<li><a class="reference internal" href="#problem-statement">Problem statement</a></li>
+<li><a class="reference internal" href="#out-of-scope">Out of scope</a></li>
+<li><a class="reference internal" href="#sets-and-indices">Sets and Indices</a></li>
+<li><a class="reference internal" href="#parameters">Parameters</a></li>
+<li><a class="reference internal" href="#decision-variables">Decision Variables</a></li>
+<li><a class="reference internal" href="#mixed-integer-programming-model">Mixed integer programming model</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="trouble_shooting.html"
+                          title="previous chapter">Troubleshooting</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="exact_method.html"
+                          title="next chapter">WorkInProgress: Driver Scheduling - Exact method</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/optimization.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="exact_method.html" title="WorkInProgress: Driver Scheduling - Exact method"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="trouble_shooting.html" title="Troubleshooting"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">LION 2025-10-12 17:56  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Driver Scheduling MIP Formulation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024 alireza.asadi@fedex.com | Road Network Planning &amp; Engineering | FedEx Express Europe | Taurusavenue 111 | 2132 LS Hoofddorp | The Netherlands.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

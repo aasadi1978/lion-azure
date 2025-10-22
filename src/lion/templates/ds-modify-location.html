@@ -1,0 +1,263 @@
+<script>
+  document.addEventListener('loadedOptions', function () {
+    let options =
+      window.config && window.config.options
+        ? window.config.options
+        : loadOptions();
+  });
+</script>
+
+<div
+  class="card popup-div-no-img"
+  id="id-insert-location-frame"
+  style="
+    display: none;
+    background-image: url(/static/images/FDX-Truck-blur.png);
+    height: 70vh;
+    width: 73vw;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+  "
+>
+  <div class="row card-body">
+    <button
+      class="btn btn-success"
+      onclick="minimize_popup(divid='id-insert-location-frame', height='65vh')"
+      style="align-content: flex-end"
+    >
+      Min/Max
+    </button>
+
+    <button
+      class="btn btn-danger"
+      onclick="hidePopup('id-insert-location-frame')"
+      style="align-content: flex-end"
+    >
+      Close
+    </button>
+  </div>
+
+  <div class="card-header">
+    <h3 class="card-title fdxfont">Add/modify a location</h3>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Location:</label
+        >
+        <div class="col-md-3">
+          <select
+            class="selectpicker form-control"
+            data-live-search="true"
+            data-style="btn btn-info"
+            title="Location"
+            data-size="7"
+            id="id-loc-code-locsetup"
+            data-actions-box="true"
+            onchange="load_location_info()"
+          >
+            {%for loc in options.all_locs %}
+            <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+              {{ loc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Postcode (Manual)*:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-zip-code-manual" />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Location code:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-loc-code-new" />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Location name:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-loc-name-new" />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Location Type:</label
+        >
+        <div class="col-md-3">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            title="LocationType"
+            data-size="7"
+            id="id-loc-type-new"
+            data-actions-box="true"
+          >
+            <option value="Customer" id="id-customer" style="font-size: 1.2em">
+              Customer
+            </option>
+            <option value="Gateway" id="id-gateway" style="font-size: 1.2em">
+              Gateway
+            </option>
+            <option value="Hub" id="id-hub" style="font-size: 1.2em">
+              Hub
+            </option>
+            <option value="Port" id="id-port" style="font-size: 1.2em">
+              Port
+            </option>
+            <option value="Station" id="id-station" style="font-size: 1.2em">
+              Station
+            </option>
+            <option value="Swap" id="id-swap" style="font-size: 1.2em">
+              Swap
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Controlling depot:</label
+        >
+        <div class="col-md-3">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            title="CTRL Loc"
+            data-size="7"
+            id="id-cust-ctrl-depot"
+            data-actions-box="true"
+          >
+            {%for loc in options.no_cust_locations %}
+            <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+              {{ loc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Stand/Live load:</label
+        >
+        <div class="col-md-3">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            title="Stand or Live Load"
+            data-size="7"
+            id="id-live-load-stand-load"
+            data-actions-box="true"
+          >
+            <option value="stand" selected style="font-size: 1.2em">
+              Stand Load
+            </option>
+            <option value="live" style="font-size: 1.2em">Live Load</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Lat/Lon: (57.100375, -2.243954):</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-lat-lon" />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Town:</label
+        >
+        <div class="col-md-3">
+          <input type="text" class="form-control" id="id-town-name" />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >Turnaround minutes (driving, non-driving):</label
+        >
+        <div class="col-md-3">
+          <input
+            type="text"
+            class="form-control"
+            id="id-turnaround-times"
+            value="15, 10"
+          />
+        </div>
+      </div>
+
+      <div class="row form-group">
+        <label
+          class="col-md-4 col-form-label text-white"
+          style="font-size: 18px"
+          >dep/arr debrief minutes (30, 30):</label
+        >
+        <div class="col-md-3">
+          <input
+            type="text"
+            class="form-control"
+            id="id-debrief-time"
+            value="30,30"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4" style="display: none">
+      <div
+        id="id-loc-map"
+        style="width: 20vw; height: 40vh; vertical-align: top"
+      ></div>
+    </div>
+  </div>
+
+  <div class="row col-lg-10">
+    <button class="btn btn-success btnrows2" onclick="handle_location()">
+      Save location
+    </button>
+    <button class="btn btn-danger btnrows2" onclick="un_close_location()">
+      De/activate
+    </button>
+  </div>
+</div>

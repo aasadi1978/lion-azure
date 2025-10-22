@@ -1,0 +1,87 @@
+Modules
+=======
+
+Launch LION
+-----------
+
+.. code-block:: python
+
+   python __main__.py
+
+global_params
+-------------
+
+.. automodule:: global_params
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+app.py module and databases
+----------------------------
+
+.. automodule:: app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+__main__ module
+----------------
+
+.. automodule:: __main__
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+   The entry point of the app which starts with creating ``objDrivers = Drivers()`` instance of ``Drivers`` class, 
+   imported from ``DnD.py`` module.
+
+   .. code-block:: python
+
+      from app import app
+      from DnD import Drivers
+      //Rest of imports
+
+      @app.route('/')
+      def index():
+         return redirect(url_for('loading_schedule'))
+
+
+      @app.route('/loading_schedule')
+      def loading_schedule():
+         params = {'redirect_url': '/lion/loading_schedule', 'message': 'Loading schedule'}
+         return render_template('wait.html', params=params)
+
+
+      @app.route('/loading_schedule')
+      def schedule():
+         flaskWarningsOff()
+
+         global objDrivers
+
+         try:
+            if objDrivers is None:
+                  objDrivers = Drivers()
+
+            # These modules are executed on launch and/or refreshing page
+            objDrivers.refresh_location_names()
+            objDrivers.load_movements_object()
+            objDrivers.refresh_traffic_type_colors()
+            objDrivers.refresh_rocs_data()
+            objDrivers.cache_latest_data()
+            objDrivers.set_barwidth()
+            objDrivers.apply_filtered_tours(Re_loading=True)
+            objDrivers.refresh_dct_driver_loc_proposals()
+
+            return render_template('driver_schedule.html', options=objDrivers.options)
+
+         except Exception:
+            PrintException(popup=True, remarks='Loading schedule failed!')
+            return {}
+
+
+DnD Module
+----------------
+
+.. automodule:: DnD
+   :show-inheritance:
+   :members:

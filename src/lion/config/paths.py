@@ -1,0 +1,47 @@
+from os import getenv
+from pathlib import Path
+from lion.bootstrap.constants import LION_MASTER_DATABASE_NAME, LION_USER_DATABASE_NAME, LION_SCHEDULE_DATABASE_NAME
+
+# The following paths are calculated and assigned to environment variables in lion\__init__.py when the lion package is loaded.
+# We need them to be available as early as possible, i.e., when the app and db are created in create_flask_app/create_app.py
+LION_PROJECT_HOME = Path(getenv('LION_PROJECT_HOME')).resolve()
+LION_HOME_PATH = Path(getenv('LION_HOME_PATH')).resolve()
+LION_STATIC_PATH = Path(getenv('LION_STATIC_PATH')).resolve()
+LION_TEMPLATES_PATH = Path(getenv('LION_TEMPLATES_PATH')).resolve()
+LION_DEFAULT_SQLDB_PATH = Path(getenv('LION_DEFAULT_SQLDB_PATH')).resolve()
+LION_LOG_FILE_PATH = Path(getenv('LION_LOG_FILE_PATH')).resolve()
+LION_SHARED_DIR = Path(getenv('LION_SHARED_DIR')).resolve()
+
+LION_ARCGIS_PATH = LION_HOME_PATH / "ArcGIS"
+LION_SQLDB_PATH = LION_HOME_PATH / "sqldb"
+
+LION_DRIVER_REPORT_DIST_PATH = LION_SHARED_DIR / "LION Reports"
+
+LION_OPTIMIZATION_PATH = LION_HOME_PATH / "optimisation"
+DELTA_DATA_PATH = LION_HOME_PATH / "DeltaData"
+DELTA_DATA_LOG_PATH = LION_HOME_PATH / "DeltaData" / "logs"
+
+LION_LOCAL_DRIVER_REPORT_PATH = LION_HOME_PATH / "DriverReport"
+LION_LOGS_PATH = LION_HOME_PATH / "logs"
+LION_DIAGNOSTICS_PATH = LION_LOGS_PATH / "diagnostics"
+
+LION_ONBOARDING_PATH = LION_SHARED_DIR / "_onboarding_"
+LION_SHARED_ASSETS_PATH = LION_SHARED_DIR / "LION_SHARED_ASSETS"
+LION_CONSOLIDATED_REPORT_PATH = LION_SHARED_DIR / "Consolidated_Driver_Report"
+LION_SHARED_SCHEDULE_PATH = LION_SHARED_DIR / "Schedule"
+LION_SHARED_SQLDB_PATH = LION_SHARED_ASSETS_PATH / 'sqldb'
+
+LION_JS_PATH = LION_STATIC_PATH / 'js'
+LION_FILES_PATH = LION_STATIC_PATH / 'files'
+LION_IMAGES_PATH = LION_STATIC_PATH / 'images'
+LION_FONTS_PATH = LION_STATIC_PATH / 'fonts'
+
+# Temporary paths for optimization data dumps
+TEMP_APP_DATA_FOLDER = LION_HOME_PATH / 'temp'
+LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'TempOptimizationDataDump'
+LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta_temp'
+
+PR_LION_USER_DB = LION_SQLDB_PATH / LION_USER_DATABASE_NAME
+PR_LION_LOCAL_SCHEDULE_DB = LION_SQLDB_PATH / LION_SCHEDULE_DATABASE_NAME
+PR_LION_MASTER_DATA_DB = LION_SQLDB_PATH / LION_MASTER_DATABASE_NAME
+PR_LION_USER_DB_PATH = LION_SQLDB_PATH / LION_USER_DATABASE_NAME

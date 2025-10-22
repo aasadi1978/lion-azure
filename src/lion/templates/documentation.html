@@ -1,0 +1,56 @@
+{% extends "base.html" %} {% block NewStyle %}
+<script>
+  document.addEventListener('configReady', () => {
+    const options = window.config.options || {};
+  });
+</script>
+<style>
+  body {
+    font-family: 'FedEx Sans';
+    background-color: #f0f0f0;
+    color: #333;
+    line-height: 1.6;
+  }
+
+  .card {
+    background-image: url('/static/images/Enterprise Culture Zoom Backgrounds - Gradient.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+  }
+
+  .clstitle {
+    color: white;
+    text-align: center;
+    background-color: #ff6600;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    /* box-shadow: 0 0 10px rgba(0,0,0,0.1); */
+  }
+  .col-form-label {
+    font-family: 'FedEx Sans' !important;
+    /* font-size: 25px !important; */
+    color: #f0f0f0 !important;
+    /* background-color: white; */
+
+    border-radius: 10px;
+    padding: 40px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+</style>
+{% endblock %} {% block NewContent %}
+<div>
+  <h1 class="clstitle">Documentation</h1>
+</div>
+
+<div class="col-form-label">
+  {% for msg_line in options.message.split('\n') %}
+  <h3>{{ msg_line }}</h3>
+  {% endfor %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,28 @@
+/* h1{
+ font-family: 'FedEx Sans Cd XBold';
+} */
+
+/* This file intentionally left blank. */
+/* body { */
+/* text-wrap: pretty; */
+/* background-color: #aba8af; */
+/* background-image: url('pretreated_imagery_19-1200x675-c2b5ff2.png'); */
+/* background-repeat: no-repeat;
+    background-position: center center center;
+    background-size: cover;  */
+/* You can adjust the size of the image, for example: 100%, contain, etc. */
+/* font-size: 18px; */
+/* color: aliceblue; */
+/* text-align: center; */
+/* margin-left: 500px; */
+/* margin-left: -300px; */
+/* z-index: 900; */
+/* scroll-behavior: auto; */
+/* } */
+
+.footer {
+  display: block !important;
+  color: #000; /* Adjust color as needed */
+  font-size: 14px; /* Adjust font size as needed */
+  padding: 10px 0;
+}

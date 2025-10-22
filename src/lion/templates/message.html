@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LION Message</title>
+        <style>
+            body {
+                color: #4d148c;
+                font-family: FedEx Sans;
+                /* background-image: url('/images/lion-home-page.png');  */
+                background-image: url('/static/images/pretreated_imagery_19-1200x675-c2b5ff2.png');
+                /* background-image: url('/images/purple_promise.png'); */
+                background-repeat: no-repeat; /* Prevents the image from repeating */
+                background-position: center center center; /* You can adjust the position of the image, for example: top left, top right, etc. */
+                background-size: cover; /* You can adjust the size of the image, for example: 100%, contain, etc. */
+                font-size: 24px;
+                text-align: center;
+                /* padding: 200px; */
+            }
+
+            h1 {
+                font-family: FedEx Sans;
+                font-size: 48px;
+                margin-bottom: 50px;
+            }
+
+            h2,
+            h3 {
+                font-family: FedEx Sans;
+            }
+
+            .msg {
+                margin-top: 50px;
+                margin-left: 1150px;
+                width: 1000px;
+                text-align: center;
+            }
+
+            img {
+                max-width: 500px;
+                margin-top: 20px;
+                margin-bottom: 50px;
+            }
+        </style>
+    </head>
+
+    <body style="margin-left: -350px">
+        <img
+            src="/static/images/collective_eng_2c_pos_rgb.svg"
+            alt="FedEx Express Logo"
+        />
+        <h1><span style="color: #ff6200; font-size: 2em"> LION {{ message.title }} </span></h1>
+        <h2>
+            <span style="font-size: 0.9em">
+                Linehaul Optimization for Network
+            </span>
+        </h2>
+        <h2 class="msg">{{ message.info }}</h2>
+        <h2 class="msg" style="color: red">{{ message.error }}</h2>
+    </body>
+</html>

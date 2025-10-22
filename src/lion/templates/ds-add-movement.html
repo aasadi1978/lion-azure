@@ -1,0 +1,357 @@
+<script>
+  document.addEventListener('configReady', () => {
+    const options = window.config.options || {};
+  });
+</script>
+
+<div class="card">
+  <div
+    class="card popup-div-no-img"
+    id="id-insert-movement-frame"
+    style="
+      display: none;
+      height: 60vh;
+      width: 65vw;
+      background-image: url(/static/images/fdx-truck-1.pptx.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="row card-body">
+      <button
+        class="btn btn-success"
+        onclick="minimize_popup(divid='id-insert-movement-frame', height='60vh')"
+        style="align-content: flex-end"
+      >
+        Min/Max
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="clear_movement_toolbox()"
+        style="align-content: flex-end"
+      >
+        Clear form
+      </button>
+
+      <button
+        class="btn btn-danger"
+        onclick="hidePopup('id-insert-movement-frame')"
+        style="align-content: flex-end"
+      >
+        Close
+      </button>
+    </div>
+
+    <div class="card-header">
+      <h3 class="card-title fdxfont">Add a movement</h3>
+    </div>
+
+    <div id="id-main-div">
+      <div class="row card-body" style="justify-content: left">
+        <div class="col-md-4 row">
+          <label
+            class="col-md-5 col-form-label"
+            style="color: white; font-size: 18px"
+            >Loc string (ADX.DZ5.2230):
+          </label>
+          <input
+            type="text"
+            class="col-md-7 form-control"
+            id="id-movement-loc-string"
+            placeholder="ADX.DZ5"
+          />
+        </div>
+
+        <div class="col-md-7 row">
+          <div class="col-md-2">
+            <div class="dropdown" vertical-align="left">
+              <select
+                class="selectpicker"
+                data-live-search="true"
+                data-style="btn btn-info"
+                data-actions-box="true"
+                title="Depday"
+                data-size="7"
+                id="id-week-day-for-movement"
+              >
+                <option value="Mon" selected style="font-size: 1.2em">0</option>
+                <option value="Tue" style="font-size: 1.2em">1</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row card-body" style="justify-content: left">
+        <div class="col-lg-2 dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-success"
+            data-size="7"
+            title="Location lookup"
+            id="id-loc-lookup-list"
+            onchange="insert_loc_into_mov_loc_string(this)"
+          >
+            {%for loc in options.all_locs %}
+            <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+              {{ loc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="col-md-2 dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-actions-box="true"
+            title="Vehicle"
+            data-size="7"
+            id="id-movement-vehicle-type"
+          ></select>
+        </div>
+
+        <div class="col-md-2">
+          <!-- onchange="insert_traffic_type_into_mov_loc_string(this)" -->
+          <div class="dropdown" vertical-align="left">
+            <select
+              class="selectpicker"
+              data-live-search="true"
+              data-style="btn btn-info"
+              data-size="7"
+              id="id-mov-traffic-type"
+              data-actions-box="true"
+              value="Express"
+              title="TrafficType"
+            >
+              {%for ttype in options.traffic_types %}
+              <option value="{{ ttype }}" style="font-size: 1.2em">
+                {{ ttype }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+          <label
+            class="col-form-label"
+            style="color: white; font-size: 18px"
+            id="id-selected-mov-traffictype"
+          ></label>
+        </div>
+      </div>
+
+      <div class="col-md-6 row">
+        <label
+          class="col-md-4 col-form-label"
+          style="color: white; font-size: 18px"
+          >C/O buffer minutes (comma seperated):
+        </label>
+        <input
+          type="text"
+          class="col-md-3 form-control"
+          id="id-changeover-connection-time"
+          value="15"
+        />
+
+        <label
+          class="col-md-2 col-form-label"
+          style="color: white; font-size: 18px"
+          >TU Dest:
+        </label>
+        <input
+          type="text"
+          class="col-md-3 form-control"
+          id="id-tu-dest"
+          value=""
+        />
+      </div>
+
+      <!-- <label class="col-lg-12 col-form-label fdxfont" style="color:greenyellow; font-size: 18px;"
+        id="id-captured-movements"></label> -->
+
+      <!-- <div class="col-md-7 row">
+          <label class="col-md-2 col-form-label" style="color:white; font-size: 18px;">Departure time (hhmm):
+          </label>
+          <input type="text" class="col-md-1 form-control" id="id-add-hoc-move-dep-time" placeholder="1730">
+  
+          <div class="col-md-2">
+            <div class="dropdown" vertical-align="left">
+              <select class="selectpicker" data-live-search="true" data-style="btn btn-info" data-actions-box="true"
+                title="Weekday" data-size="7" id="id-week-day-for-movement">
+                <option value="Mon" selected style="font-size: 1.2em;">Monday</option>
+                <option value="Tue" style="font-size: 1.2em;">Tuesday</option>
+                <option value="Wed" style="font-size: 1.2em;">Wednesday</option>
+                <option value="Thu" style="font-size: 1.2em;">Thursday</option>
+                <option value="Fri" style="font-size: 1.2em;">Friday</option>
+                <option value="Sat" style="font-size: 1.2em;">Saturday</option>
+                <option value="Sun" style="font-size: 1.2em;">Sunday</option>
+              </select>
+            </div>
+          </div>
+          <label class="col-lg-12 col-form-label fdxfont" style="color:greenyellow; font-size: 18px;"
+            id="id-captured-movements"></label>
+  
+        </div> -->
+
+      <!-- <div class="card-body">
+          <label class="col-md-2 col-form-label" style="color:red; font-size: 18px;">Changeovers only:
+          </label>
+          <div class="col-7 row" style="justify-content:left">
+            <label class="col-md-2 col-form-label" style="color:white; font-size: 18px;">Running
+              weekdays:
+            </label>
+            <div class="col-md-3">
+              <div class="dropdown" vertical-align="left">
+                <select class="selectpicker" multiple data-style="btn btn-info" title="Weekday" data-size="7"
+                  id="id-movement-running-weekday">
+                  <option value="Mon" selected  style="font-size: 1.2em;">Mon</option>
+                  <option value="Tue" selected style="font-size: 1.2em;">Tue</option>
+                  <option value="Wed" selected style="font-size: 1.2em;">Wed</option>
+                  <option value="Thu" selected style="font-size: 1.2em;">Thu</option>
+                  <option value="Fri" style="font-size: 1.2em;">Fri</option>
+                  <option value="Sun" style="font-size: 1.2em;">Sun</option>
+                </select>
+              </div>
+            </div>
+            <label class="col-md-2 col-form-label" style="color:white; font-size: 18px;">C/O buffer minutes:
+            </label>
+            <input type="text" class="col-md-1 form-control" id="id-changeover-connection-time" value="15">
+          </div>
+        </div> -->
+
+      <div class="card-body">
+        <div class="col-7 row" style="justify-content: left">
+          <!-- <button class="btn btn-success" onclick="capture_movement()">Save and insert new</button>
+            <button class="btn btn-danger" onclick="undo_movement_capture()" style="padding: 5px 40px">Undo movement
+              insert</button> -->
+          <button class="btn btn-success" onclick="insert_movements()">
+            Create
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div
+    class="card popup-div"
+    id="id-modify-traffic-type"
+    style="
+      display: none;
+      height: 25vh;
+      width: 75vw;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="popup-header">Modify movement details</div>
+    <button
+      class="btn btn-danger"
+      onclick="hidePopup('id-modify-traffic-type')"
+      style="align-content: flex-end"
+    >
+      Close
+    </button>
+    <div class="row card-body" style="justify-content: left">
+      <div class="col-md-3 row">
+        <label
+          class="col-md-5 col-form-label"
+          style="color: white; font-size: 18px"
+          >Loc string:
+        </label>
+        <input
+          type="text"
+          class="col-md-7 form-control"
+          id="id-mov-loc-string-modify"
+          style="color: white; font-size: 18px"
+        />
+      </div>
+      <div class="col-md-2">
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-actions-box="true"
+            title="Weekday"
+            data-size="7"
+            id="id-modify-mov-dep-day"
+          >
+            <option value="Mon">0</option>
+            <option value="Tue">1</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-size="7"
+            id="id-mov-traffic-type-modify"
+            data-actions-box="true"
+            value="Express"
+            title="TrafficType"
+          >
+            <!-- onchange="insert_traffic_type_into_mov_loc_string(this)"> -->
+            {%for ttype in options.traffic_types %}
+            <option value="{{ ttype }}" style="font-size: 1.2em">
+              {{ ttype }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <!-- <label class="col-form-label" style="color:white; font-size: 18px;"
+            id="id-selected-mov-traffictype-2"></label> -->
+      </div>
+
+      <div class="col-md-2">
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-size="7"
+            id="id-mov-tu-dest-modify"
+            data-actions-box="true"
+            value="Express"
+            title="TU Dest"
+          >
+            <option value="" style="font-size: 1.2em">_blank_</option>
+            <!-- Added option for 'None' -->
+            {% for loc in options.all_locs %}
+            <option value="{{ loc.split(' - ')[0] }}" style="font-size: 1.2em">
+              {{ loc }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-3 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          disabled
+          data-live-search="true"
+          data-style="btn btn-info"
+          data-actions-box="true"
+          title="Vehicle"
+          data-size="7"
+          id="id-mov-vehicle-type-modify"
+        ></select>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="col-7 row" style="justify-content: left">
+        <button class="btn btn-success" onclick="modify_movement_details()">
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

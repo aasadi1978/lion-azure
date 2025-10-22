@@ -1,0 +1,116 @@
+<style>
+    .rotate {
+        animation: rotation 4s infinite linear;
+    }
+
+    @keyframes rotation {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .container-wait-processing {
+        font-family: FedEx Sans;
+        background-image: url('/images/Zoom background_culture values.png');
+        background-repeat: no-repeat; /* Prevents the image from repeating */
+        background-position: center center; /* You can adjust the position of the image, for example: top left, top right, etc. */
+        background-size: 90%; /* You can adjust the size of the image, for example: 100%, contain, etc. */
+        font-size: 24px;
+        text-align: center;
+        padding: 50px;
+    }
+
+    h1 {
+        font-family: FedEx Sans;
+        font-size: 48px;
+        margin-bottom: 50px;
+    }
+
+    img {
+        max-width: 500px;
+        margin-top: 50px;
+        margin-bottom: 50px;
+    }
+
+    .image-container {
+        display: inline-block;
+        background-color: #ffffff;
+        padding: 5px;
+        border-radius: 10px;
+        margin-bottom: 80px;
+    }
+
+    .dot {
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        margin: 0 5px;
+        animation: dotAnimation 1s infinite;
+        background-color: #fff;
+        animation-timing-function: cubic-bezier(0, 1, 1, 0);
+    }
+
+    @keyframes dotAnimation {
+        0% {
+            transform: scale(0);
+        }
+
+        50% {
+            transform: scale(1);
+        }
+
+        100% {
+            transform: scale(0);
+        }
+    }
+
+    .wait {
+        font-family: FedEx Sans;
+        display: inline-block;
+        animation: textAnimation 2s ease-in-out infinite;
+    }
+
+    @keyframes textAnimation {
+        0% {
+            opacity: 0;
+            transform: translateY(0);
+        }
+
+        25% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        50% {
+            opacity: 1;
+            transform: translateY(-20px);
+        }
+
+        75% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container-wait-processing">
+    <h2>
+        {{ message }} <span class="dot"></span><span class="dot"></span
+        ><span class="dot"></span>
+    </h2>
+    <p><span class="wait">Please wait</span></p>
+
+    <div class="image-container">
+        <img src="/images/psp.png" alt="PSP image" class="rotate" />
+    </div>
+</div>

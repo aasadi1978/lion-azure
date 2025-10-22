@@ -1,0 +1,97 @@
+<div class="card">
+  <div
+    class="card popup-div-no-img"
+    id="id-gen-driver-plan-with-day-selection"
+    style="
+      display: none;
+      height: 40vh;
+      width: 50vw;
+      background-image: url(/static/images/fdx-truck-1.pptx.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center center;
+    "
+  >
+    <div class="popup-header">Driver report with day selection</div>
+    <button
+      class="btn btn-danger"
+      onclick="hidePopup('id-gen-driver-plan-with-day-selection')"
+      style="align-content: flex-end"
+    >
+      Close
+    </button>
+    <div class="card-body" style="font-size: 20px">
+      <div class="col-md-5">
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            multiple
+            data-style="btn btn-primary"
+            data-size="7"
+            title="Weekdays"
+            id="id-wkdays-to-gen-driver-plan"
+            style="color: black; font-size: 16px"
+          >
+            <option value="Mon" selected style="font-size: 14px">Mon</option>
+            <option value="Tue" selected style="font-size: 14px">Tue</option>
+            <option value="Wed" selected style="font-size: 14px">Wed</option>
+            <option value="Thu" selected style="font-size: 14px">Thu</option>
+            <option value="Fri" selected style="font-size: 14px">Fri</option>
+            <option value="Sun" selected style="font-size: 14px">Sun</option>
+          </select>
+        </div>
+        <button
+          class="btn btn-primary btnrows2"
+          onclick="gen_driver_report_day_selection()"
+          style="width: 300px"
+        >
+          Export driver plan
+        </button>
+
+        <div class="container">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="col-lg-6 d-flex align-items-center">
+              <label
+                class="col-form-label col-md-6"
+                style="
+                  color: aliceblue;
+                  font-family: FedEx Sans;
+                  font-size: 18px;
+                "
+                >Publish</label
+              >
+              <input
+                type="checkbox"
+                checked
+                class="bootstrap-switch"
+                data-on-label="ON"
+                data-off-label="OFF"
+                id="id-chkbox-publish-driver-plan"
+              />
+            </div>
+
+            <div class="col-lg-6 d-flex align-items-center">
+              <label
+                class="col-form-label d-flex"
+                style="
+                  color: aliceblue;
+                  font-family: FedEx Sans;
+                  font-size: 18px;
+                "
+                >pdf report
+              </label>
+              <input
+                type="checkbox"
+                checked
+                class="bootstrap-switch"
+                data-on-label="ON"
+                data-off-label="OFF"
+                id="id-chkbox-pdf-report"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

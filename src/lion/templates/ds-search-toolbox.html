@@ -1,0 +1,157 @@
+<div class="card">
+  <div
+    class="card-header"
+    style="background-color: #ff6200"
+    onclick="disp_search_win_div()"
+  >
+    <h3 class="card-title fdxfont">Search</h3>
+  </div>
+
+  <div class="card-body" id="id-search-windows">
+    <div class="row">
+      <div class="col-md-1">
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            title="Masterplan"
+            data-size="7"
+            id="id-master-plan-dropdown"
+            data-actions-box="true"
+            onchange="import_selected_schedule()"
+          ></select>
+        </div>
+      </div>
+
+      <div class="col-sm-2 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          data-live-search="true"
+          data-style="btn btn-success"
+          title="Shift string"
+          data-size="7"
+          id="id-shift-string"
+          multiple
+          data-actions-box="true"
+        ></select>
+      </div>
+
+      <div class="col-sm-2 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          data-live-search="true"
+          data-style="btn btn-success"
+          title="Movement bucket"
+          data-size="7"
+          id="id-movement-bucket"
+          data-actions-box="true"
+          onchange="insert_selected_movement()"
+        ></select>
+        <label
+          class="col-form-label fdxfont"
+          style="color: white; font-size: 18px"
+          id="id-lbl-num-unplanned-movs"
+        >
+        </label>
+      </div>
+
+      <div class="col-md-1 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          data-live-search="true"
+          data-style="btn btn-success"
+          title="Changeovers"
+          data-size="7"
+          id="id-changeovers"
+          multiple
+          data-actions-box="true"
+        ></select>
+      </div>
+
+      <div class="col-md-2 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          data-live-search="true"
+          data-style="btn btn-success"
+          data-size="7"
+          title="Location search"
+          id="id-search-by-loc"
+          multiple
+          data-actions-box="true"
+        >
+          {%for loc in options.all_locs %}
+          <option style="font-size: 1.2em" value="{{ loc.split(' - ')[0] }}">
+            {{ loc }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-md-1 dropdown" vertical-align="left">
+        <select
+          class="selectpicker"
+          data-live-search="true"
+          data-style="btn btn-success"
+          data-actions-box="true"
+          title="Vehicle"
+          multiple
+          data-size="7"
+          id="id-search-by-vehicle"
+        >
+          <!-- <option style="font-size: 1.2em;" value="1">Tractor-trailer 2/3 Axles 80m3</option>
+          <option style="font-size: 1.2em;" value="4">Van</option>
+          <option style="font-size: 1.2em;" value="2">Truck 12 ton</option>
+          <option style="font-size: 1.2em;" value="3">Truck 7.5 ton</option>
+          <option style="font-size: 1.2em;" value="7">Truck 18 Ton</option>
+          <option style="font-size: 1.2em;" value="6">18 Ton + Drop-body</option>
+          <option style="font-size: 1.2em;" value="10">Unit + Long D/D Trailer</option>
+          <option style="font-size: 1.2em;" value="9">Unit + Long Trailer</option>
+          <option style="font-size: 1.2em;" value="8">Unit + D/D Trailer</option> -->
+        </select>
+      </div>
+
+      <div class="row col-md-2">
+        <label
+          class="col-md-3"
+          style="color: white; font-family: FedEx Sans; font-size: 1.2em"
+          >PageTo:
+        </label>
+        <input
+          type="text"
+          class="col-md-3 form-control"
+          id="id-jump-to-page-II"
+        />
+      </div>
+
+      <div class="row">
+        <button
+          class="btn btn-success btn-search-row"
+          style="height: 35px"
+          onclick="load_filtered_shift_data()"
+        >
+          Load data
+        </button>
+      </div>
+    </div>
+    <div
+      class="row"
+      style="margin-top: 10px; display: none"
+      id="id-tour-utilisation-bar"
+    >
+      <div class="col-md-12" style="margin-top: 2%">
+        <label
+          class="col-md-3 col-form-label fdxfont"
+          style="color: white; font-size: 18px"
+          id="id-slider-shift-utilisation-value"
+        >
+        </label>
+        <div
+          id="id-utilisation-double-slider"
+          class="slider slider-primary"
+          style="margin-bottom: 20px"
+        ></div>
+      </div>
+    </div>
+  </div>
+</div>

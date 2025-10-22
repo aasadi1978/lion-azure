@@ -1,0 +1,426 @@
+<div
+  class="card-header"
+  style="background-color: #932da2"
+  onclick="disp_toolbox_winII_div()"
+>
+  <h3 class="card-title fdxfont">Actions toolbox</h3>
+</div>
+<div class="card-body" style="display: none" id="id-toolboxII">
+  <div class="row">
+    <div class="col-6" style="display: none">
+      <div class="row">
+        <label
+          class="col-2 col-md-4"
+          style="color: white; font-family: FedEx Sans; font-size: 1.5em"
+          >Enter page number:
+        </label>
+        <input
+          type="text"
+          class="col-1 col-md-3 form-control"
+          id="id-jump-to-page"
+          value="1"
+        />
+        <label
+          class="col-md-5 col-form-label"
+          style="color: white; font-family: FedEx Sans; font-size: 1.5em"
+          id="id-page-number-disp"
+        ></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- col-lg-9 col-md-3 col-sm-1 -->
+  <div class="card-body" style="background-color: #999999">
+    <button
+      class="btn btn-success"
+      style="padding: 4px 18px; width: 150px"
+      onclick="preview_log_file()"
+    >
+      Logfile
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="update_fixed_tours()"
+      style="padding: 5px 45px; width: 150"
+    >
+      Un/fix selected
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="fix_all_drivers()"
+      style="padding: 5px 45px; width: 150px"
+    >
+      Fix all
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="unfix_all_drivers()"
+      style="padding: 5px 45px; width: 150px"
+    >
+      Unfix all
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="vacuum()"
+      style="padding: 5px 45px; width: 150px"
+      title="Executes Vaccum command on the database to clean up the unused space."
+    >
+      Vacuum
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="extract_movements_to_process(extract_all=true)"
+      style="padding: 5px 45px; width: 250px"
+      title="Extracts all movements incl. fixed ones. 
+      Fixed movements will be highlighted using asterisk(*)"
+    >
+      Extract all movements
+    </button>
+
+    <button
+      class="btn btn-success"
+      onclick="extract_locations_info()"
+      style="padding: 5px 45px; width: 250px"
+      title="Extracts all location details in the system, e.g., ctrl_by, zipcodes, 
+      number of Employed and Subco drivers, etc."
+    >
+      Extract Locations
+    </button>
+
+    <button
+      class="btn-lion btn-success btnrows2"
+      id="id-disp-locs-button"
+      onclick="window.open('/display-locations-on-map', '_blank')"
+      style="padding: 5px 45px; width: 200px; display: none"
+    >
+      View flows
+    </button>
+
+    <button class="btn btn-danger btnrows2b" onclick="reboot()">
+      Reboot LION
+    </button>
+
+    <button class="btn btn-primary btnrows2b" onclick="open_user_manual()">
+      User manual
+    </button>
+    <button class="btn btn-success btnrows2" onclick="hide_progress_bar()">
+      Toggle status bar
+    </button>
+  </div>
+  <!-- Search block was here -->
+
+  <div class="card-body">
+    <!-- style="justify-content: space-between; " -->
+
+    <div class="row" style="justify-content: flex-start">
+      <div class="col-md-1">
+        <p
+          class="category"
+          title="Enables logging of all steps. This can be useful for debuging specially when running optimization. 
+        The log file can be viewed by pressing the Logfile button"
+        >
+          Enable Logging
+        </p>
+        <input
+          type="checkbox"
+          class="bootstrap-switch"
+          data-on-label="ON"
+          data-off-label="OFF"
+          checked
+          id="id-enable-logging-switch"
+          onchange="toggle_logging()"
+        />
+      </div>
+
+      <div class="col-md-1">
+        <p class="category">Hide fixed shifts</p>
+        <input
+          type="checkbox"
+          class="bootstrap-switch"
+          data-on-label="ON"
+          data-off-label="OFF"
+          id="id-hide-fixed"
+          onchange="un_hide_fixed()"
+        />
+      </div>
+
+      <div class="col-md-1">
+        <p class="category">Hide blank shifts</p>
+        <input
+          type="checkbox"
+          class="bootstrap-switch"
+          data-on-label="ON"
+          data-off-label="OFF"
+          id="id-hide-blank"
+          onchange="un_hide_blank()"
+        />
+      </div>
+
+      <div class="col-md-1">
+        <p
+          class="category"
+          title="Searches only the current page to propose shift for the movement(s) in dump area"
+        >
+          Search current page
+        </p>
+        <input
+          type="checkbox"
+          class="bootstrap-switch"
+          data-on-label="ON"
+          data-off-label="OFF"
+          id="id-search-current-page-only"
+          onchange="toggle_search_current_page()"
+        />
+      </div>
+
+      <!-- <div class="col-md-1">
+          <p class="category">Run Full optimization</p>
+          <input type="checkbox" class="bootstrap-switch" data-on-label="ON" data-off-label="OFF"
+            id="id-run-full-optimization-flag" />
+        </div> -->
+
+      <div class="col-md-1">
+        <p class="category">Show infeas tours</p>
+        <input
+          type="checkbox"
+          class="bootstrap-switch"
+          data-on-label="ON"
+          data-off-label="OFF"
+          id="id-hide-feas"
+          onchange="un_hide_infeas()"
+        />
+      </div>
+
+      <div class="col-md-2">
+        <p class="category">Shifts per page</p>
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-actions-box="true"
+            title="PageSize"
+            data-size="7"
+            id="id-page-size-dropdown"
+            onchange="set_number_of_drivers_per_page()"
+          >
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="15" selected>15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+            <option value="50">50</option>
+            <option value="60">60</option>
+            <option value="70">70</option>
+            <option value="80">80</option>
+            <option value="90">90</option>
+            <option value="100">100</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-2">
+        <p class="category">Language</p>
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-info"
+            data-actions-box="true"
+            data-size="7"
+            id="id-language-dropdown"
+            onchange="set_language(this.value)"
+          >
+            <option style="font-size: 1.2em" value="EN">English</option>
+            <option style="font-size: 1.2em" value="FR">French</option>
+            <option style="font-size: 1.2em" value="DE">German</option>
+            <option style="font-size: 1.2em" value="IT">Italian</option>
+            <option style="font-size: 1.2em" value="ES">Spanish</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-2" style="display: none">
+        <p class="category">Runtimes data set</p>
+        <div class="dropdown" vertical-align="left">
+          <select
+            class="selectpicker"
+            data-live-search="true"
+            data-style="btn btn-primary"
+            data-size="7"
+            id="id-egis-scenarios-dropdown"
+            data-actions-box="true"
+            onchange="set_egis_scenario()"
+          ></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row col-md-12" style="margin-top: 15px">
+      <!-- <button class="btn btn-success btnrows2" onclick="preview_changes()">Preview
+          changes</button>
+        <button class="btn btn-success btnrows2" style="width: 260px;" onclick="empty_changes_log()">Empty changes log</button> -->
+      <!-- <button class="btn btn-success btnrows2" onclick="undo()">Undo</button> -->
+      <button class="btn btn-success btnrows2" onclick="run_diagnostics()">
+        Run diagnostics
+      </button>
+
+      <button
+        class="btn btn-success btnrows2"
+        style="display: none"
+        onclick="review_shifts(
+          refresh_all=true)"
+        title="Tries to reconstruct the entire schedule with the primary purpose of identifying illegal shifts."
+      >
+        Review schedule
+      </button>
+
+      <button
+        class="btn btn-success btnrows2"
+        style="display: none"
+        onclick="propose_shifts()"
+        title="Reviews the complete schedule to identify possible shifts that can accommodate some or all of the unplanned 
+        movements while ensuring compliance. Please note that users can filter the schedule if they have a preference for 
+        specific regions or subsets of tours that might absorb the movement. No changes will be made to the schedule!"
+      >
+        Propose shifts
+      </button>
+
+      <button
+        class="btn btn-success btnrows2"
+        onclick="display_doc()"
+        id="id-disp-docs-button"
+      >
+        Show docs
+      </button>
+
+      <button
+        class="btn btn-danger"
+        onclick="export_local_schedule()"
+        style="padding: 5px 45px; width: 250px"
+      >
+        Export schedule
+      </button>
+      <button
+        class="btn btn-success"
+        onclick="import_selected_schedule()"
+        style="padding: 5px 45px; width: 250px"
+      >
+        Import Shared Sch.
+      </button>
+
+      <button
+        class="btn btn-danger btnrows2"
+        onclick="import_delta_data()"
+        id="id-import-delta-data-button"
+        title="Cleaning and importing delta output from the optimization process. 
+        This will import the delta data and update the schedule accordingly."
+      >
+        Delta to LION
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="import_default_sch_data()"
+        style="padding: 5px 45px; width: 250px"
+      >
+        Import demo Sch.
+      </button>
+    </div>
+
+    <div class="row col-md-12">
+      <!-- <button class="btn btn-primary btnrows2" id="btn-Previous" disabled>
+          <i class="tim-icons icon-minimal-left"></i> Previous
+        </button>
+        <button class="btn btn-primary btnrows2" id="btn-Next">
+          Next
+          <i class="tim-icons icon-minimal-right"></i>
+        </button> -->
+      <button class="btn btn-success btnrows2" onclick="set_axis_ranges_in()">
+        Zoom in
+      </button>
+      <button class="btn btn-success btnrows2" onclick="set_axis_ranges_out()">
+        Zoom out
+      </button>
+      <button class="btn btn-success btnrows2" onclick="barwith_enlarge()">
+        Barwidth+
+      </button>
+
+      <button class="btn btn-success btnrows2" onclick="barwith_shrink()">
+        Barwidth-
+      </button>
+
+      <button
+        class="btn btn-danger btnrows2"
+        onclick="delete_changeovers()"
+        id="id-del-co-button"
+        title="Deletes the selected changeover. First select a c/o id from the dropdown list, load the data, then press this button. 
+        Please note that no movement or shiftID will be deleted during the process. Only connection between the movements
+        connected via the selected c/o id will be removed. If required, the changeover has to be recreated!"
+      >
+        Del selected C/O
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="add_a_vehicle()"
+        style="padding: 5px 45px; width: 250px"
+        title="Use this button to add a new vehicle to LION. First update vehicles.xlsx with a unique name and shortname, 
+          save and close it. Then press this button!"
+      >
+        Update vehicles
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="add_a_traffic_type()"
+        style="padding: 5px 45px; width: 250px"
+        title="Use this button to add a new traffic type to LION. First update traffic_types.xlsx with a unique 
+          traffic_type and favorite color (HEX format), 
+          save and close it. Then press this button!"
+      >
+        Update traffic types
+      </button>
+
+      <button
+        class="btn btn-success"
+        onclick="backup_db()"
+        style="padding: 5px 45px; width: 250px"
+      >
+        Backup
+      </button>
+    </div>
+  </div>
+
+  <!-- <div class="card">
+      <div class=" card-header" style="background-color:#0099CC;">
+        <h3 class="card-title fdxfont">Apply Weekly Changes</h3>
+      </div>
+      <div class="card-body" style="font-size: 20px;">
+        <div class="row">
+          <div class="col-md-2">
+            <div class="dropdown" vertical-align="left">
+              <select class="selectpicker" multiple data-style="btn btn-primary" data-size="7" title="Weekdays"
+                id="id-wkdays-to-apply-weekly-chg" style="color:black; font-size: 16px;">
+                <option value="Mon" selected style="font-size: 14px;">Mon</option>
+                <option value="Tue" selected style="font-size: 14px;">Tue</option>
+                <option value="Wed" selected style="font-size: 14px;">Wed</option>
+                <option value="Thu" selected style="font-size: 14px;">Thu</option>
+                <option value="Fri" selected style="font-size: 14px;">Fri</option>
+                <option value="Sun" style="font-size: 14px;">Sun</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-danger btnrows2" onclick="update_weekly_schedule()" 
+          id="id-update-weekly-schedule-button-2bremoved" style="width: 300px;">Update weekly changes</button>
+        </div>
+      </div>
+    </div> -->
+</div>
