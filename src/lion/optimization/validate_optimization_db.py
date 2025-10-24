@@ -48,13 +48,12 @@ def create_optimization_tables():
         from lion.orm.drivers_info import DriversInfo
         from lion.orm.changeover import Changeover
         from lion.orm.shift_movement_entry import ShiftMovementEntry
-        from lion.orm.scn_info import ScnInfo
         from lion.orm.shift_index import ShiftIndex
         from lion.orm.opt_movements import OptMovements
         from lion.orm.resources import Resources
 
         with LION_FLASK_APP.app_context():
-            LION_SQLALCHEMY_DB.create_all(bind_key='lion_optimization_db')
+            LION_SQLALCHEMY_DB.create_all()
         
         return True
 

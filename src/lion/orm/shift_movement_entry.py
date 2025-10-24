@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import logging
 from typing import List
-from sqlalchemy import and_
+from sqlalchemy import and_, not_
 from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
@@ -19,30 +19,26 @@ from lion.utils import dict2class
 
 class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = LION_FLASK_APP.config.get('LION_USER_SPECIFIED_BIND', 'local_schedule_db')
-    __tablename__ = 'local_movements'
+    __scope_hierarchy__ = ["scn_id"]
+    __tablename__ = 'movements'
 
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=0, primary_key=True)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
-    extended_str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=True, default='')
-    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False)
-    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
-    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
+    extended_str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='')
+    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
+    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
+    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
     is_loaded = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
 
     shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=0)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config['LION_USER_ID'])
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='')
 
     def __init__(self, **attrs):
 
-        super().__init__(**attrs)
-
         self.str_id = attrs.get('str_id', '')
         self.shift_id = attrs.get('shift_id', 0)
-
-        is_repos = self.str_id.lower().endswith(
-            '|empty') or '|empty|' in self.str_id.lower()
-
+        is_repos = self.str_id.lower().endswith('|empty') or '|empty|' in self.str_id.lower()
         self.movement_id = attrs.get('movement_id', 0)
         self.is_loaded = not is_repos
         self.loc_string = attrs.get('loc_string', '')
@@ -53,13 +49,47 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
 
     @property
     def shift_ids(cls):
-
         try:
             return list(set([shiftid for shiftid, in cls.query.with_entities(
                 cls.shift_id).filter(cls.shift_id > 0).all()]))
         except Exception as e:
             logging.error(f'shift_ids failed! {e}')
             return []
+
+    @classmethod
+    def duplicate_scn(cls, from_scn_id: int, to_scn_id: int) -> bool:
+
+        if not from_scn_id:
+            return 0
+        
+        try:
+            objs = cls.query.filter(cls.scn_id == from_scn_id).all()
+            new_records = []
+            for obj in objs:
+
+                new_records.append(ShiftMovementEntry(
+                    str_id=obj.str_id,
+                    movement_id=obj.movement_id,
+                    is_loaded=obj.is_loaded,
+                    loc_string=obj.loc_string,
+                    tu_dest=obj.tu_dest,
+                    shift_id=obj.shift_id,
+                    scn_id=to_scn_id
+                ))
+
+            LION_SQLALCHEMY_DB.session.bulk_save_objects(new_records)
+            LION_SQLALCHEMY_DB.session.commit()
+
+            return True
+        except SQLAlchemyError as e:
+            exc_logger.log_exception(popup=False, remarks=f"Failed to duplicate movements for scenario {from_scn_id}: {str(e)}")
+
+            LION_SQLALCHEMY_DB.session.rollback()
+        except Exception as e:
+            exc_logger.log_exception(popup=False, remarks=f"Failed to duplicate movements for scenario {from_scn_id}: {str(e)}")
+
+            LION_SQLALCHEMY_DB.session.rollback()
+        return False
 
     @classmethod
     def all_movement_objects(cls) -> list:
@@ -78,6 +108,19 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
             logging.error(f'all_unplanned_movement_ids failed! {e}')
             return []
 
+    @classmethod
+    def is_loaded_movement(cls, movement_id):
+
+        try:
+            obj = cls.query.filter(cls.movement_id == movement_id).first()
+            if obj:
+                return obj.is_loaded
+            
+        except Exception:
+            return False
+
+        return False        
+    
     @classmethod
     def is_changeover(cls, loc_string):
 
@@ -496,7 +539,7 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
     def create_new_digital_id(cls, locstring=''):
 
         if locstring.lower().endswith('|empty') or '|empty|' in locstring.lower():
-            return cls.create_new_repos_digital_id()
+            return cls.fetch_new_empty_movement_id()
 
         return cls.create_new_loaded_digital_id()
 
@@ -504,8 +547,8 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
     def create_new_loaded_digital_id(cls):
 
         try:
-            return max([obj.movement_id for obj in cls.query.all()
-                        if obj.movement_id < MIN_REPOS_MOVEMENT_ID]) + 1
+            return max([m for m, in cls.query.with_entities(
+                cls.movement_id).filter(cls.is_loaded)]) + 1
 
         except Exception as err:
             if 'max() iterable argument is empty' in str(err).lower():
@@ -514,31 +557,29 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
                 exc_logger.log_exception(
                     popup=False, remarks=f"Could not get a new digital id!")
 
+
         return INIT_LOADED_MOV_ID + 1
 
     @ classmethod
-    def create_new_repos_digital_id(cls):
+    def fetch_new_empty_movement_id(cls):
 
         try:
-
-            objs = cls.query.filter(
-                cls.movement_id >= MIN_REPOS_MOVEMENT_ID).all()
-
-            if objs:
-                return max(MIN_REPOS_MOVEMENT_ID,
-                           max([obj.movement_id for obj in objs])) + 1
+            return max([m for m, in cls.query.with_entities(
+                cls.movement_id).filter(cls.is_loaded == False)]) + 1
 
         except SQLAlchemyError as err:
             exc_logger.log_exception(
                 popup=False, remarks=f"SQLAlchemyError: Could not get a new repos digital id! {str(err)}")
+            
+            return 1
 
         except Exception:
             exc_logger.log_exception(
                 popup=False, remarks=f"Could not get a new repos digital id!")
 
-        return MIN_REPOS_MOVEMENT_ID + 1
+        return 1
 
-    @ classmethod
+    @classmethod
     def get_max_movement_ids(cls):
         """
         return max_loaded_id, max_repos_id
@@ -550,11 +591,10 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
         # else:
         #   return loadm, repos_m
         
-        return cls.create_new_loaded_digital_id(), cls.create_new_repos_digital_id()
-        
-        
+        return cls.create_new_loaded_digital_id(), cls.fetch_new_empty_movement_id()
 
-    @ classmethod
+
+    @classmethod
     def clear_all(cls):
 
         try:
@@ -859,8 +899,3 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
 
         return dict_movements_data
         
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()

@@ -99,6 +99,7 @@ class BuildSchedule():
         return _dct_baseline_schedule, _dct_baseline_movements
 
     def __build_baseline(self) -> tuple[dict, dict] | None:
+        
         _dct_baseline_schedule = {}
         _dct_m_shift_id = {}
         logging.info("Building baseline schedule ...")

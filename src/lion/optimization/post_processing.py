@@ -2,7 +2,6 @@ from datetime import datetime
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.opt_params import OPT_PARAMS
 from lion.orm.shift_movement_entry import ShiftMovementEntry
-from lion.orm.scn_info import ScnInfo
 from lion.movement.movements_manager import UI_MOVEMENTS
 from lion.ui.ui_params import UI_PARAMS
 from lion.shift_data.shift_data import UI_SHIFT_DATA
@@ -17,7 +16,7 @@ def post_processing():
         OPT_LOGGER.log_info(message=logFileMessage)
 
         OPT_PARAMS.EXCLUDED_LOCS = []
-        scn_name = ScnInfo.get_param(param='scn_name', if_null='')
+        scn_name = 'Optimization-scenario' # ScnInfo.get_param(param='scn_name', if_null='')
 
         if scn_name:
             scn_name = f'Optimised-{scn_name} - {datetime.now().strftime('%Y%m%d-%H%M')}'
@@ -26,8 +25,8 @@ def post_processing():
 
         OPT_PARAMS.LION_TEMP_OPTIMIZED_SCN_NAME = scn_name
 
-        ScnInfo.update(scn_name=scn_name)
-        ScnInfo.delete_param(param='scn_id')
+        # ScnInfo.update(scn_name=scn_name)
+        # ScnInfo.delete_param(param='scn_id')
 
         unplanned = [m for m, in ShiftMovementEntry.query.with_entities(
             ShiftMovementEntry.movement_id).filter(ShiftMovementEntry.shift_id == 0).all()]

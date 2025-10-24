@@ -1,14 +1,14 @@
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.read_user_movements.locstring2movs import locstring2changeover
-from lion.optimization.orm.opt_movements import OptimizationMovements
+from lion.orm.opt_movements import OptMovements
 from lion.movement.movements_manager import UI_MOVEMENTS
 
 
 def save_movements_on_opt_movements(df_movs):
     """
     Processes a DataFrame of user movements, transforms the data as needed, and saves the results to the database.
-    This function iterates over each row in the provided DataFrame (`df_movs`). For rows representing changeovers (identified by a non-empty 'tu' field and a unique 'loc_string'), it generates changeover records using the `locstring2changeover` function. For other rows, it creates `OptimizationMovements` objects. All generated records are added to the database session and committed.
+    This function iterates over each row in the provided DataFrame (`df_movs`). For rows representing changeovers (identified by a non-empty 'tu' field and a unique 'loc_string'), it generates changeover records using the `locstring2changeover` function. For other rows, it creates `OptMovements` objects. All generated records are added to the database session and committed.
     If the DataFrame is empty, or if an error occurs during processing or database operations, the function logs the exception and returns False.
     Args:
         df_movs (pandas.DataFrame): DataFrame containing movement data with required columns such as 'tu', 'loc_string', 'DepDay', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sun', 'TrafficType', and 'str_id'.
@@ -23,7 +23,7 @@ def save_movements_on_opt_movements(df_movs):
     try:
         processed_changeovers = []
         list_records = []
-        OptimizationMovements.clear_all()
+        OptMovements.clear_all()
 
         for idx, row in df_movs.iterrows():
 
@@ -49,7 +49,7 @@ def save_movements_on_opt_movements(df_movs):
 
 
             else:
-                rcrd = OptimizationMovements(
+                rcrd = OptMovements(
                                 movement_id=UI_MOVEMENTS.get_new_loaded_movement_id(),
                                 str_id=row['str_id'],
                                 loc_string=row['loc_string'],

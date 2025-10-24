@@ -3,7 +3,7 @@ from lion.runtimes.clean_up_arcgis_output import get_clean_data
 from lion.logger.exception_logger import log_exception
 from datetime import datetime
 import warnings
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 
 warnings.filterwarnings('ignore')
 

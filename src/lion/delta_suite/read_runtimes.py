@@ -2,7 +2,7 @@ from lion.orm.location_mapping import LocationMapper
 from pyodbc import connect as pyodbc_connect
 from lion.delta_suite.delta_logger import DELTA_LOGGER
 from pandas import DataFrame, concat, read_sql
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.utils.is_null import is_null
 from lion.runtimes.runtime_mileage_fetcher import UI_RUNTIMES_MILEAGES
 from lion.utils.sqldb import SQLDB

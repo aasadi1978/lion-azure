@@ -8,6 +8,8 @@ from urllib.parse import quote_plus
 from sqlalchemy.exc import SQLAlchemyError
 import msal
 import pyodbc
+import asyncio
+from sqlalchemy.ext.asyncio import create_async_engine
 
 
 TENANT_ID = getenv("AZURE_LION_APP_TENANT_ID")
@@ -25,8 +27,6 @@ AZURE_SQL_PASS = getenv("AZURE_SQL_PASS")
     ALTER ROLE db_datareader ADD MEMBER [lion-app]; // read-only access
     ALTER ROLE db_datawriter ADD MEMBER [lion-app]; // read and write access
 """
-
-
 
 def azure_sql_connection_string_uid_pwd():
     try:
@@ -51,52 +51,6 @@ def azure_ad_sql_connection_string():
 
 def build_azure_ad_engine()-> str:
 
-    # try:
-    #     app = msal.ConfidentialClientApplication(
-    #         CLIENT_ID,
-    #         authority=f"https://login.microsoftonline.com/{TENANT_ID}",
-    #         client_credential=CLIENT_SECRET,
-    #     )
-
-    #     result = app.acquire_token_for_client(scopes=["https://database.windows.net//.default"])
-    #     if "access_token" not in result:
-    #         raise Exception(f"Failed to acquire token: {result.get('error_description')}")
-
-    #     access_token = result["access_token"]
-    #     token_bytes = result["access_token"].encode("utf-16-le")
-
-    #     # claims = jwt.decode(result["access_token"], options={"verify_signature": False})
-    #     # print("Tenant ID in token:", claims.get("tid"))
-    #     # print("Audience:", claims.get("aud"))
-    #     # print("App ID:", claims.get("appid"))
-
-    #     # input("Press Enter to test ODBC connection...")
-    #     # ✅ Raw ODBC connection string — no SQLAlchemy encoding here
-    #     odbc_str = (
-    #         "Driver={ODBC Driver 18 for SQL Server};"
-    #         "Server=tcp:lion-server.database.windows.net,1433;"
-    #         "Database=lion-sql-db;"
-    #         "Encrypt=yes;"
-    #         "TrustServerCertificate=no;"
-    #         "Connection Timeout=30;"
-    #     )
-
-    #     # ✅ Pass token via attrs_before
-    #     conn = pyodbc.connect(odbc_str, attrs_before={1256: token_bytes})
-    #     input("Press Enter to execute test query...")
-    #     cursor = conn.cursor()
-    #     cursor.execute("SELECT TOP 1 name FROM sys.databases;")
-    #     print(cursor.fetchall())
-
-    # except pyodbc.Error as e:
-    #     for arg in e.args:
-    #         print("ODBC error:", arg)
-
-    # except Exception:
-    #     log_exception("build_azure_ad_engine: Failed to create Azure AD SQL engine")
-    
-    # input("Press Enter to continue...")
-    # Acquire access token
     try:
         app = msal.ConfidentialClientApplication(
             CLIENT_ID,
@@ -107,18 +61,18 @@ def build_azure_ad_engine()-> str:
         if not hasattr(pyodbc, "SQL_COPT_SS_ACCESS_TOKEN"):
             pyodbc.SQL_COPT_SS_ACCESS_TOKEN = 1256
 
-        # ✅ Scope should have one slash
+        # Scope should have one slash
         result = app.acquire_token_for_client(scopes=["https://database.windows.net/.default"])
         if "access_token" not in result:
             raise Exception(f"Failed to acquire token: {result.get('error_description')}")
 
-        # ✅ Correct encoding (UTF-8)
+        # Correct encoding (UTF-8)
         token_bytes = result["access_token"].encode("utf-8")
 
-        # ✅ Pack properly for pyodbc
+        # Pack properly for pyodbc
         token_struct = struct.pack(f"<I{len(token_bytes)}s", len(token_bytes), token_bytes)
 
-        # ✅ ODBC connection string
+        # ODBC connection string
         odbc_str = (
             f"Driver={{ODBC Driver 18 for SQL Server}};"
             f"Server={quote_plus(AZURE_SQL_SERVER)};"
@@ -129,7 +83,7 @@ def build_azure_ad_engine()-> str:
 
         conn_str = f"mssql+pyodbc:///?odbc_connect={odbc_str}"
 
-        # ✅ Correct usage for SQLAlchemy 2.x
+        # Correct usage for SQLAlchemy 2.x
         engine = create_engine(
             conn_str,
             connect_args={"attrs_before": {pyodbc.SQL_COPT_SS_ACCESS_TOKEN: token_struct}},
@@ -171,24 +125,65 @@ def test_connection_str_uid_pwd()-> str:
     
     return ""
 
-    
-def azure_connection():
+
+async def azure_connection():
     try:
         # co_str_ad = build_azure_ad_engine()   
+
         # if co_str_ad:
         #     logging.info("Using Azure AD authentication for Azure SQL DB connection.")
-        #     return co_str_ad
+        #     # Convert to async connection string
+        #     async_co_str_ad = co_str_ad.replace("mssql+pyodbc://", "mssql+aioodbc://")
+            
+        #     # Test async connection
+        #     async_engine = create_async_engine(async_co_str_ad)
+        #     async with async_engine.begin() as conn:
+        #         await conn.execute(text("SELECT 1"))
+        #         logging.info("Azure AD async connection succeeded.")
+        #     await async_engine.dispose()
+        #     return async_co_str_ad
         
         if AZURE_SQL_USER is None or AZURE_SQL_PASS is None:
             logging.error("Azure SQL credentials are not set in environment variables.")
             return ""
 
-        con_str = test_connection_str_uid_pwd()
+        con_str = azure_sql_connection_string_uid_pwd()
         if con_str:
-            logging.info("Using SQL authentication for Azure SQL DB connection.")
-            return con_str
+            # Convert to async connection string
+            async_con_str = con_str.replace("mssql+pyodbc://", "mssql+aioodbc://")
+            
+            # Test async connection
+            async_engine = create_async_engine(async_con_str)
+            async with async_engine.begin() as conn:
+                await conn.execute(text("SELECT 1"))
+                logging.info("="*20)
+                logging.info("SQL authentication through uid/pwd async connection succeeded.")
+                logging.info("="*20)
+            await async_engine.dispose()
+            return async_con_str
 
     except Exception:
-        log_exception("configure_lion_app: Failed to create Azure SQL DB connection string")
+        log_exception("azure_connection: Failed to create Azure SQL DB connection string")
     
     return ""
+
+async def azure_connection_with_retry(max_retries=5, delay=5):
+    for attempt in range(1, max_retries + 1):
+        try:
+            conn_str = await azure_connection()
+            if conn_str:
+                logging.info(f"Azure connection established on attempt {attempt}")
+                async_con_str = conn_str.replace("mssql+aioodbc://", "mssql+pyodbc://")
+                return async_con_str
+            else:
+                logging.warning(f"Attempt {attempt}: Connection not yet available.")
+        except Exception as e:
+            logging.error(f"Attempt {attempt} failed: {e}")
+
+        if attempt < max_retries:
+            logging.info(f"Retrying in {delay} seconds...")
+            await asyncio.sleep(delay)
+
+    logging.error("All retry attempts failed to connect to Azure SQL.")
+    return ""
+    

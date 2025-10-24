@@ -1,8 +1,10 @@
+from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 
 
 class Cost(LION_SQLALCHEMY_DB.Model):
-
+    
+    __scope_hierarchy__ = ["group_name"]
     __tablename__ = 'Cost'
 
     operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(200), primary_key=True)
@@ -10,6 +12,13 @@ class Cost(LION_SQLALCHEMY_DB.Model):
         LION_SQLALCHEMY_DB.String(200), primary_key=True, nullable=False)
 
     value = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Double, nullable=False, default=0)
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
+
+    def __init__(self, **attrs):
+        self.operator = attrs.get('operator', '')
+        self.cost_component = attrs.get('cost_component', '')
+        self.value = attrs.get('value', 0)
+        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
 
     @classmethod
     def to_dict(cls, operator=None):

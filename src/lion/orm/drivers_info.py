@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 import logging
 from pickle import UnpicklingError
+from time import timezone
 from typing import List
 from pandas import read_csv
 from sqlalchemy import and_, func
@@ -11,6 +12,7 @@ from lion.orm.operators import Operator
 import lion.logger.exception_logger as exc_logger
 from lion.logger.status_logger import log_message
 from sqlalchemy.exc import SQLAlchemyError
+from lion.orm.scenarios import Scenarios
 from lion.utils.popup_notifier import show_error
 from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
@@ -22,14 +24,16 @@ drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = LION_FLASK_APP.config.get('LION_USER_SPECIFIED_BIND', 'local_schedule_db')
-    __tablename__ = 'local_drivers_info'
+    __scope_hierarchy__ = ["scn_id", "group_name"] 
+    __tablename__ = 'drivers_info'
 
     """
-    This table contains detail such as start position, abse location, oeprator name etc
+    This table contains detail such as start position, absolute location, operator name etc
     per shiftname in the schedule (replaceing dct_drivers)
     """
 
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
+    shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
     shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     ctrl_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     start_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
@@ -39,8 +43,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     vehicle = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
     loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     # running_days = db.Column(db.String(25), nullable=False)
-    shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
-    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, nullable=False)
+    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, default=lambda: datetime.now(timezone.utc),)
 
     del_flag = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
 
@@ -54,7 +57,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
     data = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.LargeBinary, nullable=True, default=None)
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config['LION_USER_ID'])
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=str(LION_FLASK_APP.config['LION_USER_ID']))
 
     def __init__(self, **attrs):
 
@@ -68,13 +71,64 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
         self.loc = attrs.get('loc', False)
         self.shift_id = attrs.get('shift_id', None)
         self.del_flag = attrs.get('del_flag', False)
-        self.timestamp = attrs.get('timestamp', datetime.now())
+        self.timestamp = attrs.get('timestamp', datetime.now(timezone.utc))
         self.data = attrs.get('data', None)
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
+        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
 
         for dy in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']:
             setattr(self, dy, attrs.get(dy, False))
+
+    @classmethod
+    def duplicate_scn(cls, scn_id):
+
+        if not scn_id:
+            return 0, 'Invalid source scenario ID.'
+        
+        try:
+            selected_scn_rows = cls.query.filter(cls.scn_id==scn_id).all()
+            if not selected_scn_rows:
+                return 0, 'No rows found for the given scenario ID.'
+
+            scnname=f"COPY: {Scenarios.scn_name(scn_id)}"
+            new_scn_id = Scenarios.register_new_scenario(scn_name=scnname)
+            
+            new_rows = []
+
+            for row in selected_scn_rows:
+                new_rows.append(DriversInfo(
+                    scn_id = new_scn_id,
+                    shift_id = row.shift_id,
+                    shiftname = row.shiftname,
+                    ctrl_loc = row.ctrl_loc,
+                    start_loc = row.start_loc,
+                    operator = row.operator,
+                    home_base = row.home_base,
+                    vehicle = row.vehicle,
+                    loc = row.loc,
+                    timestamp = row.timestamp,
+                    del_flag = row.del_flag,
+                    mon = row.mon,
+                    tue = row.tue,
+                    wed = row.wed,
+                    thu = row.thu,
+                    fri = row.fri,
+                    sat = row.sat,
+                    sun = row.sun,
+                    data = row.data,
+                    group_name = row.group_name,
+                    user_id = row.user_id
+                ))
+
+            LION_SQLALCHEMY_DB.session.bulk_save_objects(new_rows)
+
+        except Exception as err:
+            exc_logger.log_exception(popup=False)
+            log_message(f'save shift data failed! {str(err)}')
+            return 0, str(err)
+
+        return new_scn_id, scnname
+
 
     @classmethod
     def clear_cache(cls):
@@ -98,6 +152,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
             logging.error('get_all_valid_records failed!')
             return []
         return scn_shift_ids_records
+    
     @classmethod
     def shiftname_taken(cls, shift):
         return cls.query.filter(cls.shiftname == shift).first() is None

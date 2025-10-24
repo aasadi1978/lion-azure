@@ -1,4 +1,4 @@
-LION_UK_APP/
+lion-azure/
 ├── dct_tour.py
 └── lion
     ├── __init__.py
@@ -6,6 +6,10 @@ LION_UK_APP/
     ├── algorithms
     │   ├── __init__.py
     │   └── depth_first_search.py
+    ├── auth
+    │   ├── __init__.py
+    │   ├── azure_auth.py
+    │   └── token.py
     ├── bootstrap
     │   ├── __init__.py
     │   ├── constants.py
@@ -27,6 +31,7 @@ LION_UK_APP/
     │   └── paths.py
     ├── create_flask_app
     │   ├── __init__.py
+    │   ├── azure_db_connection.py
     │   ├── config.py
     │   ├── create_app.py
     │   ├── create_tables.py
@@ -152,6 +157,7 @@ LION_UK_APP/
     │   ├── cost.py
     │   ├── driver_report.py
     │   ├── drivers_info.py
+    │   ├── groups.py
     │   ├── location.py
     │   ├── location_mapping.py
     │   ├── operators.py
@@ -167,6 +173,34 @@ LION_UK_APP/
     │   ├── temp_shift_movement_entry.py
     │   ├── time_stamp.py
     │   ├── traffic_type.py
+    │   ├── user.py
+    │   ├── user_params.py
+    │   └── vehicle_type.py
+    ├── orm_azure
+    │   ├── __init__.py
+    │   ├── changeover.py
+    │   ├── cost.py
+    │   ├── driver_report.py
+    │   ├── drivers_info.py
+    │   ├── groups.py
+    │   ├── local_to_azure.py
+    │   ├── location.py
+    │   ├── location_mapping.py
+    │   ├── log_entry.py
+    │   ├── operators.py
+    │   ├── opt_movements.py
+    │   ├── orm_runtimes_mileages.py
+    │   ├── pickle_dumps.py
+    │   ├── resources.py
+    │   ├── scn_info.py
+    │   ├── scoped_mixins.py
+    │   ├── scoped_query.py
+    │   ├── shift_index.py
+    │   ├── shift_movement_entry.py
+    │   ├── time_stamp.py
+    │   ├── traffic_type.py
+    │   ├── user.py
+    │   ├── user_directory.py
     │   ├── user_params.py
     │   └── vehicle_type.py
     ├── reporting
@@ -222,8 +256,7 @@ LION_UK_APP/
     │   ├── lion_master_data.db
     │   └── local_schedule.db
     ├── static
-    │   ├── assets
-    │   │   └── files
+    │   ├── api_config.json
     │   ├── css
     │   │   ├── black-dashboard.css
     │   │   ├── black-dashboard.css.map
@@ -402,20 +435,19 @@ LION_UK_APP/
     │   │   ├── vehicles.png
     │   │   └── weekly-changes-sample.png
     │   ├── js
-    │   │   ├── Highcharts-Maps-12.3.0.zip
     │   │   ├── black-dashboard.js
     │   │   ├── black-dashboard.js.map
     │   │   ├── black-dashboard.min.js
+    │   │   ├── connection-check.js
+    │   │   ├── connection-status.js
     │   │   ├── core
     │   │   │   ├── bootstrap.min.js
     │   │   │   ├── jquery.min.js
     │   │   │   └── popper.min.js
-    │   │   ├── disp_footprint_on_map.js
-    │   │   ├── disp_point_on_map.js
-    │   │   ├── disp_point_on_map_eMaps.js
     │   │   ├── disp_popup.js
     │   │   ├── dnd-scripts.js
-    │   │   ├── flow_map.js
+    │   │   ├── get-config.js
+    │   │   ├── get-options.js
     │   │   ├── highcharts-code
     │   │   │   ├── css
     │   │   │   │   ├── annotations
@@ -6609,7 +6641,6 @@ LION_UK_APP/
     │   │   │       └── sunset.src.js
     │   │   ├── load_driver_shift_chart.js
     │   │   ├── load_filtered_schedule.js
-    │   │   ├── load_map.js
     │   │   ├── plugins
     │   │   │   ├── bootstrap-datetimepicker.js
     │   │   │   ├── bootstrap-notify.js
@@ -6635,13 +6666,11 @@ LION_UK_APP/
     │   │   │   └── sweetalert2.min.js
     │   │   ├── process-user-changes.js
     │   │   ├── py2js.js
-    │   │   ├── render_error.js
     │   │   ├── render_message.js
     │   │   ├── right-click.js
     │   │   ├── run_optimization_async.js
-    │   │   ├── run_optimization_not_in_use.js
     │   │   ├── speechRecognitions.js
-    │   │   ├── test.js
+    │   │   ├── streaming.js
     │   │   └── udf-funcs.js
     │   ├── technical-docs
     │   │   ├── _images
@@ -6781,7 +6810,6 @@ LION_UK_APP/
     ├── templates
     │   ├── add_note_to_shift.html
     │   ├── base.html
-    │   ├── disp-locations.html
     │   ├── documentation.html
     │   ├── draw-shift.html
     │   ├── driver_report.html
@@ -6794,8 +6822,6 @@ LION_UK_APP/
     │   ├── ds-modify-location.html
     │   ├── ds-optimization-params.html
     │   ├── ds-search-toolbox.html
-    │   ├── eMaps.html
-    │   ├── earch.html
     │   ├── message.html
     │   ├── please_wait.html
     │   ├── popup.html
@@ -6884,6 +6910,7 @@ LION_UK_APP/
     │   ├── order_dict_by_value.py
     │   ├── popup_notifier.py
     │   ├── print2console.py
+    │   ├── process_pool_manager.py
     │   ├── python_version.py
     │   ├── reboot.py
     │   ├── remove_element.py

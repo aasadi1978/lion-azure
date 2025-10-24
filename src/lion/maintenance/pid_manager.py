@@ -2,11 +2,11 @@ import logging
 import re
 import subprocess
 from lion.create_flask_app.create_app import LION_SQLALCHEMY_DB
+from lion.logger.exception_logger import log_exception
     
 
 class PIDManager(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = 'lion_db'
     __tablename__ = 'pid_manager'
 
     pid = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True)
@@ -25,7 +25,7 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
 
         existing = cls.query.filter_by(pid=pid).first()
         if existing:
-            existing.delete()
+            LION_SQLALCHEMY_DB.session.delete(existing)
             LION_SQLALCHEMY_DB.session.commit()
 
         new_pid = cls({'pid': pid, 
@@ -87,7 +87,7 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
         
         except Exception as e:
             LION_SQLALCHEMY_DB.session.rollback()
-            logging.error(f"Error during PID cleanup: {e}")
+            log_exception("clean up PIDs failed.")
 
     @classmethod
     def kill_main_processes(cls):
@@ -106,7 +106,7 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
                     LION_SQLALCHEMY_DB.session.commit()
             except Exception as e:
                 LION_SQLALCHEMY_DB.session.rollback()
-                logging.error(f"Error killing main PID {pid}: {e}")
+                log_exception("Killing main PIDs failed.")
 
     @classmethod
     def kill_redundant_processes(cls):
@@ -125,7 +125,7 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
                     LION_SQLALCHEMY_DB.session.commit()
             except Exception as e:
                 LION_SQLALCHEMY_DB.session.rollback()
-                logging.error(f"Error killing redundant PID {pid}: {e}")
+                log_exception("Killing redundant PIDs failed.")
     
     @classmethod
     def get_running_sessions(cls):
@@ -149,7 +149,7 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
             return pids
         
         except Exception as e:
-            logging.error(f"Error retrieving python.exe PIDs: {e}")
+            log_exception("Error retrieving python.exe PIDs failed.")
             return []
     
     @classmethod
@@ -164,5 +164,5 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
             logging.info(f"Killed PID {pid} successfully.")
             return True
         except Exception as e:
-            logging.error(f"Error killing PID {pid}: {e}")
+            log_exception(f"Error killing PID {pid} failed.")
             return False

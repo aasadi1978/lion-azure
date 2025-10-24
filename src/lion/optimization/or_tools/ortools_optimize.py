@@ -192,8 +192,7 @@ class Optimize():
           
             if OPT_PARAMS.APPLY_MAX_DRIVER_CNT:
 
-                df_loc_params = SqlDb().sqlalchemy_select(
-                    tablename='loc_params', bind='lion_db')
+                df_loc_params = SqlDb().sqlalchemy_select(tablename='loc_params')
 
                 df_loc_params = df_loc_params[
                     df_loc_params.active == 1].copy()

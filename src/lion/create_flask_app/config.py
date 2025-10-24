@@ -1,13 +1,11 @@
+import asyncio
+from datetime import timedelta
 import logging
-from os import environ, getenv
+from os import getenv
 
-from flask import session
 from lion.bootstrap import LION_BOOTSTRAP_CONFIG as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
 from lion.config import paths
-from lion.bootstrap.user_region_and_language import get_lang, get_rgn
-from lion.bootstrap.constants import (LION_MASTER_DATABASE_NAME, LION_OPTIMIZATION_DATABASE_NAME, LION_SCHEDULE_DATABASE_NAME, 
-                                      LION_TEMP_SCENARIO_DATABASE_NAME, LION_USER_DATABASE_NAME)
-from lion.create_flask_app.azure_db_connection import azure_connection
+from lion.create_flask_app.azure_db_connection import azure_connection_with_retry
 
 
 def configure_lion_app() -> dict:
@@ -16,35 +14,33 @@ def configure_lion_app() -> dict:
     """
 
     try:
-        db_files = {
-            'lion_db': LION_USER_DATABASE_NAME, # For local user configuration
-            'local_schedule_db': LION_SCHEDULE_DATABASE_NAME, # For output schedule incl corresponsing movements and schedule
-            'temp_local_schedule_db': LION_TEMP_SCENARIO_DATABASE_NAME, # Temporary local schedule
-            'lion_master_data_db': LION_MASTER_DATABASE_NAME, # Master data such as runtimes, locations, etc.
-            'lion_optimization_db': LION_OPTIMIZATION_DATABASE_NAME # Optimization data
-        }
 
-        db_paths = {key: paths.LION_SQLDB_PATH / filename for key, filename in db_files.items()}
+        SQLALCHEMY_DATABASE_URI = asyncio.run(azure_connection_with_retry())
+        lion_config.setdefault('SQLALCHEMY_BINDS', {})
 
-        SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_paths.pop('lion_master_data_db')}"
+        if not SQLALCHEMY_DATABASE_URI:
+            # NOTE: Fallback to local DB if Azure connection string is not available
+            # This is mainly for development and testing purposes. when trying to upload data to Azure,
+            # we consolidate all data in the local DB called data.db first before pushing to Azure.
+            SQLALCHEMY_DATABASE_URI = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
+            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
+        else:
+            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
 
         lion_config.update({
             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,
             'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-            'LION_USER_ID': int(lion_config.get('LION_USER_ID', 0)),
-            'SQLALCHEMY_BINDS': {key: f"sqlite:///{path}" for key, path in db_paths.items()}
+            'LION_USER_ID': int(lion_config.get('LION_USER_ID', 0))
             })
 
-        azure_con_str = azure_connection()
-        if azure_con_str:
-            lion_config['SQLALCHEMY_BINDS']['azure_sql_db'] = azure_con_str
-            environ['is_azure_sql_db_connected'] = 'TRUE'
-
-        user_group = getenv('LION_USER_GROUP_NAME', "")
-        lion_config.update({'LION_OBJECT_ID': getenv('LION_OBJECT_ID', getenv('LION_USER_ID', ''))})
+        user_group = getenv('LION_USER_GROUP_NAME', "UnknownGroup")
+        lion_config.update({'LION_OBJECT_ID': getenv('LION_OBJECT_ID', getenv('LION_USER_ID', 'Guest'))})
         lion_config.update({'LION_USER_GROUP_NAME': user_group})
-        lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else get_rgn(user_group)})
-        lion_config.update({'LION_USER_LANGUAGE_NAME': lion_config.get("LION_USER_LANGUAGE_NAME", "") if len(lion_config.get("LION_USER_LANGUAGE_NAME", "")) >= 2 else get_lang(user_group)})
+        lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else "GB"})
+        lion_config.update({'LION_USER_LANGUAGE_NAME': lion_config.get("LION_USER_LANGUAGE_NAME", "") if len(lion_config.get("LION_USER_LANGUAGE_NAME", "")) >= 2 else "GB"})
+
+        lion_config["SESSION_PERMANENT"] = True
+        lion_config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=7)
 
     except Exception as e:
         logging.error(f"[FATAL] Failed to load or parse flask config: {e}")
@@ -53,55 +49,3 @@ def configure_lion_app() -> dict:
     return lion_config
 
 LION_CONFIG = configure_lion_app()
-
-# def configure_lion_app(cold_start: bool = False) -> dict:
-#     """
-#     Setup the application configuration.
-#     """
-#     lion_config: dict = {}
-
-#     if cold_start and Path('config.json').exists():
-#         lion_config = lion_config_cold_reload()
-
-#         if lion_config:
-#             return lion_config
-#         else:
-#             logging.warning("config.json is empty or not found. Reloading default configuration ...")
-    
-#     if Path('config.json').exists():
-#         with open('config.json') as config_file:
-#             lion_config = json.load(config_file)
-
-#     try:
-#         db_files = {
-#             'lion_db': LION_USER_DATABASE_NAME, # For local user configuration
-#             'local_schedule_db': LION_SCHEDULE_DATABASE_NAME, # For output schedule incl corresponsing movements and schedule
-#             'temp_local_schedule_db': LION_TEMP_SCENARIO_DATABASE_NAME, # Temporary local schedule
-#             'lion_master_data_db': LION_MASTER_DATABASE_NAME, # Master data such as runtimes, locations, etc.
-#             'lion_optimization_db': LION_OPTIMIZATION_DATABASE_NAME, # Optimization data
-#         }
-
-#         db_paths = {key: paths.LION_SQLDB_PATH / filename for key, filename in db_files.items()}
-
-#         SQLALCHEMY_DATABASE_URI = f"sqlite:///{db_paths.pop('lion_master_data_db')}"
-
-#         lion_config.update({
-#             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,
-#             'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-#             'LION_USER_ID': int(lion_config.get('LION_USER_ID', 0)),
-#             'SQLALCHEMY_BINDS': {key: f"sqlite:///{path}" for key, path in db_paths.items()}
-#             })
-
-#         user_group = getenv('LION_USER_GROUP_NAME', "")
-#         lion_config.update({'LION_USER_GROUP_NAME': user_group})
-#         lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else get_rgn(user_group)})
-#         lion_config.update({'LION_USER_LANGUAGE_NAME': lion_config.get("LION_USER_LANGUAGE_NAME", "") if len(lion_config.get("LION_USER_LANGUAGE_NAME", "")) >= 2 else get_lang(user_group)})
-
-#         with open('config.json', 'w') as config_file:
-#             json.dump(lion_config, config_file, indent=4)
-
-#     except Exception as e:
-#         logging.error(f"[FATAL] Failed to load or parse flask config: {e}")
-#         return {}
-    
-#     return lion_config

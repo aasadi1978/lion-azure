@@ -1,4 +1,4 @@
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.utils.mile2km import mile2km
 from lion.logger.exception_logger import log_exception
 from lion.utils.roundup_to_nearest_5 import roundup_to_nearest_5

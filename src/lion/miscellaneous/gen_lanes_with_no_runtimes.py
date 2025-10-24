@@ -2,7 +2,7 @@ from pandas import DataFrame
 from os import makedirs, path as os_path
 from lion.config.paths import LION_ARCGIS_PATH
 from lion.utils.dfgroupby import groupby as df_grpby
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.xl.write_excel import write_excel as xlwriter
 from lion.utils.popup_notifier import show_error
 from lion.logger.exception_logger import log_exception

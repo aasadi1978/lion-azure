@@ -112,7 +112,7 @@ class LocationFinder():
         try:
 
             df_loc_params = SqlDb().sqlalchemy_select(
-                tablename='loc_params', bind='lion_db')
+                tablename='loc_params')
 
             df_loc_params = df_loc_params[df_loc_params.active == 1].copy()
 

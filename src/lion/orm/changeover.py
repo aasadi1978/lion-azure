@@ -1,27 +1,28 @@
 import logging
 from typing import List, Set
+from cachetools import TTLCache
+from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
-from sqlalchemy.exc import SQLAlchemyError
-from cachetools import TTLCache
 from lion.orm.shift_movement_entry import ShiftMovementEntry
 
 
 class Changeover(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = LION_FLASK_APP.config.get(
-        'LION_USER_SPECIFIED_BIND', 'local_schedule_db')
-    __tablename__ = 'local_changeovers'
+    __tablename__ = 'changeovers'
+    __scope_hierarchy__ = ["scn_id"] # Specify scope hierarchy for Changeover; all changes will be scoped by scn_id only
 
     dct_co_cache = TTLCache(maxsize=100, ttl=900)
+
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
+    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), primary_key=True, nullable=False)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
-    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, primary_key=True, nullable=False)
     tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(10), nullable=True)
     leg = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True)
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config['LION_USER_ID'])
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default=LION_FLASK_APP.config['LION_USER_ID'])
 
     def __init__(self, **attrs):
 
@@ -34,6 +35,42 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
 
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
+
+    @classmethod
+    def duplicate_scn(cls, from_scn_id: int, to_scn_id: int) -> bool:
+
+        if not from_scn_id:
+            return 0
+        
+        try:
+            objs = cls.query.filter(cls.scn_id == from_scn_id).all()
+            new_records = []
+            for obj in objs:
+
+                new_records.append(Changeover(
+                    loc_string=obj.loc_string,
+                    tu_dest=obj.tu_dest,
+                    movement_id=obj.movement_id,
+                    leg=obj.leg,
+                    scn_id=to_scn_id
+                ))
+
+            LION_SQLALCHEMY_DB.session.bulk_save_objects(new_records)
+            LION_SQLALCHEMY_DB.session.commit()
+
+            return True
+
+        except SQLAlchemyError as e:
+            show_error(f"Failed to duplicate changeovers for scenario {from_scn_id}: {str(e)}")
+
+            LION_SQLALCHEMY_DB.session.rollback()
+        
+        except Exception as e:
+            show_error(f"Failed to duplicate changeovers for scenario {from_scn_id}: {str(e)}")
+
+            LION_SQLALCHEMY_DB.session.rollback()
+        
+        return False
 
     @classmethod
     def list_changeovers(cls, clear=False):

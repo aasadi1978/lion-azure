@@ -117,8 +117,7 @@ def extract_locs_data():
         _df_locs_opt['timestamp'] = datetime.now()
 
         SqlDb().to_sql(dataFrame=_df_locs_opt,
-                            destTableName='loc_params', ifExists='replace', 
-                            bind=LION_FLASK_APP.config.get('LION_OPTIMIZATION_DB_BIND', 'lion_db'))
+                            destTableName='loc_params', ifExists='replace')
 
     except Exception:
         OPT_LOGGER.log_exception(popup=True, remarks='Dumping locations failed!')

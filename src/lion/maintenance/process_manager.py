@@ -24,7 +24,8 @@ def toggle_processes(app: Flask = LION_FLASK_APP, **kwargs):
             from lion.maintenance.pid_manager import PIDManager
             proc_title = getproctitle()
             pid = os.getpid()
-            PIDManager.register_pid(pid=pid, process_name=proc_title if proc_title else f'lion-python-{pid}', is_redundant=kwargs.get('is_redundant', False))
+            PIDManager.register_pid(pid=pid, process_name=proc_title if proc_title else f'lion-python-{pid}', 
+                                    is_redundant=kwargs.get('is_redundant', False))
         
         except Exception as e:
             log_exception(popup=False, remarks=f"Error toggling process redundancy: {e}", level='error')

@@ -1058,7 +1058,7 @@ function export_local_schedule() {
   let status = py2js(
     (str_func_name = ''),
     (dct_params = {}),
-    (url = '/export-local-schedule')
+    (url = '/save-final-vsn-schedule')
   );
 
   create_popup((title = 'Exporting schedule'), (message = status.message));
@@ -1072,14 +1072,14 @@ async function import_selected_schedule() {
   let status = py2js(
     (str_func_name = ''),
     (dct_params = { scn_name: scn_name }),
-    (url = '/import-selected-schedule')
+    (url = '/load-selected-schedule')
   );
 
   if (status.code === 200) {
     let is_pwd_valid = true;
-    if (status.pwd_required) {
-      is_pwd_valid = await showSwalInput('Please Enter password');
-    }
+    // if (status.pwd_required) {
+    //   is_pwd_valid = await showSwalInput('Please Enter password');
+    // }
 
     if (is_pwd_valid) {
       window.location.href = '/';
@@ -1508,7 +1508,7 @@ function export_schedule_as(is_master_plan = false) {
       scn_note: scn_note,
       is_master_plan: is_master_plan,
     }),
-    (url = '/export-local-schedule'),
+    (url = '/save-final-vsn-schedule'),
     (async = false)
   );
 

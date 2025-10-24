@@ -4,7 +4,7 @@ from lion.utils.df2csv import export_dataframe_as_csv
 from lion.logger.exception_logger import log_exception
 from lion.orm.vehicle_type import VehicleType
 from lion.utils.roundup_to_nearest_5 import roundup_to_nearest_5
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.config.paths import LION_LOGS_PATH
 from os import path as os_path
 from lion.runtimes.get_lanes import get_lanes_data

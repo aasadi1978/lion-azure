@@ -1,5 +1,6 @@
 
-from lion.bootstrap.constants import MIN_REPOS_MOVEMENT_ID
+from lion.logger.exception_logger import log_exception
+from lion.orm.shift_movement_entry import ShiftMovementEntry
 
 
 class IsLoaded():
@@ -21,17 +22,14 @@ class IsLoaded():
 
     def is_loaded(self, m=0):
         try:
-            return m < MIN_REPOS_MOVEMENT_ID
-        except:
-            return int(m) < MIN_REPOS_MOVEMENT_ID
+            return ShiftMovementEntry.is_loaded_movement(m)
+        except Exception:
+            log_exception(f'IsLoaded.is_loaded failed for movement id {m}')
+            return False
 
     def is_repos(self, m):
         try:
-            return m >= MIN_REPOS_MOVEMENT_ID
-        except:
-            return int(m) >= MIN_REPOS_MOVEMENT_ID
-
-
-if __name__ == '__main__':
-    print(IsLoaded(1000002).loaded)
-    # print(__t.is_repos(5223233443))
+            return not ShiftMovementEntry.is_loaded_movement(m)
+        except Exception:
+            log_exception(f'IsLoaded.is_repos failed for movement id {m}')
+            return False

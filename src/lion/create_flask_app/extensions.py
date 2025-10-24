@@ -1,2 +1,4 @@
 from flask_sqlalchemy import SQLAlchemy
-LION_SQLALCHEMY_DB: SQLAlchemy = SQLAlchemy()
+
+from lion.orm.scoped_query import AutoScopedQuery
+LION_SQLALCHEMY_DB = SQLAlchemy(query_class=AutoScopedQuery)

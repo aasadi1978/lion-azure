@@ -6,7 +6,7 @@ from lion.optimization.cache_params import cache_optimization_params
 from lion.optimization import run_optimization
 from lion.optimization.load_resources_data import import_resources_to_db
 import lion.optimization.validate_optimization_db
-from lion.optimization.orm.opt_movements import OptimizationMovements
+from lion.orm.opt_movements import OptMovements
 from lion.utils.flask_request_manager import retrieve_form_data
 from lion.optimization.optimization_logger import OPT_LOGGER
 
@@ -28,7 +28,7 @@ def run_optimization_detached():
         run_id = DETACHEDRUNS.run_immediate(
             run_optimization.run,
             process_title="optimization-run",
-            bind='lion_optimization_db',
+            # bind='lion_optimization_db',
             **retrieve_form_data()
         )
 
@@ -85,7 +85,7 @@ def upload_external_file():
         if OPT_LOGGER.OPT_GLOBAL_ERROR:
             return jsonify({'code': 400, "message": OPT_LOGGER.OPT_GLOBAL_ERROR})
 
-        n_imported_movs = OptimizationMovements.query.count()
+        n_imported_movs = OptMovements.query.count()
 
         if n_imported_movs:
             return jsonify({

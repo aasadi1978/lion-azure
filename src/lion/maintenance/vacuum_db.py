@@ -1,14 +1,13 @@
 import logging
 from os.path import basename
 import sqlite3
-from lion.config.paths import LION_SQLDB_PATH, PR_LION_USER_DB_PATH, PR_LION_LOCAL_SCHEDULE_DB
+from lion.config.paths import LION_SQLDB_PATH, PR_LION_USER_DB_PATH
 from lion.logger.exception_logger import log_exception
 
 sqldb_path = LION_SQLDB_PATH
 
 dct_config = {
-    'lion_db': PR_LION_USER_DB_PATH,
-    'local_schedule_db': PR_LION_LOCAL_SCHEDULE_DB
+    'local_data_bind': PR_LION_USER_DB_PATH,
 }
 
 def compress_db_storage(db_paths=[]):

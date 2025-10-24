@@ -1,0 +1,1 @@
+# Used only to copy data into azure sql

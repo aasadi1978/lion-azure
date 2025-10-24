@@ -5,10 +5,9 @@ from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 
-
-
 class User(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = []
     __tablename__ = 'user'
 
     user_ladp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True)

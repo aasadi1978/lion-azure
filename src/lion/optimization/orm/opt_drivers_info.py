@@ -22,8 +22,7 @@ drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 class OptimizationDriversInfo(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__= 'lion_optimization_db'
-    __tablename__ = 'local_drivers_info'
+    __tablename__ = 'opt_drivers_info'
 
     """
     This table contains detail such as start position, abse location, oeprator name etc

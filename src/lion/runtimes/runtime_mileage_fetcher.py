@@ -3,7 +3,7 @@ import logging
 
 from lion.orm.location import Location
 from lion.orm.location_mapping import LocationMapper
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.logger.exception_logger import log_exception
 from lion.utils.roundup_to_nearest_5 import roundup_to_nearest_5
 

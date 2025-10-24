@@ -7,19 +7,25 @@ from cachetools import TTLCache
 
 class LocationMapper(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = ["group_name"]
     __tablename__ = 'loc_code_mapping'
+    
     loc_map_cache = TTLCache(maxsize=1000, ttl=8 * 3600)
 
     loc_code = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(20),
                          nullable=False, primary_key=True)
     mapping = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String, nullable=False)
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True)
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
     
     def __init__(self, **loc_data):
         self.loc_code = loc_data.get('loc_code', '')
         self.mapping = loc_data.get('mapping', '')
+        self.user_id = str(loc_data.get('user_id', ''))
+        self.group_name = str(loc_data.get('group_name', ''))
 
     def __repr__(self):
-        return f"<LocationMapper(loc_code='{self.loc_code}', mapping='{self.mapping}')>"
+        return f"<LocationMapper(loc_code='{self.loc_code}', mapping='{self.mapping}', user_id='{self.user_id}', group_name='{self.group_name}')>"
 
     @classmethod
     def clear_cache(cls):

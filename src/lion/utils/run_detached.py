@@ -1,6 +1,6 @@
 import logging
 from multiprocessing import Process, get_start_method, set_start_method
-from os import getpid
+from os import getenv, getpid
 from pathlib import Path
 from typing import Callable
 
@@ -23,7 +23,9 @@ class DetachedRuns:
         if self._initialized:
             return
 
-        self.log_dir = Path(log_dir if Path(log_dir).exists() else Path().resolve() / "status.log").resolve()
+        self.log_dir = Path(log_dir if Path(log_dir).exists() else Path(
+            getenv('LION_PROJECT_HOME', str(Path().resolve()))).resolve() / "status.log").resolve()
+        
         self.log_dir.mkdir(parents=True, exist_ok=True)
         self.active_processes = {}
         self.cleanup()

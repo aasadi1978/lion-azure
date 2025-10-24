@@ -2,6 +2,7 @@ import logging
 from os import getenv
 from flask import Flask
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
+from lion.logger.exception_logger import log_exception
 
 """
 In this module, we define a function to create all database tables. For those already setup, it will skip them gracefully.
@@ -11,40 +12,33 @@ missing new tables.
 def create_all(app: Flask):
     
     with app.app_context():
-        from lion.maintenance.pid_manager import PIDManager
-        from lion.logger.log_entry import LogEntry
-        from lion.orm.location_mapping import LocationMapper
-        from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
-        from lion.orm.temp_changeover import TempChangeover
-        from lion.orm.temp_drivers_info import TempDriversInfo
-        from lion.orm.temp_scn_info import TempScnInfo
-        from lion.orm.temp_shift_movement_entry import TempShiftMovementEntry
 
-        if getenv('is_azure_sql_db_connected', 'FALSE') == 'TRUE':
+        try:
+            from lion.maintenance.pid_manager import PIDManager
+            from lion.orm.operators import Operator
+            from lion.orm.vehicle_type import VehicleType
+            from lion.orm.traffic_type import TrafficType
+            from lion.orm.changeover import Changeover
+            from lion.orm.shift_movement_entry import ShiftMovementEntry
+            from lion.orm.drivers_info import DriversInfo
+            from lion.orm.cost import Cost
+            from lion.orm.orm_runtimes_mileages import RuntimesMileages
+            from lion.orm.driver_report import DriverReport
+            from lion.orm.location_mapping import LocationMapper as AzureLocationMapper
+            from lion.orm.location import Location
+            from lion.orm.opt_movements import OptMovements
+            from lion.orm.pickle_dumps import PickleDumps as AzurePickleDumps
+            from lion.orm.resources import Resources
+            from lion.orm.time_stamp import TimeStamp
+            from lion.orm.user_directory import UserDirectory
+            from lion.orm.user_params import UserParams as AzureUserParams
+            from lion.orm.user import User
+            # from lion.orm.scenarios import Scenarios
+            from lion.logger.log_entry import LogEntry
 
-            from lion.orm_azure.log_entry import LogEntry as AzureLogEntry
-            from lion.orm_azure.operators import Operator
-            from lion.orm_azure.vehicle_type import VehicleType
-            from lion.orm_azure.pickle_dumps import PickleDumps
-            from lion.orm_azure.user_params import UserParams
-            from lion.orm_azure.traffic_type import TrafficType
-            from lion.orm_azure.changeover import Changeover
-            from lion.orm_azure.shift_movement_entry import ShiftMovementEntry
-            from lion.orm_azure.drivers_info import DriversInfo
-            from lion.orm_azure.cost import Cost
-            from lion.orm_azure.orm_runtimes_mileages import RuntimesMileages
-            from lion.orm_azure.driver_report import DriverReport
-            from lion.orm_azure.location_mapping import LocationMapper as AzureLocationMapper
-            from lion.orm_azure.location import Location
-            from lion.orm_azure.opt_movements import OptMovements
-            from lion.orm_azure.pickle_dumps import PickleDumps as AzurePickleDumps
-            from lion.orm_azure.resources import Resources
-            from lion.orm_azure.time_stamp import TimeStamp
-            from lion.orm_azure.user_directory import UserDirectory
-            from lion.orm_azure.user_params import UserParams as AzureUserParams
-            from lion.orm_azure.log_entry import LogEntry as AzureLogEntry
-            from lion.orm_azure.user import User
+            LION_SQLALCHEMY_DB.create_all()
 
-        LION_SQLALCHEMY_DB.create_all()
-
-        logging.debug("All tables created successfully (if they did not already exist).")
+            logging.debug("All tables created successfully (if they did not already exist).")
+        
+        except Exception:
+            log_exception(popup=False, remarks="Error creating database tables.", level="critical")

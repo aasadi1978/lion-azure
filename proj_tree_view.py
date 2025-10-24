@@ -32,7 +32,7 @@ if __name__ == '__main__':
         print(f'Error: Directory {dir_path} does not exist.')
         exit(1)
 
-    project_name = 'LION_UK_APP'
+    project_name = 'lion-azure'
 
     tree_str = generate(dir_path=dir_path)
 

@@ -1,7 +1,7 @@
 from lion.orm.changeover import Changeover
 from lion.orm.location import Location
 from lion.orm.location_mapping import LocationMapper
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 
 def clear_all():
     """

@@ -3,7 +3,6 @@ from datetime import datetime
 import logging
 from lion.logger.exception_logger import log_exception
 from lion.shift_data.build_schedule import BuildSchedule
-from lion.orm.scn_info import ScnInfo
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 
 
@@ -25,7 +24,7 @@ def load_shift_data_if_needed() -> dict:
             logging.info("UI_SHIFT_DATA contains no schedule data. Attempting to build schedule and load baseline shift data ...")
             build_status = BuildSchedule().load_baseline_shift_data()
             if build_status:
-                scnname = ScnInfo.scn_name()
+                scnname = UI_SHIFT_DATA.scn_name
                 logging.info(f"Baseline shift data for {scnname} loaded successfully.")
                 UI_SHIFT_DATA.scn_name = scnname
             else:

@@ -8,7 +8,7 @@ from pandas import DataFrame, concat
 from lion.runtimes.runtime_mileage_fetcher import UI_RUNTIMES_MILEAGES
 from lion.utils.sqldb import SQLDB
 from lion.xl.write_excel import xlwriter
-from lion.runtimes.orm_runtimes_mileages import RuntimesMileages
+from lion.orm.orm_runtimes_mileages import RuntimesMileages
 from lion.orm.location import Location
 from lion.create_flask_app.create_app import LION_FLASK_APP
 
@@ -60,7 +60,7 @@ def copy_to_opt_movements(df_local_movements):
         - Adds a current timestamp to each row.
         - Sets weekday columns ('mon' to 'fri') to 1, 'sun' to 0.
         - Adds 'shift_id' (set to 0) and 'user' (current user or 'System').
-        - Writes the resulting DataFrame to the 'opt_movements' table in the 'lion_db' database, replacing existing data.
+        - Writes the resulting DataFrame to the 'opt_movements' table in the database, replacing existing data.
     Exception Handling:
         - Logs and updates status if any exception occurs during the process.
     Returns:
@@ -80,7 +80,7 @@ def copy_to_opt_movements(df_local_movements):
         SQLDB.to_sql(dataFrame=df_local_movements_opt[
             ['movement_id', 'str_id', 'loc_string', 'tu_dest', 'timestamp', 'mon', 'tue', 'wed', 
                 'thu', 'fri', 'sun', 'shift_id', 'user']],
-            destTableName='opt_movements', ifExists='replace', bind='lion_db')
+            destTableName='opt_movements', ifExists='replace')
         
     except Exception as e:
         DELTA_LOGGER.log_exception(f"Error copying movements: {str(e)}")

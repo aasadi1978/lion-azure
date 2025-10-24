@@ -1,9 +1,10 @@
 import logging
 import logging.handlers
-from os import getpid
+from os import getenv, getpid
 from pathlib import Path
 import sys
 from setproctitle import getproctitle
+
 
 
 def initialize_logger(
@@ -28,7 +29,7 @@ def initialize_logger(
     """
 
     if log_file_path is None or not Path(log_file_path).exists():
-        log_file_path = Path().resolve() / 'status.log'
+        log_file_path = Path(getenv('LION_PROJECT_HOME', str(Path().resolve()))) / 'status.log'
         
     # Ensure log directory exists
     log_file_path.parent.mkdir(parents=True, exist_ok=True)

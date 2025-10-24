@@ -5,6 +5,7 @@ from lion.config.paths import (LION_SHARED_ASSETS_PATH, LION_CONSOLIDATED_REPORT
                           LION_LOGS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, LION_OPTIMIZATION_PATH, 
                           LION_SHARED_SCHEDULE_PATH)
 from lion.movement.sort_list_movements import are_movements_overlapped
+from lion.orm.scenarios import Scenarios
 from lion.shift_data.get_shift_proposal import get_shift_proposals
 from lion.movement.movements_manager import UI_MOVEMENTS
 from lion.status_n_progress_bar.status_bar_manager import STATUS_CONTROLLER
@@ -1247,10 +1248,7 @@ class DriversUI():
     def load_available_scenarios(self, **dct_params):
 
         try:
-
-            lst_scnarios_db = sort_dir_tm(
-                dir=LION_SHARED_SCHEDULE_PATH, endswith='.db', return_basename=True)
-
+            lst_scnarios_db = Scenarios.get_available_scenarios()
             return {'scenarios': lst_scnarios_db}
 
         except Exception:
@@ -2579,7 +2577,7 @@ class DriversUI():
             __df_locs_opt['timestamp'] = datetime.now()
 
             self._sql_db.to_sql(dataFrame=__df_locs_opt,
-                                destTableName='loc_params', ifExists='replace', bind='lion_db')
+                                destTableName='loc_params', ifExists='replace')
 
             return __df_locs_opt
 

@@ -7,8 +7,9 @@ from lion.bootstrap.get_user_name import full_name
 from lion.logger.exception_logger import log_exception
 from lion.logger.status_logger import log_message
 
+
 # Current directory of the project decided by the user. Note that this is not necessarily where the python package sits.
-LION_PROJECT_HOME = Path().resolve()
+LION_PROJECT_HOME = Path(getenv('LION_PROJECT_HOME', str(Path().resolve()))).resolve()
 LION_ENV_FILE_PATH = LION_PROJECT_HOME / '.env'
 LION_BING_API_KEY = getenv('LION_BING_API_KEY', getenv('BING_API_KEY')) # Allows to use user's Bing API key if set on device level
 # load_dotenv override will not override this variable if set on device level instead of .env
@@ -18,18 +19,9 @@ LION_PKG_MODULES_PATH = Path(getenv('LION_PKG_MODULES_PATH', Path(__file__).reso
 LION_LOG_FILE_PATH = Path(getenv('LION_LOG_FILE_PATH', LION_PROJECT_HOME / 'status.log'))
 
 try:
-    if not (LION_ENV_FILE_PATH).exists():
-        with open(LION_ENV_FILE_PATH, 'w') as f:
-            f.write(f"LION_USER_GROUP_NAME='fedex-lion-uk-users'\n")
-            f.write(f"LION_USER_REGION_NAME='GB'\n")
-            f.write(f"LION_USER_LANGUAGE_NAME='GB'\n")
-            f.write(f"LION_ENV='local'\n") # 'local' or 'cloud'
-            f.write(f"LION_USER_ROLE='Scheduler'\n") # Developer
-            f.write(f"LION_USER_FULL_NAME='{full_name()}'\n")
-            f.write(f"LION_USER_ID='{getlogin()}'\n")
 
-
-    load_dotenv(dotenv_path=LION_ENV_FILE_PATH, override=True)
+    if LION_ENV_FILE_PATH.exists():
+        load_dotenv(dotenv_path=LION_ENV_FILE_PATH, override=True)
 
     # Read environment variables
     AZURE_SQL_SERVER = getenv("AZURE_SQL_SERVER", "azur-2285js-v10.database.windows.net")

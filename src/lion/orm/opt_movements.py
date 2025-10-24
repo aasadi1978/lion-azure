@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import timezone
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from sqlalchemy.exc import SQLAlchemyError
@@ -7,21 +8,18 @@ from lion.orm.user_params import UserParams
 from lion.logger.exception_logger import log_exception
 from lion.logger.status_logger import log_message
 
-# Base = declarative_base()
-
-
 class OptMovements(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = 'lion_db'
-    __tablename__ = 'lion_optimization_db'
+    __scope_hierarchy__ = ["group_name"]
+    __tablename__ = 'opt_movements'
 
     shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=0)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
-    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='reserved')
-    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
-    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Text, nullable=False, default='')
+    str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='reserved')
+    loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
+    tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
 
-    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, nullable=False)
+    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, default=lambda: datetime.now(timezone.utc),)
 
     mon = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
     tue = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
@@ -32,9 +30,9 @@ class OptMovements(LION_SQLALCHEMY_DB.Model):
 
     user_id = LION_SQLALCHEMY_DB.Column(
         LION_SQLALCHEMY_DB.Integer, nullable=False)
-
-    timestamp = LION_SQLALCHEMY_DB.Column(
-        LION_SQLALCHEMY_DB.DateTime, default=datetime.now())
+    
+    group_name = LION_SQLALCHEMY_DB.Column(
+        LION_SQLALCHEMY_DB.String(150), nullable=True)
 
     # Each Movement can be part of multiple Schedules
     # Note: back_populates should point to 'movement' relation ship created in Schedule class
@@ -50,9 +48,10 @@ class OptMovements(LION_SQLALCHEMY_DB.Model):
         self.tu_dest = attrs.get('tu_dest', '')
         self.shift_id = attrs.get('shift_id', 0)
 
-        self.user = LION_FLASK_APP.config['LION_USER_ID']
+        self.user_id = str(LION_FLASK_APP.config['LION_USER_ID'])
+        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
 
-        self.timestamp = attrs.get('timestamp', datetime.now())
+        self.timestamp = attrs.get('timestamp', datetime.now(timezone.utc))
 
         for dy in ['mon', 'tue', 'wed', 'thu', 'fri', 'sun']:
             setattr(self, dy, attrs.get(dy, False))
@@ -534,8 +533,3 @@ class OptMovements(LION_SQLALCHEMY_DB.Model):
             log_message(
                 f'The table {cls.__tablename__} has been successfully cleared!')
 
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()

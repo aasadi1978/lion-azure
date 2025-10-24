@@ -3,7 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.bootstrap.constants import LION_DATES, MOVEMENT_DUMP_AREA_NAME
 from lion.orm.changeover import Changeover
-from lion.optimization.orm.opt_movements import OptimizationMovements as OptMovements
+from lion.orm.opt_movements import OptMovements
 from lion.movement.movements_manager import UI_MOVEMENTS
 from lion.utils.combine_date_time import combine_date_time
 from lion.optimization.optimization_logger import OPT_LOGGER

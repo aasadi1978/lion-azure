@@ -5,7 +5,7 @@ import logging
 from lion.config.libraries import OS_PATH
 from lion.config.paths import LION_DIAGNOSTICS_PATH, LION_LOGS_PATH
 from lion.movement.movements_manager import UI_MOVEMENTS
-from lion.orm.scn_info import ScnInfo
+from lion.orm.scenarios import Scenarios
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.safe_copy import secure_copy
 from lion.utils.df2csv import export_dataframe_as_csv
@@ -53,7 +53,7 @@ class ShiftData():
             logging.info(f"Initializing global UI_SHIFT_DATA ...")
             self.clean_initialization_shift_data()
 
-            self.__scn_name = ScnInfo.scn_name()
+            self.__scn_name = Scenarios.fetch_scn_name()
             self.__n_drivers_per_page = UserParams.get_param(param='page_size')
             self.__xAxis_range_start = UserParams.get_param(
                 param='xAxis_range_start', if_null=combine_date_time(

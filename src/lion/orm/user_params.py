@@ -1,3 +1,4 @@
+from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 
@@ -5,21 +6,25 @@ from lion.logger.exception_logger  import log_exception
 class UserParams(LION_SQLALCHEMY_DB.Model):
 
     # This tells SQLAlchemy to use the lion_user_db for this model
-    __bind_key__ = 'lion_db'
+    __scope_hierarchy__ = ["user_id"]
     __tablename__ = 'user_params'
 
-    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False, primary_key=True)
-    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False)
-    html_element_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT)
+    param = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, primary_key=True)
+    val = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
+    html_element_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255))
     category = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(200), nullable=False, default='General')
-    default_value = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False, default='General')
+    default_value = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='General')
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
 
-    def __init__(self, param, val, html_element_id, category='General', default_value=''):
-        self.param = param
-        self.val = val
-        self.html_element_id = html_element_id
-        self.category = category
-        self.default_value = default_value
+    def __init__(self, **attrs):
+        self.param = attrs.get('param', '')
+        self.val = attrs.get('val', '')
+        self.html_element_id = attrs.get('html_element_id', '')
+        self.category = attrs.get('category', 'General')
+        self.default_value = attrs.get('default_value', 'General')
+        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
+        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
 
     @classmethod
     def to_elem_dict(cls):

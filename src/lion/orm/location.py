@@ -15,7 +15,9 @@ from cachetools import TTLCache
 
 class Location(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = [ "group_name"]
     __tablename__ = 'location'
+
     dct_locations_cache = TTLCache(maxsize=1000, ttl=8 * 3600)
 
     loc_code = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(20),
@@ -42,6 +44,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
     live_stand_load = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String, nullable=False)
     ctrl_depot = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String)
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String, nullable=False)
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
 
     def __init__(self, **loc_data):
         self.loc_code = loc_data.get('loc_code', '')
@@ -64,6 +67,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
         self.live_stand_load = loc_data.get('live_stand_load', 'Stand Load')
         self.ctrl_depot = loc_data.get('ctrl_depot', '')
         self.group_name = loc_data.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
+        self.user_id = str(loc_data.get('user_id', LION_FLASK_APP.config.get('LION_USER_ID', '0')))
 
     def __repr__(self):
         return f"<Location(location_name='{self.location_name}')>"

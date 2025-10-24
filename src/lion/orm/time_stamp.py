@@ -1,20 +1,25 @@
+from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 class TimeStamp(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = ["user_id"]
     __tablename__ = 'time_stamp'
-    __bind_key__ = 'lion_db'
-
+    
     setting_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(
         50), nullable=False, primary_key=True)
 
     timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
 
-    def __init__(self, setting_name, timestamp=datetime.now()):
-        self.setting_name = setting_name
-        self.timestamp = timestamp
+    def __init__(self, **attrs):
+        self.setting_name = attrs.get('setting_name', '')
+        self.timestamp = attrs.get('timestamp', datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
+        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
+        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
 
     @classmethod
     def update(cls, **settings):

@@ -1,4 +1,5 @@
 from typing import List
+from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
@@ -10,15 +11,21 @@ dct_oper_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 class Operator(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = ["group_name"]
     __tablename__ = 'operator'
 
     operator_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True,
                             nullable=False, autoincrement=True)
 
-    operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), unique=True, nullable=False)
+    operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True, 
+                                           default=LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
 
     def __init__(self, **attrs):
         self.operator = attrs.get('operator', '')
+        self.group_name = attrs.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
+        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
 
     @classmethod
     def list_operators(cls):
@@ -183,8 +190,3 @@ class Operator(LION_SQLALCHEMY_DB.Model):
         cls.to_dict_reverse(clear_cache=True)
         cls.to_dict(clear_cache=True)
 
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()

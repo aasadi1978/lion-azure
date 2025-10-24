@@ -13,22 +13,24 @@ from cachetools import TTLCache
 
 dct_cached_data = TTLCache(maxsize=100, ttl=900)
 
-
 class ShiftIndex(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__ = LION_FLASK_APP.config.get('LION_USER_SPECIFIED_BIND', 'local_schedule_db')
+    __scope_hierarchy__ = ["group_name"]
     __tablename__ = 'shift_index'
 
-    shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.TEXT, nullable=False,
+    shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False,
                           primary_key=True)
 
     ctrl_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     idx = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
+    group_name = LION_SQLALCHEMY_DB.Column(
+        LION_SQLALCHEMY_DB.String(150), nullable=True)
 
     def __init__(self, **attrs):
         self.shiftname = attrs.get('shiftname', '')
         self.ctrl_loc = attrs.get('ctrl_loc', '')
         self.idx = attrs.get('idx', 0)
+        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
 
     @classmethod
     def clear_all(cls):

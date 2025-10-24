@@ -11,8 +11,7 @@ from lion.orm.shift_movement_entry import ShiftMovementEntry
 
 class OptimizationChangeover(LION_SQLALCHEMY_DB.Model):
 
-    __bind_key__= 'lion_optimization_db'
-    __tablename__ = 'local_changeovers'
+    __tablename__ = 'opt_changeovers'
 
     dct_co_cache = TTLCache(maxsize=100, ttl=900)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)

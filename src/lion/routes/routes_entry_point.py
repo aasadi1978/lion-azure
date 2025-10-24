@@ -1,18 +1,15 @@
-from collections import defaultdict
 from datetime import datetime
 from json import loads as json_loads
-from os import getenv, makedirs, path as os_path
+from os import makedirs, path as os_path
 from lion.config.paths import LION_DRIVER_REPORT_DIST_PATH, LION_HOME_PATH, LION_LOG_FILE_PATH
-from lion.orm.scn_info import ScnInfo
+from lion.orm.scenarios import Scenarios
 from lion.reporting.consolidate_driver_reprots import generate_consolidated_driver_report
-from lion.ui.pushpins import PUSHPIN_DATA
 from lion.ui.driver_ui import DRIVERS_UI
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.kill_file import kill_file
 from lion.logger.exception_logger import log_exception
-from lion.orm.location import Location
 from lion.create_flask_app.create_app import LION_FLASK_APP
-from flask import Blueprint, g, jsonify, redirect, render_template, request, session, url_for
+from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
 
 from lion.orm.drivers_info import DriversInfo
 from lion.utils.get_week_num import get_week_num
@@ -46,7 +43,7 @@ def disp_schedule_docs():
 
     message = ''
     try:
-        message = ScnInfo.docs()
+        message = Scenarios.docs()
     except Exception:
         message = log_exception(popup=False)
 

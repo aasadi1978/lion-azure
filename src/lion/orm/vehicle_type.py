@@ -1,15 +1,25 @@
+from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 
 
 class VehicleType(LION_SQLALCHEMY_DB.Model):
 
+    __scope_hierarchy__ = ["group_name"]
     __tablename__ = 'vehicle_type'
 
     vehicle_code = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False,
                              primary_key=True, autoincrement=True)
     vehicle_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     vehicle_short_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False)
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='')
+
+    def __init__(self, **attrs):
+        self.vehicle_name = attrs.get('vehicle_name', '')
+        self.vehicle_short_name = attrs.get('vehicle_short_name', '')
+        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
+        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
 
     @classmethod
     def update(cls, **kwargs):

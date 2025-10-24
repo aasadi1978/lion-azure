@@ -7,8 +7,6 @@ from waitress import serve
 # bootstrap does not have any circular dependencies
 import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
 from lion.create_flask_app.create_tables import create_all
-from lion.migeration.upgrade_dbs import upgrade_master_data
-from lion.orm_azure.local_to_azure import copy_data_to_azure
 from lion.routes.blueprints import register_blueprints
 from lion.utils.find_available_port import get_port
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -16,12 +14,9 @@ import lion.routes.initialize_global_instances as  initialize_global_instances
 import lion.maintenance.process_manager as process_manager
 from lion.utils.whl_version import RETTRIEVELIONVERSION
 
-
 def main():
 
     validate_paths.validate_all()
-    upgrade_master_data()
-
     create_all(app=LION_FLASK_APP)
     process_manager.terminate_pids(app=LION_FLASK_APP)
     process_manager.toggle_processes(app=LION_FLASK_APP, is_redundant=False)
@@ -29,7 +24,6 @@ def main():
     register_blueprints(app=LION_FLASK_APP)
     RETTRIEVELIONVERSION.initialize()
     initial_load(app=LION_FLASK_APP)
-    copy_data_to_azure(app=LION_FLASK_APP)
     start_app(app=LION_FLASK_APP)
 
 def initial_load(app: Flask):

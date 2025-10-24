@@ -7,7 +7,11 @@ from time import sleep
 from lion.config.paths import LION_DEFAULT_SQLDB_PATH, LION_SHARED_ASSETS_PATH, LION_SHARED_SQLDB_PATH, LION_SQLDB_PATH
 from lion.bootstrap.constants import LION_MASTER_DATABASE_NAME
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
-from flask import Blueprint, abort, jsonify, render_template, request
+from flask import Blueprint, abort, jsonify, render_template, request, session, g
+from lion.orm.changeover import Changeover
+from lion.logger.log_entry import LogEntry
+from lion.orm.scenarios import Scenarios
+from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.utils.run_detached import DETACHEDRUNS
 from lion.maintenance.vacuum_db import compress_db_storage
 from lion.orm.drivers_info import DriversInfo
@@ -18,14 +22,11 @@ from lion.ui.basket.basket_shifts import get_basket_shift_ids
 from lion.ui.dump_locations_info import dump_locs_data
 from lion.ui.save_ui_params import refresh_schedule_filters
 from lion.orm.shift_index import ShiftIndex
-from lion.shift_data.export_local_schedule import export_schedule
-from lion.import_scenario.import_scenario import import_schedule
+from lion.shift_data.save_schedule import save_final_version_of_schedule
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 from lion.utils.dispose_db_engine import shutdown_db_engine
-import lion.utils.export_lion_master_data as export_lion_master_data
 from lion.utils.flask_request_manager import retrieve_form_data
 from lion.orm.location import Location
-from lion.orm.scn_info import ScnInfo
 from lion.orm.user_params import UserParams
 from lion.shift_data.refreshshift import refresh_shift
 from lion.traffic_types.traffic_type_colors import refresh_traffic_type_colors
@@ -41,6 +42,7 @@ from lion.utils.validate_uploaded_file import receive_file_upload
 from lion.utils.warnnings_off import flaskWarningsOff
 from lion.create_flask_app.create_app import FLASK_APP_INSTANCE, LION_FLASK_APP
 import lion.reporting.extract_dep_arrivals as extract_dep_arrivals
+import lion.utils.reset_global_instances as reset_globals
 
 ui_bp = Blueprint('ui', __name__)
 
@@ -290,7 +292,6 @@ def import_delta():
 
     UI_SHIFT_DATA.reset()
     ShiftIndex.clear_all()
-    ScnInfo.update(scn_name='Imported delta movements')
 
     return jsonify(dct_status)
 
@@ -303,7 +304,6 @@ def upload_accdb_delta():
 
     UI_SHIFT_DATA.reset()
     ShiftIndex.clear_all()
-    ScnInfo.update(scn_name='Imported delta movements')
 
     return jsonify({'code': 200, 'message': 'File uploaded successfully.'})
 
@@ -337,38 +337,54 @@ def get_chart():
                                message={'title': 'ERROR',
                                         'error': f'Loading schedule failed!\n{log_exception(popup=False)}'})
 
-@ui_bp.route('/import-selected-schedule', methods=['post'])
+@ui_bp.route('/load-selected-schedule', methods=['post'])
 def import_selected_schedule():
 
     UI_PARAMS.REQUEST_BLOCKER = True
 
     try:
+        dct_params = retrieve_form_data()
+        scn_id = Scenarios.get_scn_id(scn_name=dct_params.get('scn_name', ''))
 
-        shutdown_db_engine()
-        status = import_schedule(**retrieve_form_data())
+        scn_id_copy, scnname = DriversInfo.duplicate_scn(scn_id=scn_id)
+        if isinstance(scn_id_copy, int) and scn_id_copy > 0:
 
-        if status.get('code', 200) == 400:
-            raise Exception(status['error'])
-        
-        return jsonify(status)
-        
-    except Exception as e:
+            session['active_scn_id'] = scn_id_copy
+            g.scn_id = scn_id_copy
+
+            session['active_scn_name'] = scnname
+            g.scn_name = scnname
+
+            if ShiftMovementEntry.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy) and \
+               Changeover.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy):
+
+                Scenarios.duplicate_scn_settings(from_scn_id=scn_id, to_scn_id=scn_id_copy)
+
+                Changeover.clear_cache()
+                DriversInfo.clear_cache()
+                UI_PARAMS.CHANGEOVERS_VALIDATED = False
+                UI_PARAMS.DCT_CACHED_INFO = {}
+                reset_globals.reset_all()
+                LogEntry.clear_log()
+
+                return jsonify({'code': 200, 'message': 'Scenario duplicated successfully.'})
+
+        else:
+            raise ValueError(f'Duplicating scenario failed! {scn_id_copy}.')
+
+    except Exception:
         return return_exception_code(popup=False)
 
     finally:
         UI_PARAMS.REQUEST_BLOCKER = False
 
-@ui_bp.route('/export-local-schedule', methods=['post'])
+@ui_bp.route('/save-final-vsn-schedule', methods=['post'])
 def export_local_schedule_data():
     
     try:
-        status = export_schedule(**retrieve_form_data())
+        status = save_final_version_of_schedule(**retrieve_form_data())
         if status.get('code', 200) == 400:
             raise Exception(status['error'])
-
-        master_data_export_err = export_lion_master_data.export(if_updated_only=True)
-        if master_data_export_err not in ('', 'skipped'):
-            status['message'] += f'\n{master_data_export_err}!'
 
         return jsonify(status)
         
@@ -508,7 +524,7 @@ def check_scn_password():
         requested_data = json_loads(requested_data)
         pwd = requested_data['pwd']
 
-        status = ScnInfo.check_password(password=pwd)
+        status = Scenarios.check_password(password=pwd)
 
     except Exception:
         return {'code': 400, 'message': log_exception(popup=False), 'status': False}
