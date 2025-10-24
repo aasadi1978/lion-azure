@@ -1,9 +1,8 @@
 from collections import defaultdict
 import logging
 
-from lion.config.paths import (LION_SHARED_ASSETS_PATH, LION_CONSOLIDATED_REPORT_PATH, LION_DIAGNOSTICS_PATH, LION_DRIVER_REPORT_DIST_PATH, 
-                          LION_LOGS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, LION_OPTIMIZATION_PATH, 
-                          LION_SHARED_SCHEDULE_PATH)
+from lion.config.paths import (LION_CONSOLIDATED_REPORT_PATH, LION_DIAGNOSTICS_PATH, LION_DRIVER_REPORT_DIST_PATH, 
+                          LION_LOGS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, LION_OPTIMIZATION_PATH)
 from lion.movement.sort_list_movements import are_movements_overlapped
 from lion.orm.scenarios import Scenarios
 from lion.shift_data.get_shift_proposal import get_shift_proposals
@@ -23,15 +22,12 @@ from lion.utils.to_lion_datetime import to_lion_datetime
 from lion.utils.safe_copy import secure_copy
 from lion.utils.empty_dir import empty_dir
 from lion.utils.df2csv import export_dataframe_as_csv
-from lion.utils.sort_dir_tm import sort_dir_tm
 from lion.utils.combine_date_time import combine_date_time
 from lion.utils.is_file_updated import is_file_updated
 from lion.utils.split_string import split_string
 from lion.logger.exception_logger import log_exception
 from lion.ui.arrow import Arrow
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
-from lion.utils.backup_db import backup
-from lion.maintenance.clean_up_lion_directories import clean_up_folders
 from lion.orm.changeover import Changeover
 from lion.orm.drivers_info import DriversInfo
 from lion.orm.shift_movement_entry import ShiftMovementEntry
@@ -139,8 +135,7 @@ class DriversUI():
             STATUS_CONTROLLER.PROGRESS_INFO = ''
             STATUS_CONTROLLER.PROGRESS_PERCENTAGE_STR = 0
 
-            self._dct_available_scenarios = sort_dir_tm(
-                dir=LION_SHARED_SCHEDULE_PATH, endswith='.db', return_basename=True)
+            self._dct_available_scenarios = Scenarios.get_available_scenarios()
 
             self._page_size = self.get_user_param(param='page_size', if_null=15)
             
@@ -2837,31 +2832,6 @@ class DriversUI():
         except Exception:
             log_exception(False)
 
-    def clean_up_dirs(self):
-
-        tday = datetime.now()
-        clean_up = False
-
-        try:
-            with open(os_path.join(LION_SHARED_ASSETS_PATH, 'clean_up_folders.txt'), 'r') as f:
-                dt = datetime.strptime(f.readline(), '%Y-%m-%d')
-
-            if dt < tday - timedelta(days=30):
-                clean_up = True
-
-        except Exception:
-            log_exception(popup=False, remarks='clean_up_dirs failed!')
-            clean_up = False
-
-        if clean_up:
-
-            try:
-                clean_up_folders()
-
-            except Exception:
-                log_exception(
-                    popup=False, remarks='clean_up_dirs failed!')
-
     def set_right_click_id(self, **dct_params):
 
         point_id = dct_params.get('point_id', None)
@@ -2900,12 +2870,12 @@ class DriversUI():
         """
         Creates backup
         """
-        try:
-            backup()
-        except Exception:
-            log_exception(popup=False, remarks='backup databases failed!')
+        # try:
+        #     backup()
+        # except Exception:
+        #     log_exception(popup=False, remarks='backup databases failed!')
 
-            return False
+        #     return False
 
         return True
 

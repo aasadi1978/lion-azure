@@ -56,8 +56,8 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     sun = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
 
     data = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.LargeBinary, nullable=True, default=None)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=str(LION_FLASK_APP.config['LION_USER_ID']))
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
 
     def __init__(self, **attrs):
 

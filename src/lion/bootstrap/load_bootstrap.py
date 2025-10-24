@@ -17,6 +17,7 @@ LION_BING_API_KEY = getenv('LION_BING_API_KEY', getenv('BING_API_KEY')) # Allows
 # Directory where the lion package modules sit, e.g., lion\static, lion\templates, lion\sqldb etc.
 LION_PKG_MODULES_PATH = Path(getenv('LION_PKG_MODULES_PATH', Path(__file__).resolve().parent.parent))
 LION_LOG_FILE_PATH = Path(getenv('LION_LOG_FILE_PATH', LION_PROJECT_HOME / 'status.log'))
+AZURE_STORAGE_CONNECTION_STRING = getenv("AZURE_STORAGE_CONNECTION_STRING")
 
 try:
 

@@ -3,6 +3,7 @@ from pathlib import Path
 from time import sleep
 import setproctitle
 
+
 from lion.logger.logger_handler import initialize_logger
 from lion.utils.process_pool_manager import ProcessPoolManager
 setproctitle.setproctitle(f"py-lion-main:{getpid()}")

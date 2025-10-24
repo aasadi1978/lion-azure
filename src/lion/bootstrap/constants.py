@@ -201,10 +201,5 @@ RECYCLE_BIN_NAME = 'Recycle bin'
 
 LOC_STRING_SEPERATOR = '.'
 
-LION_USER_DATABASE_NAME = 'lion.db'
-LION_SCHEDULE_DATABASE_NAME = 'local_schedule.db'
-LION_TEMP_SCENARIO_DATABASE_NAME = 'temp_local_schedule.db'
-LION_MASTER_DATABASE_NAME = 'lion_master_data.db'
-LION_OPTIMIZATION_DATABASE_NAME = 'optimization.db'
-
+LION_SQLITE_LOCAL_DATABASE = 'data.db'
 TAG_NAME = f"lion-{version('lion')}"

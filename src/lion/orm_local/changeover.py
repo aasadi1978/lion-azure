@@ -21,7 +21,7 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
     loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), primary_key=True, nullable=False)
     tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(10), nullable=True)
     leg = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='TBD')
 
     def __init__(self, **attrs):
 

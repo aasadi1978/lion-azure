@@ -52,7 +52,7 @@ class OptimizationDriversInfo(LION_SQLALCHEMY_DB.Model):
     sun = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
 
     data = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.LargeBinary, nullable=True, default=None)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default='TBD')
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config['LION_USER_ID'])
 
     def __init__(self, **attrs):

@@ -1,4 +1,4 @@
-from lion.orm.opt_movements import OptMovements
+from lion.optimization.orm.opt_movements import OptMovements
 from lion.optimization import create_kpis
 from lion.optimization.driver_optimization import DRIVER_OPTIMIZATION
 from lion.optimization.extract_locations_info import extract_locs_data

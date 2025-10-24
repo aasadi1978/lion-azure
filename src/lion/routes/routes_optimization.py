@@ -6,7 +6,7 @@ from lion.optimization.cache_params import cache_optimization_params
 from lion.optimization import run_optimization
 from lion.optimization.load_resources_data import import_resources_to_db
 import lion.optimization.validate_optimization_db
-from lion.orm.opt_movements import OptMovements
+from lion.optimization.orm.opt_movements import OptMovements
 from lion.utils.flask_request_manager import retrieve_form_data
 from lion.optimization.optimization_logger import OPT_LOGGER
 
@@ -54,7 +54,7 @@ def cache_opt_params():
 
 @optim_bp.route('/fresh-start', methods=['POST'])
 def fresh_start():
-    status = lion.optimization.validate_optimization_db.fresh_start_optimization_db()
+    status = lion.optimization.validate_optimization_db.validate_optimization_database()
     return jsonify({'code': 200 if status else 400, 
                     "message": "Optimization database initialized." if status else "Failed to initialize optimization database!"})
 

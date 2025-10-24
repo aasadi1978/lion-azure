@@ -2,7 +2,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.orm.shift_movement_entry import ShiftMovementEntry
-from lion.orm.opt_movements import OptMovements as OptMovements
+from lion.optimization.orm.opt_movements import OptMovements as OptMovements
 
 
 def transfer_new_movements_to_local_database():

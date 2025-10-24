@@ -26,7 +26,7 @@ def create_all(app: Flask):
             from lion.orm.driver_report import DriverReport
             from lion.orm.location_mapping import LocationMapper as AzureLocationMapper
             from lion.orm.location import Location
-            from lion.orm.opt_movements import OptMovements
+            from lion.optimization.orm.opt_movements import OptMovements
             from lion.orm.pickle_dumps import PickleDumps as AzurePickleDumps
             from lion.orm.resources import Resources
             from lion.orm.time_stamp import TimeStamp

@@ -1,5 +1,4 @@
 from datetime import datetime
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.optimization.dump_dct_drivers_per_loc import dump_dct_drivers_per_location
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.opt_params import OPT_PARAMS

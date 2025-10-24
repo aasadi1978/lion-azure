@@ -1,11 +1,7 @@
 import logging
-from os import environ, listdir, remove
-from shutil import copyfile
+from os import environ
 from json import loads as json_loads
-from time import sleep
 
-from lion.config.paths import LION_DEFAULT_SQLDB_PATH, LION_SHARED_ASSETS_PATH, LION_SHARED_SQLDB_PATH, LION_SQLDB_PATH
-from lion.bootstrap.constants import LION_MASTER_DATABASE_NAME
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
 from flask import Blueprint, abort, jsonify, render_template, request, session, g
 from lion.orm.changeover import Changeover
@@ -425,96 +421,17 @@ def vacuum():
 
 @ui_bp.route('/export-master-data', methods=['POST'])
 def export_master_data():
-
-    err = ''
-    try:
-
-        db_to_copy = [LION_MASTER_DATABASE_NAME]
-        for db in db_to_copy:
-
-            copyfile(LION_SQLDB_PATH / db, LION_SHARED_ASSETS_PATH / 'sqldb' / db)
-            sleep(1)
-
-            if not (LION_SHARED_ASSETS_PATH / 'sqldb' / db).exists():
-                err = f'{err}Failed to copy {db} to {LION_SHARED_ASSETS_PATH / 'sqldb' / db}. '
-                continue
-        
-    except Exception as e:
-        err = f'{err}Importing databases failed! {str(e)}'
-
-    if err:
-        return {'code': 400, 'message': err}
-
-    return jsonify({'code': 200, 'message': 'Exporting master data succeeded!'})
+    return jsonify({'code': 200, 'message': 'This module is deprecated. Master data is now stored on the cloud.'})
 
 
 @ui_bp.route('/import-master-data', methods=['POST'])
 def import_master_data():
+    return jsonify({'code': 200, 'message': 'This module is deprecated. Master data is now stored on the cloud.'})  
 
-    err = ''
-    try:
-
-        UI_PARAMS.REQUEST_BLOCKER = True
-        shutdown_db_engine()
-
-        db_to_copy = [LION_MASTER_DATABASE_NAME]
-
-        for db in db_to_copy:
-
-            copyfile(LION_SHARED_SQLDB_PATH / db, LION_SQLDB_PATH / db)
-            sleep(1)
-
-            if not (LION_SQLDB_PATH / db).exists():
-                err = f'{err}Failed to copy {db} to {LION_SQLDB_PATH}. '
-                continue
-        
-    except Exception as e:
-        err = f'{err}Importing databases failed! {str(e)}'
-
-    finally:
-        UI_PARAMS.REQUEST_BLOCKER = False
-
-    if err:
-        return {'code': 400, 'message': err}
-
-    return reboot_app()
 
 @ui_bp.route('/import-default-data', methods=['POST'])
 def import_default_demo_data():
-    
-    err = ''
-    try:
-        UI_PARAMS.REQUEST_BLOCKER = True
-        shutdown_db_engine()
-
-        db_to_copy = [db for db in listdir(LION_DEFAULT_SQLDB_PATH) 
-                      if str(db).lower().endswith('.db')]
-
-        for db in db_to_copy:
-
-            if (LION_SQLDB_PATH / db).exists():
-                try:
-                    remove(LION_SQLDB_PATH / db)
-                except Exception:
-                    pass
-
-            copyfile(LION_DEFAULT_SQLDB_PATH / db, LION_SQLDB_PATH / db)
-            sleep(1)
-
-            if not (LION_SQLDB_PATH / db).exists():
-                err = f'{err}Failed to copy {db} to {LION_SQLDB_PATH}. '
-                continue
-        
-    except Exception as e:
-        err = f'{err}Importing default data failed! {str(e)}'
-
-    finally:
-        UI_PARAMS.REQUEST_BLOCKER = False
-
-    if err:
-        return {'code': 400, 'message': err}
-
-    return reboot_app()
+    return jsonify({'code': 200, 'message': 'This module is deprecated.'})  
 
 
 @ui_bp.route('/check-scn-password/', methods=['POST'])

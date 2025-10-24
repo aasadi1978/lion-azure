@@ -21,6 +21,8 @@ __pycache__/
 !.env.example
 !.debug_mode_on
 !orchestrator
+!.docker*
+!.docker*
 
 
 # Ignore specific directories

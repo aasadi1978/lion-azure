@@ -17,7 +17,7 @@ class LogEntry(LION_SQLALCHEMY_DB.Model):
     timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, nullable=True, default=lambda: datetime.now(timezone.utc), primary_key=True)
     level = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=True, default='INFO')
     message = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True)
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=LION_FLASK_APP.config.get('LION_USER_ID'))
+    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default='TBD')
 
     def __init__(self, **attrs):
         self.level = attrs.get('level', 'INFO')

@@ -1,7 +1,7 @@
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.read_user_movements.locstring2movs import locstring2changeover
-from lion.orm.opt_movements import OptMovements
+from lion.optimization.orm.opt_movements import OptMovements
 from lion.movement.movements_manager import UI_MOVEMENTS
 
 

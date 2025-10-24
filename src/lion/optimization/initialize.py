@@ -35,8 +35,6 @@ def initialize_optimization(**kwargs):
         if not kwargs:
             kwargs = retrieve_form_data()
 
-        print(kwargs)
-
         ELAPSED_TIME.reset()
         OPT_PARAMS.reset()
         OPT_LOGGER.reset()

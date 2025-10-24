@@ -30,22 +30,20 @@ class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
     break_time = LION_SQLALCHEMY_DB.Column('BreakTime', LION_SQLALCHEMY_DB.Integer)
     rest_time = LION_SQLALCHEMY_DB.Column('RestTime', LION_SQLALCHEMY_DB.Integer)
     drivers = LION_SQLALCHEMY_DB.Column('Drivers', LION_SQLALCHEMY_DB.Integer)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, default=LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True)
 
-    def __init__(self, orig, dest, vehicle, dist, driving_time,
-                 break_time, rest_time, drivers, remarks, 
-                 group_name=LION_FLASK_APP.config['LION_USER_GROUP_NAME']):
-        
-        self.orig = orig
-        self.dest = dest
-        self.vehicle = vehicle
-        self.dist = dist
-        self.driving_time = driving_time
-        self.break_time = break_time
-        self.rest_time = rest_time
-        self.drivers = drivers
-        self.remarks = remarks
-        self.group_name = group_name
+    def __init__(self, **kwargs):
+
+        self.orig = kwargs.get('orig')
+        self.dest = kwargs.get('dest')
+        self.vehicle = kwargs.get('vehicle')
+        self.dist = kwargs.get('dist')
+        self.driving_time = kwargs.get('driving_time')
+        self.break_time = kwargs.get('break_time')
+        self.rest_time = kwargs.get('rest_time')
+        self.drivers = kwargs.get('drivers')
+        self.remarks = kwargs.get('remarks')
+        self.group_name = kwargs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
 
 
     @classmethod

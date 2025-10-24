@@ -18,8 +18,7 @@ class Operator(LION_SQLALCHEMY_DB.Model):
                             nullable=False, autoincrement=True)
 
     operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True, 
-                                           default=LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
+    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True)
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
 
     def __init__(self, **attrs):
@@ -28,7 +27,7 @@ class Operator(LION_SQLALCHEMY_DB.Model):
         self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
 
     @classmethod
-    def list_operators(cls):
+    def list_operators(cls):    
         """
         Returns a dict with loc_string as keys and idx as values.
         """

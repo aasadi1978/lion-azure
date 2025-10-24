@@ -2,6 +2,7 @@ import asyncio
 from datetime import timedelta
 import logging
 from os import getenv
+import sys
 
 from lion.bootstrap import LION_BOOTSTRAP_CONFIG as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
 from lion.config import paths
@@ -16,6 +17,10 @@ def configure_lion_app() -> dict:
     try:
 
         SQLALCHEMY_DATABASE_URI = asyncio.run(azure_connection_with_retry())
+        if not SQLALCHEMY_DATABASE_URI:
+            logging.warning("Azure SQL Database connection string not found or could not be established.")
+            sys.exit(1)
+            
         lion_config.setdefault('SQLALCHEMY_BINDS', {})
 
         if not SQLALCHEMY_DATABASE_URI:
@@ -30,7 +35,7 @@ def configure_lion_app() -> dict:
         lion_config.update({
             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,
             'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-            'LION_USER_ID': int(lion_config.get('LION_USER_ID', 0))
+            'LION_USER_ID': lion_config.get('LION_USER_ID', 'Guest')
             })
 
         user_group = getenv('LION_USER_GROUP_NAME', "UnknownGroup")

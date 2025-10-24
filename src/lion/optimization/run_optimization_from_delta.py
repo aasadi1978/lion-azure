@@ -1,6 +1,6 @@
 from lion.delta_suite.delta_logger import DELTA_LOGGER
 from lion.delta_suite.import_delta_into_lion_main import read_delta_movements
-from lion.orm.opt_movements import OptMovements
+from lion.optimization.orm.opt_movements import OptMovements
 from lion.optimization.driver_optimization import DRIVER_OPTIMIZATION
 from lion.optimization.extract_locations_info import extract_locs_data
 from lion.shift_data.shift_data import UI_SHIFT_DATA
