@@ -68,8 +68,7 @@ echo ------------------------------------------------------------
 
 echo You can now push your changes using 'git push' command.
 echo The following remotes are available:
-git remote -v
-pause
+git remote -vs
 
 set /p push_confirm=Do you want to push now? (y/n):
 if /i "%push_confirm%"=="y" (
@@ -109,13 +108,13 @@ if "%tag%"=="" (
         echo Push tags to origin successful.
     )
 
-    echo Pushing tag %tag% to origin and origin_private
-    git push origin_private tag %tag%
-    if errorlevel 1 (
-        echo Push tags to origin_private failed. Please check the error messages above.
-    ) else (
-        echo Push tags to origin_private successful.
-    )
+    @REM echo Pushing tag %tag% to origin and origin_private
+    @REM git push origin_private tag %tag%
+    @REM if errorlevel 1 (
+    @REM     echo Push tags to origin_private failed. Please check the error messages above.
+    @REM ) else (
+    @REM     echo Push tags to origin_private successful.
+    @REM )
 )
 
 set /p build_pkg=Do you want to build a wheel file? (y/n):

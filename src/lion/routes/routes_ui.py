@@ -3,7 +3,7 @@ from os import environ
 from json import loads as json_loads
 
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
-from flask import Blueprint, abort, jsonify, render_template, request, session, g
+from flask import Blueprint, abort, jsonify, render_template, request, g
 from lion.orm.changeover import Changeover
 from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
@@ -32,7 +32,6 @@ from lion.ui.filter_tours import apply_filters
 from lion.ui.driver_ui import DRIVERS_UI
 from lion.ui.options import refresh_options
 from lion.logger.exception_logger import log_exception, return_exception_code
-from lion.utils.reboot import reboot_app
 from lion.utils.validate_uploaded_file import receive_file_upload
 from lion.utils.warnnings_off import flaskWarningsOff
 from lion.create_flask_app.create_app import FLASK_APP_INSTANCE, LION_FLASK_APP
@@ -397,7 +396,7 @@ def please_wait(message):
 
 @ui_bp.route('/reboot-lion', methods=['GET'])
 def rebootlion():
-    return reboot_app()
+    return {'message': 'The service is deprecated and will be removed in future versions.', 'code': 400}
 
 
 @ui_bp.route('/extract-locations', methods=['POST'])

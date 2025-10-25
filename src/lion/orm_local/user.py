@@ -1,4 +1,4 @@
-from os import getlogin
+import getpass
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import BCRYPT
@@ -108,7 +108,7 @@ class User(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_purple_id(cls):
 
-        log_id = getlogin()
+        log_id = getpass.getuser()
 
         try:
 

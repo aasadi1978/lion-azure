@@ -1,4 +1,5 @@
-from os import environ, getenv, getlogin
+import getpass
+from os import environ, getenv
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
@@ -72,7 +73,7 @@ try:
     environ['LION_USER_LANGUAGE_NAME'] = 'GB' if len(getenv('LION_USER_LANGUAGE_NAME', "").strip()) == 0 else getenv('LION_USER_LANGUAGE_NAME')
     environ['LION_USER_GROUP_NAME'] = 'fedex-lion-uk-users' if len(getenv('LION_USER_GROUP_NAME', "").strip()) == 0 else getenv('LION_USER_GROUP_NAME')
     environ['LION_USER_ROLE'] = 'Scheduler' if len(getenv('LION_USER_ROLE', "").strip()) == 0 else getenv('LION_USER_ROLE')
-    environ['LION_USER_ID'] = str(getlogin()) if len(getenv('LION_USER_ID', "").strip()) == 0 else getenv('LION_USER_ID')
+    environ['LION_USER_ID'] = str(getpass.getuser()) if len(getenv('LION_USER_ID', "").strip()) == 0 else getenv('LION_USER_ID')
     environ['LION_USER_FULL_NAME'] = full_name() if len(getenv('LION_USER_FULL_NAME', "").strip()) == 0 else getenv('LION_USER_FULL_NAME')
 
 except Exception:
