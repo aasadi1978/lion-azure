@@ -1320,13 +1320,6 @@ function reboot() {
   );
 }
 
-function import_default_sch_data() {
-  let status = sync_post('/import-default-data', {});
-  create_popup(
-    (title = 'Importing default schedule data'),
-    (message = status.message)
-  );
-}
 
 function extract_locations_info() {
   let config = window.options.api_config || loadConfig();

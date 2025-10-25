@@ -1,5 +1,5 @@
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 
 
 class Cost(LION_SQLALCHEMY_DB.Model):

@@ -3,10 +3,10 @@ from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from sqlalchemy.exc import SQLAlchemyError, ProgrammingError, OperationalError
 from lion.logger.status_logger import log_message
 from cachetools import TTLCache
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
 
 
-class LocationMapper(BASE, GroupScopedBase):
+
+class LocationMapper(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'loc_code_mapping'

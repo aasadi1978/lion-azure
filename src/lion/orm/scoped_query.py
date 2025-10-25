@@ -34,11 +34,13 @@ class AutoScopedQuery(BaseQuery):
 
         if not getattr(current_user, "is_authenticated", False):
             return self
-
+        
         entity = self._only_full_mapper_zero("apply_scope").class_
-
-        # get model-specific hierarchy or fallback to default
         hierarchy = getattr(entity, "__scope_hierarchy__", ["group_name"])
+
+        if hierarchy == []:
+            return self
+
         self._get_scn_id()
 
         filters = []
@@ -55,10 +57,10 @@ class AutoScopedQuery(BaseQuery):
             if user_value is not None:
                 filters.append(getattr(entity, scope_field) == user_value)
 
-        if self._scn_id is not None:
+        if self._scn_id is not None and "scn_id" not in hierarchy and hasattr(entity, "scn_id"):
             filters.append(getattr(entity, "scn_id") == self._scn_id)
 
-        if self._group_name is not None:
+        if self._group_name is not None and "group_name" not in hierarchy and hasattr(entity, "group_name"):
             filters.append(getattr(entity, "group_name") == self._group_name)
 
         # Apply logic based on declared hierarchy
@@ -85,7 +87,8 @@ class AutoScopedQuery(BaseQuery):
         return BaseQuery.delete(self._apply_scope(), synchronize_session=synchronize_session)
 
     def __iter__(self):
-        return super(AutoScopedQuery, self)._apply_scope().__iter__()
+        return BaseQuery.__iter__(self._apply_scope())
+        # return super(AutoScopedQuery, self)._apply_scope().__iter__()
 
     def all(self):
         # Apply scope, then call BaseQuery.all() directly (avoid recursion)

@@ -23,7 +23,7 @@ class OptimizationLogFile(metaclass=SingletonMeta):
             return
 
         logging.info(f"Initializing OPT_LOGGER ...")
-        self.TEMP_DIR = paths.LION_OPTIMIZATION_PATH / datetime.now().strftime('%Y%m%d_%H%M%S')
+        self.TEMP_DIR = paths.LION_OPTIMIZATION_PATH
         self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
         self._log_file = self.TEMP_DIR / 'optimization.log'
 

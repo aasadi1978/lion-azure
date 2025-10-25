@@ -12,7 +12,6 @@ from lion.utils.find_available_port import get_port
 from lion.create_flask_app.create_app import LION_FLASK_APP
 import lion.routes.initialize_global_instances as  initialize_global_instances
 import lion.maintenance.process_manager as process_manager
-from lion.utils.whl_version import RETTRIEVELIONVERSION
 
 def main():
 
@@ -22,7 +21,6 @@ def main():
     process_manager.toggle_processes(app=LION_FLASK_APP, is_redundant=False)
     initialize_global_instances.initialize_all(app=LION_FLASK_APP)
     register_blueprints(app=LION_FLASK_APP)
-    RETTRIEVELIONVERSION.initialize()
     initial_load(app=LION_FLASK_APP)
     start_app(app=LION_FLASK_APP)
 

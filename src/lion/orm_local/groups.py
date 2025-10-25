@@ -2,12 +2,12 @@ from sqlalchemy import and_
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
 
 
-class GroupName(BASE, GroupScopedBase):
 
-    
+class GroupName(LION_SQLALCHEMY_DB.Model):
+
+    __bind_key__ = 'local_data_bind'
     __tablename__ = 'groups'
 
     id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False,

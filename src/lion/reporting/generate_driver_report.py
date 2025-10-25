@@ -1,7 +1,9 @@
 from collections import defaultdict
 import logging
+from lion.bootstrap.constants import LION_STRG_CONTAINER_DRIVER_REPORT
 from lion.config.paths import LION_CONSOLIDATED_REPORT_PATH, LION_FONTS_PATH
 from lion.shift_data.shift_data import UI_SHIFT_DATA
+from lion.utils import utcnow
 from lion.utils.km2mile import km2mile
 from lion.utils.minutes2hhmm import minutes2hhmm
 from lion.utils.is_null import is_null
@@ -35,6 +37,7 @@ from datetime import datetime
 from lion.utils.dict2class import Dict2Class
 from lion.utils.get_week_num import get_week_num
 from lion.config.paths import LION_IMAGES_PATH
+from lion.logger.trigger_async_log_upload import trigger_async_log_upload
 
 LION_STATION_REPORT_17Inch_Spotfire = 'https://euremars-lvl1-tss.emea.fedex.com:8001/spotfire/wp/OpenAnalysis?file=ec200e26-aa13-41ce-a2f0-6c291b5fd9ce'
 
@@ -116,6 +119,23 @@ class DriverReport():
     def dump_directory(self, x):
         self.__dump_directory = x
 
+    def to_blob_storage(self, *blob_parts: str):
+        
+        try:
+
+            utctimenow = utcnow()
+            blob_parts: list[str] = list(blob_parts)
+            blob_parts.append(utctimenow)
+
+            trigger_async_log_upload(
+                src_path=LION_STRG_CONTAINER_DRIVER_REPORT,
+                container_name=LION_STRG_CONTAINER_DRIVER_REPORT,
+                *blob_parts,
+            )
+        
+        except Exception:
+            log_exception(popup=False, remarks="Failed to trigger async upload of driver report to blob storage.")
+
     def __get_stn_pdf_path(self, loc, day, driver):
         """
         There can be only one master plan to generate driver report.
@@ -148,38 +168,6 @@ class DriverReport():
 
         makedirs(__loc_report_dir, exist_ok=True)
 
-        # if publish:
-
-        #     # wknum = get_week_num()
-        #     # __loc_report_dir = os_path.join(
-        #     #     self.__dump_directory, r'Driver plan %s' % (wknum))
-
-        #     __loc_report_dir = os_path.join(
-        #         __loc_report_dir, r'%s' % (loc))
-
-        #     __loc_report_dir = os_path.join(
-        #         __loc_report_dir, r'%s' % (day))
-
-        #     makedirs(__loc_report_dir, exist_ok=True)
-
-        #     __filename = '%s.pdf' % (driver)
-
-        # else:
-        #     # __loc_report_dir = '%s' % (LION_LOCAL_DRIVER_REPORT_PATH)
-
-        #     if dump_in_day_dir:
-        #         __loc_report_dir = os_path.join(
-        #             __loc_report_dir, r'%s' % (day))
-
-        #     makedirs(__loc_report_dir, exist_ok=True)
-
-        #     __loc_report_dir = os_path.join(
-        #         __loc_report_dir, r'%s' % (loc))
-
-        #     makedirs(__loc_report_dir, exist_ok=True)
-
-        #     __filename = '%s.%s.pdf' % (driver, day)
-
         __stn_pdf_path = os_path.join(__loc_report_dir, __filename)
 
         kill_file(__stn_pdf_path)
@@ -206,33 +194,6 @@ class DriverReport():
         makedirs(__loc_report_dir, exist_ok=True)
 
         __filename = '%s.xlsx' % (driver)
-
-        # if publish:
-
-        #     __loc_report_dir = os_path.join(
-        #         __loc_report_dir, r'%s' % (loc))
-
-        #     __loc_report_dir = os_path.join(
-        #         __loc_report_dir, r'%s' % (day))
-
-        #     makedirs(__loc_report_dir, exist_ok=True)
-
-        #     __filename = '%s.xlsx' % (driver)
-
-        # else:
-
-        #     # __loc_report_dir = '%s' % (LION_LOCAL_DRIVER_REPORT_PATH)
-
-        #     # __loc_report_dir = os_path.join(
-        #     #     __loc_report_dir, r'%s' % (self.__scn_name))
-
-        #     if dump_in_day_dir:
-        #         __loc_report_dir = os_path.join(
-        #             __loc_report_dir, r'%s' % (day))
-
-        #     makedirs(__loc_report_dir, exist_ok=True)
-
-        #     __filename = '%s.%s.xlsx' % (driver, day)
 
         __stn_wb_path = os_path.join(__loc_report_dir, __filename)
 

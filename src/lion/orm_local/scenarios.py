@@ -11,7 +11,7 @@ from lion.utils.utcnow import utcnow
 
 class Scenarios(LION_SQLALCHEMY_DB.Model):
 
-    __scope_hierarchy__ = [] # No scope restriction which means that all users can access
+    __bind_key__ = 'local_data_bind'
     __tablename__ = 'scenarios'
 
     scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, autoincrement=True)

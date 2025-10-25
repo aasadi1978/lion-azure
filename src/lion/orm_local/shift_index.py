@@ -10,11 +10,11 @@ from lion.ui.ui_params import UI_PARAMS
 from lion.utils.split_list import split_list
 from lion.logger.status_logger import log_message
 from cachetools import TTLCache
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 
 dct_cached_data = TTLCache(maxsize=100, ttl=900)
 
-class ShiftIndex(BASE, GroupScopedBase):
+class ShiftIndex(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'shift_index'

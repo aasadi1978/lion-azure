@@ -6,7 +6,7 @@ from lion.logger.exception_logger  import log_exception
 
 class GroupName(LION_SQLALCHEMY_DB.Model):
 
-    B__scope_hierarchy__ = ["user_id"]
+    __scope_hierarchy__ = ["user_id"]
     __tablename__ = 'groups'
 
     id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False,

@@ -44,7 +44,6 @@ from lion.utils.popup_notifier import show_popup, show_error
 from lion.reporting.kpi_report import kpi_report
 from lion.utils.sqldb import SqlDb
 
-from lion.maintenance.vacuum_db import compress_db_storage
 from lion.xl.write_excel import write_excel as xlwriter
 from datetime import timedelta, datetime
 from lion.orm.location import Location
@@ -1716,6 +1715,7 @@ class DriversUI():
             __status_msg = '%s.\nRuntime: %s' % (__status_msg, str(
                 timedelta(seconds=int((__t1 - _t0).total_seconds()))))
 
+        DRIVER_REPORT.to_blob_storage()
         self._display_info(__status_msg)
 
     def consolidate_driver_reports(self, pr_cons_driver_rep_path=''):
@@ -2856,28 +2856,6 @@ class DriversUI():
         self._display_info(
             message='Shift indices updated successfully! Reboot LION to see the effect!')
         return {}
-
-    def vacuum(self):
-        try:
-            compress_db_storage()
-
-        except Exception:
-            log_exception(popup=False, remarks='Vaccuming failed!')
-
-        return {}
-
-    def backup_db(self):
-        """
-        Creates backup
-        """
-        # try:
-        #     backup()
-        # except Exception:
-        #     log_exception(popup=False, remarks='backup databases failed!')
-
-        #     return False
-
-        return True
 
     def get_flow_data(self, **dct_params):
 

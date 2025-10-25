@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import logging
 from typing import List
+from flask import g
 from sqlalchemy import and_, not_
 from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -22,7 +23,7 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
     __scope_hierarchy__ = ["scn_id"]
     __tablename__ = 'movements'
 
-    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=0, primary_key=True)
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=True, default=1, primary_key=True)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
     extended_str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='')
     str_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False)
@@ -46,6 +47,7 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
         self.extended_str_id = attrs.get('extended_str_id', f"{attrs.get('str_id', '')}|{self.movement_id}")
+        self.scn_id = attrs.get('scn_id', g.scn_id)
 
     @property
     def shift_ids(cls):

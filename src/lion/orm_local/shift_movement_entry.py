@@ -15,10 +15,9 @@ from lion.logger.status_logger import log_message
 from lion.runtimes.runtime_mileage_fetcher import UI_RUNTIMES_MILEAGES
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils import dict2class
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
 
 
-class ShiftMovementEntry(BASE, GroupScopedBase):
+class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'movements'

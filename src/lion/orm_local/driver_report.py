@@ -1,6 +1,6 @@
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 
 
 class DriverReport(LION_SQLALCHEMY_DB.Model):

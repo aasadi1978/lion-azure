@@ -1,6 +1,7 @@
 import logging
 from typing import List, Set
 from cachetools import TTLCache
+from flask import g
 from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
@@ -16,7 +17,7 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
 
     dct_co_cache = TTLCache(maxsize=100, ttl=900)
 
-    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True, default=1)
     loc_string = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), primary_key=True, nullable=False)
     movement_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, nullable=False)
     tu_dest = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(10), nullable=True)
@@ -35,6 +36,7 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
 
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
+        self.scn_id = attrs.get('scn_id', g.scn_id)
 
     @classmethod
     def duplicate_scn(cls, from_scn_id: int, to_scn_id: int) -> bool:

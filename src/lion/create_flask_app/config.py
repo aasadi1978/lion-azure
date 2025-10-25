@@ -30,7 +30,7 @@ def configure_lion_app() -> dict:
             SQLALCHEMY_DATABASE_URI = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
             lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
         else:
-            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
+            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind':  f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"})
 
         lion_config.update({
             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,

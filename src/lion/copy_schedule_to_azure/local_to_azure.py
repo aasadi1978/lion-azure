@@ -1,5 +1,5 @@
 import logging
-from flask import Flask
+from flask import Flask, g
 from sqlalchemy.exc import SQLAlchemyError
 from lion.create_flask_app.create_app import LION_FLASK_APP, LION_SQLALCHEMY_DB
 
@@ -19,7 +19,7 @@ from lion.orm_local.location import Location as LocalLocation
 from lion.orm_local.resources import Resources as LocalResources
 from lion.orm_local.user import User as LocalUser
 from lion.orm_local.groups import GroupName as LocalGroupName
-
+from lion.orm_local.scenarios import Scenarios as LocalScenarios
 # --- IMPORTS: AZURE ORM MODELS ---
 from lion.orm.shift_movement_entry import ShiftMovementEntry as AzureShiftMovementEntry
 from lion.orm.user_params import UserParams as AzureUserParams
@@ -34,6 +34,7 @@ from lion.orm.location import Location as AzureLocation
 from lion.orm.resources import Resources as AzureResources
 from lion.orm.user import User as AzureUser
 from lion.orm.groups import GroupName as AzureGroupName
+from lion.orm.scenarios import Scenarios as AzureScenarios
 
 def copy_drivers_info(exclude_fields=None):
 
@@ -44,7 +45,8 @@ def copy_drivers_info(exclude_fields=None):
 
         dct_data = {shftid: LocalDriversInfo.load_shift_data(shiftid=shftid) for shftid in _list_shift_ids}
 
-        updated_records_with_group_name = []
+        updated_records_with_group_name: list[AzureDriversInfo] = []
+
         for rcrd in records:
             rcrd.group_name = LION_FLASK_APP.config['LION_USER_GROUP_NAME']
             rcrd.user_id = LION_FLASK_APP.config['LION_USER_ID']
@@ -54,7 +56,7 @@ def copy_drivers_info(exclude_fields=None):
             **{attr: getattr(rcrd, attr) for attr in rcrd.__dict__ if not attr.startswith('_') and attr not in [
                 'data', 'timestamp']})
             for rcrd in updated_records_with_group_name]
-
+        
         if extend_records:
 
             extend_records_with_data = []
@@ -64,9 +66,7 @@ def copy_drivers_info(exclude_fields=None):
                 rcrd.double_man = rcrd.double_man or dct_data[rcrd.shift_id].get('double_man', False)
                 extend_records_with_data.append(rcrd)
 
-            LION_SQLALCHEMY_DB.session.query(AzureDriversInfo).delete()
-            LION_SQLALCHEMY_DB.session.commit()
-
+            AzureDriversInfo.clear_all()
             LION_SQLALCHEMY_DB.session.bulk_save_objects(extend_records_with_data)
             LION_SQLALCHEMY_DB.session.commit()
 
@@ -193,11 +193,13 @@ def copy_data(local_cls, azure_cls, exclude_fields=None):
 
 
 # --- MAIN FUNCTION TO APPLY COPY TO ALL PAIRS ---
-def copy_data_to_azure(app: Flask):
+def start_copy(app: Flask):
 
     with app.app_context():
 
+        g.scn_id = 1  # Default scenario ID for context
         logging.info("Starting data copy from local ORM to Azure ORM...")
+
         table_pairs = [
             (LocalShiftMovementEntry, AzureShiftMovementEntry),
             (LocalUserParams, AzureUserParams),
@@ -216,6 +218,7 @@ def copy_data_to_azure(app: Flask):
             (LocalResources, AzureResources),
             # (LocalTimeStamp, AzureTimeStamp),
             (LocalGroupName, AzureGroupName),
+            (LocalScenarios, AzureScenarios),
             # (LocalUser, AzureUser),  # Handled separately due to exclude fields
             # (LocalDriversInfo, AzureDriversInfo), # Handled separately due to data fields (pickle dumps)
         ]

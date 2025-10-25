@@ -5,10 +5,10 @@ from lion.logger.exception_logger  import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from lion.logger.exception_logger import log_exception
 from lion.ui.ui_params import UI_PARAMS
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
 
 
-class Resources(BASE, GroupScopedBase):
+
+class Resources(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'resources'
@@ -20,8 +20,6 @@ class Resources(BASE, GroupScopedBase):
     subco = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
     total = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
     region = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False)
-    user_id = LION_SQLALCHEMY_DB.Column(
-        LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
     group_name = LION_SQLALCHEMY_DB.Column(
         LION_SQLALCHEMY_DB.String(150), nullable=True)
 
@@ -30,7 +28,6 @@ class Resources(BASE, GroupScopedBase):
         self.employed = attrs.get('employed', 0)
         self.subco = attrs.get('subco', 0)
         self.total = attrs.get('total', 0)
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
         self.region = attrs.get('region', UI_PARAMS.LION_REGION)
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
 

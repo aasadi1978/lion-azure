@@ -9,7 +9,6 @@ from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
 from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.utils.run_detached import DETACHEDRUNS
-from lion.maintenance.vacuum_db import compress_db_storage
 from lion.orm.drivers_info import DriversInfo
 from lion.reporting.publish_driver_plan import gen_driver_report
 from lion.ui import changeover_chart
@@ -345,10 +344,7 @@ def import_selected_schedule():
         scn_id_copy, scnname = DriversInfo.duplicate_scn(scn_id=scn_id)
         if isinstance(scn_id_copy, int) and scn_id_copy > 0:
 
-            session['active_scn_id'] = scn_id_copy
             g.scn_id = scn_id_copy
-
-            session['active_scn_name'] = scnname
             g.scn_name = scnname
 
             if ShiftMovementEntry.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy) and \
@@ -411,28 +407,6 @@ def extract_locations():
     except Exception:
         return jsonify({'code': 400, 
                 'message': f'Extracting locations failed! {log_exception(popup=False)}'})
-
-@ui_bp.route('/vacuum', methods=['POST'])
-def vacuum():
-    try:
-        return jsonify(compress_db_storage())
-    except Exception:
-        return jsonify({'code': 400, 'message': 'Vacuuming failed! %s' % log_exception(popup=False)})
-
-@ui_bp.route('/export-master-data', methods=['POST'])
-def export_master_data():
-    return jsonify({'code': 200, 'message': 'This module is deprecated. Master data is now stored on the cloud.'})
-
-
-@ui_bp.route('/import-master-data', methods=['POST'])
-def import_master_data():
-    return jsonify({'code': 200, 'message': 'This module is deprecated. Master data is now stored on the cloud.'})  
-
-
-@ui_bp.route('/import-default-data', methods=['POST'])
-def import_default_demo_data():
-    return jsonify({'code': 200, 'message': 'This module is deprecated.'})  
-
 
 @ui_bp.route('/check-scn-password/', methods=['POST'])
 def check_scn_password():

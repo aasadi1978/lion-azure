@@ -16,12 +16,12 @@ from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
 from lion.config.paths import LION_HOME_PATH
 from lion.ui.ui_params import UI_PARAMS
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 
 drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 
-class DriversInfo(BASE, GroupScopedBase):
+class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'drivers_info'

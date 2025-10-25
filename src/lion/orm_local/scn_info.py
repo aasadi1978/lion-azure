@@ -3,11 +3,11 @@ from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from pickle import dumps as pickle_dumps
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 from lion.logger.exception_logger import log_exception
 
 
-class ScnInfo(BASE, GroupScopedBase):
+class ScnInfo(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'scn_info'

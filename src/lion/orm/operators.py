@@ -16,15 +16,12 @@ class Operator(LION_SQLALCHEMY_DB.Model):
 
     operator_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True,
                             nullable=False, autoincrement=True)
-
     operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True)
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=False, default='')
 
     def __init__(self, **attrs):
         self.operator = attrs.get('operator', '')
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
 
     @classmethod
     def list_operators(cls):    

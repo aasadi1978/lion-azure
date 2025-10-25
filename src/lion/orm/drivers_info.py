@@ -4,6 +4,7 @@ import logging
 from pickle import UnpicklingError
 from time import timezone
 from typing import List
+from flask import g
 from pandas import read_csv
 from sqlalchemy import and_, func
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -18,13 +19,14 @@ from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
 from lion.config.paths import LION_HOME_PATH
 from lion.ui.ui_params import UI_PARAMS
+from lion.utils.utcnow import utcnow
 
 drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 
 class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
-    __scope_hierarchy__ = ["scn_id", "group_name"] 
+    __scope_hierarchy__ = ["scn_id", "group_name"]
     __tablename__ = 'drivers_info'
 
     """
@@ -32,7 +34,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     per shiftname in the schedule (replaceing dct_drivers)
     """
 
-    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
+    scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True, default=1)
     shift_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, primary_key=True)
     shiftname = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     ctrl_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
@@ -43,7 +45,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     vehicle = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
     loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     # running_days = db.Column(db.String(25), nullable=False)
-    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, default=lambda: datetime.now(timezone.utc),)
+    timestamp = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.DateTime, default=lambda: utcnow(), nullable=False)
 
     del_flag = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Boolean, nullable=False, default=False)
 
@@ -61,6 +63,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
 
+        self.scn_id = attrs.get('scn_id', g.scn_id)
         self.shiftname = attrs.get('shiftname', '')
         self.ctrl_loc = attrs.get('ctrl_loc', attrs.get('start_loc', ''))
         self.start_loc = attrs.get('start_loc', attrs.get('ctrl_loc', ''))
@@ -71,7 +74,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
         self.loc = attrs.get('loc', False)
         self.shift_id = attrs.get('shift_id', None)
         self.del_flag = attrs.get('del_flag', False)
-        self.timestamp = attrs.get('timestamp', datetime.now(timezone.utc))
+        self.timestamp = attrs.get('timestamp', utcnow())
         self.data = attrs.get('data', None)
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))

@@ -1,12 +1,10 @@
 from os import getlogin
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
-from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
+from lion.create_flask_app.create_app import BCRYPT
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
-from lion.orm.scoped_mixins import BASE
-
-class User(BASE):
+class User(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'user'

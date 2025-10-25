@@ -3,7 +3,7 @@
 import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
 from lion.create_flask_app.create_tables import create_all
 from lion.create_flask_app.create_app import LION_FLASK_APP
-from lion.copy_to_azure.local_to_azure import start_copy
+from lion.copy_schedule_to_azure.local_to_azure import start_copy
 
 def run_copy():
 

@@ -74,13 +74,16 @@ def write_excel(df,
                 keep=False,
                 header=True,
                 echo=True,
-                storage: Optional[LionStorageManager] = None):
+                storage: LionStorageManager | None = None):
     """
     Writes a dataframe to an Excel file locally or uploads to Azure Blob via LionStorageManager.
+    
     """
 
     try:
-        # prepare target path
+
+        storage = storage or LionStorageManager(container_name='logs')
+
         is_blob_target = storage is not None and storage.in_azure
         local_tmp_path = None
 

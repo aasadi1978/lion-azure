@@ -1,30 +1,39 @@
-from os import listdir
-from flask import jsonify
-from lion.config.paths import LION_LOGS_PATH, LION_LOG_FILE_PATH
-from lion.create_flask_app.create_app import LION_FLASK_APP
+from flask import Blueprint, jsonify
+from lion.bootstrap.constants import LION_STRG_CONTAINER_DRIVER_REPORT, LION_STRG_CONTAINER_LOGS, LION_STRG_CONTAINER_OPTIMIZATION
+from lion.config.paths import LION_LOCAL_DRIVER_REPORT_PATH, LION_LOGS_PATH, LION_OPTIMIZATION_PATH
 from lion.logger.exception_logger import log_exception
-from lion.utils.storage_manager import LionStorageManager
+from lion.logger.trigger_async_log_upload import trigger_async_log_upload
+from lion.utils.flask_request_manager import retrieve_form_data
 
+bp_copy_logs = Blueprint('logger_upload_logs', __name__)
 
-@LION_FLASK_APP.route("/push-logs", methods=["POST", "GET"])
+@bp_copy_logs.route("/push-logs", methods=["POST", "GET"])
 def push_logs():
+    trigger_async_log_upload(src_path=LION_LOGS_PATH, container_name=LION_STRG_CONTAINER_LOGS)
+    return jsonify({"status": "started", "message": "Uploading logs in background"})
+
+
+@bp_copy_logs.route("/push-optimization-logs", methods=["POST", "GET"])
+def push_optimization_logs():
+    trigger_async_log_upload(src_path=LION_OPTIMIZATION_PATH, container_name=LION_STRG_CONTAINER_OPTIMIZATION)
+    return jsonify({"status": "started", "message": "Uploading logs in background"})
+
+@bp_copy_logs.route("/push-driver-reports", methods=["POST", "GET"])
+def push_driver_reports():
+
     try:
-        storage = LionStorageManager(container_name="logs")
-        errmsg = ''
+        dct_params = retrieve_form_data()
 
-        list_logs = listdir(LION_LOGS_PATH)
-        for log_file in list_logs:
-            try:
-                storage.upload_file(local_path=LION_LOGS_PATH / log_file, blob_name=log_file)
-            except Exception as e:
-                errmsg = f"{errmsg}{log_exception(remarks=f"Failed to upload log file {log_file} to Blob Storage: {str(e)}")}. "
-        
-        storage.upload_file(local_path=LION_LOG_FILE_PATH, blob_name=LION_LOG_FILE_PATH.name)
+        if loc_code := dct_params.get('loc_code', ''):
+            src_path = LION_LOCAL_DRIVER_REPORT_PATH / loc_code
+            args = [f"{loc_code}/"]
+        else:
+            src_path = LION_LOCAL_DRIVER_REPORT_PATH
+            args = []
 
-        if errmsg:
-            raise Exception(errmsg)
+        trigger_async_log_upload(src_path=src_path, container_name=LION_STRG_CONTAINER_DRIVER_REPORT, *args)
 
     except Exception:
-        return jsonify({"message": log_exception(), 'code': 400})
-    
-    return jsonify({"status": "success", "message": "Logs uploaded to Blob Storage", 'code': 200})
+        return jsonify({"status": "error", "message": log_exception()})
+
+    return jsonify({"status": "started", "message": "Uploading logs in background"})

@@ -3,6 +3,10 @@ import logging
 from flask.json import loads
 import lion.logger.exception_logger as EXCP_LOGGER
 
+def load_form_params(logger=EXCP_LOGGER) -> dict:
+    return retrieve_form_data(logger=logger)
+    
+
 def retrieve_form_data(logger=EXCP_LOGGER) -> dict:
 
     try:

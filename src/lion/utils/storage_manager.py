@@ -5,22 +5,23 @@ from pathlib import Path
 from typing import Optional
 from azure.storage.blob import BlobServiceClient
 
+from lion.config.paths import LION_PROJECT_HOME
+
 class LionStorageManager:
 
     def __init__(
         self,
         local_root: Optional[Path] = None,
-        container_name: Optional[str] = None
+        container_name: str  = 'logs'
     ):
-        self.local_root = local_root or Path(getenv("LION_HOME_PATH", ".")).resolve()
-        self.container_name = container_name or getenv("AZURE_CONTAINER_NAME", "lion-data")
+        self.local_root = local_root or LION_PROJECT_HOME
 
         conn_str = getenv("AZURE_STORAGE_CONNECTION_STRING")
         self.in_azure = conn_str is not None
 
         if self.in_azure:
             self.blob_service = BlobServiceClient.from_connection_string(conn_str)
-            self.container_client = self.blob_service.get_container_client(self.container_name)
+            self.container_client = self.blob_service.get_container_client(container_name)
             try:
                 self.container_client.create_container()
             except Exception:

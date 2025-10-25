@@ -1,16 +1,15 @@
 from typing import List
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
 from lion.utils.print2console import display_in_console
 from cachetools import TTLCache
-from lion.orm.scoped_mixins import BASE, GroupScopedBase
+
 
 dct_oper_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 
-class Operator(BASE, GroupScopedBase):
+class Operator(LION_SQLALCHEMY_DB.Model):
 
     __bind_key__ = 'local_data_bind'
     __tablename__ = 'operator'
@@ -19,13 +18,9 @@ class Operator(BASE, GroupScopedBase):
                             nullable=False, autoincrement=True)
 
     operator = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
-    group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True, 
-                                           default=LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
 
     def __init__(self, **attrs):
         self.operator = attrs.get('operator', '')
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
-        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
 
     @classmethod
     def list_operators(cls):

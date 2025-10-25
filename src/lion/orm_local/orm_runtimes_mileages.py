@@ -33,7 +33,6 @@ class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=True, 
                            default='')
     
-    user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
 
     def __init__(self, orig, dest, vehicle, dist, driving_time,
                  break_time, rest_time, drivers, remarks, 
@@ -48,7 +47,6 @@ class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
         self.drivers = drivers
         self.remarks = remarks
         self.group_name = group_name
-        self.user_id = str(LION_FLASK_APP.config['LION_USER_ID'])
         
 
     @classmethod
