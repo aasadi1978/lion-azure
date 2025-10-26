@@ -1,7 +1,6 @@
 import logging
 
 from setproctitle import getproctitle
-from lion.auth.set_session_context import set_session_context
 from lion.config import paths
 from flask_bootstrap import Bootstrap
 from flask import Flask
@@ -9,7 +8,6 @@ from flask_bcrypt import Bcrypt
 import warnings
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.create_flask_app.config import LION_CONFIG
-from lion.auth.azure_auth import init_azure_auth
 
 warnings.filterwarnings("ignore")
 
@@ -100,8 +98,8 @@ class CreateAPP:
             bcrypt = Bcrypt(lion_app)
 
             self._initialized = True
-            init_azure_auth(lion_app)
-            set_session_context(lion_app)
+            # init_azure_auth(lion_app)
+            # set_session_context(lion_app)
 
             self._app = lion_app
             self._bcrypt = bcrypt

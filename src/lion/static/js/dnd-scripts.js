@@ -5,8 +5,6 @@ function load_chart_on_full_page_load(chart_data) {
 
   window.location.href = '/';
 
-  // document.getElementById("chart-assign-drivers").style.display = 'none'
-  // document.location.reload();
 }
 
 function update_page_num(pagenum) {
@@ -1337,24 +1335,6 @@ function extract_locations_info() {
   set_default_title();
 }
 
-function refresh_all() {
-  set_title('Refreshing schedule ...');
-
-  let __dct_refresh_all = py2js(
-    (str_func_name = 'refresh_all'),
-    (dct_params = {}),
-    (url = '/drivers')
-  );
-
-  if (!$.isEmptyObject(__dct_refresh_all)) {
-    insert_disp_drag_full();
-    load_driver_shift_chart((dct_chart_data = __dct_refresh_all));
-    load_chart_on_full_page_load();
-    set_default_title();
-  }
-  set_default_title();
-}
-
 function cache_optimization_params() {
   let drivingtimeb4break = $('#id-drivingtimeb4break').val();
   let minbreaktimeworking = $('#id-minbreaktimeworking').val();
@@ -1546,9 +1526,6 @@ function sort_by_tourLocString() {
 
   window.location.href = '/loading_schedule/';
 
-  // build_tours_map_div((page_size = page_size))
-  // load_driver_shift_chart((dct_chart_data = chart_data1))
-  // load_chart_on_full_page_load()
 }
 
 function is_basket_empty() {

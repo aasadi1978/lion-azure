@@ -2258,21 +2258,6 @@ class DriversUI():
 
         return get_chart_data(**dct_params)
 
-    # def make_m_not_draggable(self, **dct_params):
-
-    #     if self._movement_made_draggable:
-
-    #         __dct_m = UI_SHIFT_DATA.dict_all_movements.get(
-    #             self._movement_made_draggable, {})
-    #         __dct_m.update({'draggableX': False})
-
-    #         UI_SHIFT_DATA.update(
-    #             dict_movements={self._movement_made_draggable: __dct_m},
-    #             refresh_all=False)
-
-    #         self._movement_made_draggable = 0
-    #         return get_chart_data(**dct_params)
-
     def add_movement_to_dump_area(self, list_m=[]):
 
         # self._dct_dump_area = {

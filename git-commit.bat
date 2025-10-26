@@ -68,22 +68,13 @@ echo ------------------------------------------------------------
 
 echo You can now push your changes using 'git push' command.
 echo The following remotes are available:
-git remote -vs
+git remote -v
 
 set /p push_confirm=Do you want to push now? (y/n):
 if /i "%push_confirm%"=="y" (
     
     echo Pushing to remote repository origin
     git push origin master
-    if errorlevel 1 (
-        echo Push failed. Please check the error messages above.
-        exit /b 1
-    ) else (
-        echo Push successful.
-    )
-
-    echo Pushing to remote repository - origin_private
-    git push origin_private master
     if errorlevel 1 (
         echo Push failed. Please check the error messages above.
         exit /b 1
@@ -107,29 +98,21 @@ if "%tag%"=="" (
     ) else (
         echo Push tags to origin successful.
     )
-
-    @REM echo Pushing tag %tag% to origin and origin_private
-    @REM git push origin_private tag %tag%
-    @REM if errorlevel 1 (
-    @REM     echo Push tags to origin_private failed. Please check the error messages above.
-    @REM ) else (
-    @REM     echo Push tags to origin_private successful.
-    @REM )
 )
 
-set /p build_pkg=Do you want to build a wheel file? (y/n):
+@REM set /p build_pkg=Do you want to build a wheel file? (y/n):
 
-if /i "%build_pkg%"=="y" (
-    echo Building the package...
-    call build-distributable-package.bat
-    if errorlevel 1 (
-        echo Build and push process failed. Please check the error messages above.
-        exit /b 1
-    ) else (
-        echo Build and push process completed successfully.
-    )
-) else (
-    echo Skipping package build and push.
-)
+@REM if /i "%build_pkg%"=="y" (
+@REM     echo Building the package...
+@REM     call build-distributable-package.bat
+@REM     if errorlevel 1 (
+@REM         echo Build and push process failed. Please check the error messages above.
+@REM         exit /b 1
+@REM     ) else (
+@REM         echo Build and push process completed successfully.
+@REM     )
+@REM ) else (
+@REM     echo Skipping package build and push.
+@REM )
 
 endlocal
