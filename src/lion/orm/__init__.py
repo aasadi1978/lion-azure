@@ -3,7 +3,7 @@ This module is the entry point to initialize Flask app
 
 .. code-block:: python
 
-    pr_user_sqldb_path = os_path.join(LION_HOME_PATH, 'sqldb')
+    pr_user_sqldb_path = os_path.join(LION_PROJECT_HOME, 'sqldb')
     if not os_path.exists(pr_user_sqldb_path):
         mkdir(pr_user_sqldb_path)
 

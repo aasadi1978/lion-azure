@@ -1,6 +1,7 @@
 import logging
 from flask import Flask
 
+
 def initialize_all(app: Flask):
 
     with app.app_context():

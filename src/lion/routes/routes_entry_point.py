@@ -1,7 +1,7 @@
 from datetime import datetime
 from json import loads as json_loads
 from os import makedirs, path as os_path
-from lion.config.paths import LION_DRIVER_REPORT_DIST_PATH, LION_HOME_PATH, LION_LOG_FILE_PATH
+from lion.config.paths import LION_DRIVER_REPORT_DIST_PATH, LION_PROJECT_HOME, LION_LOG_FILE_PATH
 from lion.orm.scenarios import Scenarios
 from lion.reporting.consolidate_driver_reprots import generate_consolidated_driver_report
 from lion.ui.driver_ui import DRIVERS_UI
@@ -17,7 +17,6 @@ from lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
 
 from lion.utils.popup_notifier import show_error, show_popup
 
-
 top_blueprint = Blueprint('lion', __name__)
 
 @top_blueprint.route('/')
@@ -27,6 +26,10 @@ def home():
         return redirect("/login")
     
     return redirect(url_for('ui.loading_schedule'))
+
+@top_blueprint.route("/health-check", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"}), 200
 
 @top_blueprint.route("/userinfo")
 def userinfo():
@@ -143,7 +146,7 @@ def view_report(shiftname):
                                                    report_data=report_data,
                                                    top_report_title=f'{shiftname} ({_n_drivers})')
 
-                with open(os_path.join(LION_HOME_PATH, 'driver_plan.html'), 'w') as _html_file:
+                with open(os_path.join(LION_PROJECT_HOME, 'driver_plan.html'), 'w') as _html_file:
                     _html_file.writelines(html_driver_plan)
 
                 return html_driver_plan

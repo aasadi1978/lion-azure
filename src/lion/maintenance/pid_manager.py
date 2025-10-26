@@ -1,6 +1,7 @@
 import logging
 import re
 import subprocess
+import platform
 from lion.create_flask_app.create_app import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
     
@@ -130,6 +131,9 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_running_sessions(cls):
 
+        if platform.system().lower() != 'windows':
+            return []
+
         try:
             """Return a list of (pid, name) tuples for python.exe processes running on Windows."""
             result = subprocess.run(
@@ -156,12 +160,16 @@ class PIDManager(LION_SQLALCHEMY_DB.Model):
     def kill_pid(cls, pid):
         """Force kill a process by PID."""
         try:
-            process_output: subprocess.CompletedProcess = subprocess.run(['taskkill', '/PID', str(pid), '/F'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-            if process_output.returncode != 0:
-                logging.error(f"Failed to kill PID {pid}, return code: {process_output.returncode}")
-                return False
 
-            logging.info(f"Killed PID {pid} successfully.")
+            if platform.system().lower() == 'windows':
+                process_output: subprocess.CompletedProcess = subprocess.run(['taskkill', '/PID', str(pid), '/F'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                if process_output.returncode != 0:
+                    logging.error(f"Failed to kill PID {pid}, return code: {process_output.returncode}")
+                    return False
+
+                logging.info(f"Killed PID {pid} successfully.")
+            else:
+                logging.info(f"Attempting to kill PID {pid} on non-Windows platform. Operation cancelled!.")
             return True
         except Exception as e:
             log_exception(f"Error killing PID {pid} failed.")

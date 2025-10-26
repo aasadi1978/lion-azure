@@ -3,7 +3,7 @@ from flask import Blueprint, request, send_from_directory
 from datetime import datetime
 from json import loads as json_loads
 from os import path as os_path
-from lion.config.paths import LION_HOME_PATH, LION_SHARED_DIR
+from lion.config.paths import LION_PROJECT_HOME, LION_SHARED_DIR
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from flask import Blueprint, request
@@ -58,7 +58,7 @@ def update_comments():
         with open(os_path.join(LION_SHARED_DIR, 'user_manual_comments.log'), 'a') as _usr_f:
             _usr_f.writelines(txt)
 
-        with open(os_path.join(LION_HOME_PATH, 'user_manual_comments.log'), 'a') as _usr_f:
+        with open(os_path.join(LION_PROJECT_HOME, 'user_manual_comments.log'), 'a') as _usr_f:
             _usr_f.writelines(txt)
 
     except Exception:

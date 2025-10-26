@@ -83,7 +83,7 @@ Extract all movements
 -------------------------
 Designed to extract all movements in the loaded schedule throughout the week. In the output movements.xlsm file, fixed movements will 
 be will have asterisk on the weekday it runs. In desktop version of LION, the output is dumped in 
-*LION_HOME_PATH\\LionDataDump* directory.
+*LION_PROJECT_HOME\\LionDataDump* directory.
 
 .. image:: images/extract-movs-popup.png
 .. image:: images/extracted-movements.png
@@ -94,7 +94,7 @@ Extract Locations
 -------------------------
 Designed to extract all locations details including number of fixed/unfixed employed and subcontractor
 drivers count per location based on the loaded schedule. In desktop version of LION, the output is dumped in 
-*LION_HOME_PATH\\LionDataDump* directory.
+*LION_PROJECT_HOME\\LionDataDump* directory.
 
 
 .. image:: images/buttons1.png
@@ -135,7 +135,7 @@ the app, **CTRL+Z** can trigger simialr action.
 Run diagnostics
 -------------------------
 It isn recommended to execute this functionality as a health check of the schedule. It reports potential issues such as wrong changeovers,
-shifts with issues, etc. In LION desktop, the output is dumped in in *LION_HOME_PATH\\Diagnostic* folder.
+shifts with issues, etc. In LION desktop, the output is dumped in in *LION_PROJECT_HOME\\Diagnostic* folder.
 
 .. image:: images/diagnostics.png
    :width: 940
@@ -156,7 +156,7 @@ Identify non-compliant shifts
 -----------------------------
 It conducts a similar analysis to *Repair shifts* but on the entire schedule instead of the current page. A log file will be generated 
 providing a bit more details per non-compliant shift. NOTE that this functionality does not modify or delete any movement or shift.
-In LION desktop, the output is dumped in in *LION_HOME_PATH\\LionDataDump* folder.
+In LION desktop, the output is dumped in in *LION_PROJECT_HOME\\LionDataDump* folder.
 
 .. image:: images/identify-non-compliant-tours.png
    :width: 940
@@ -171,7 +171,7 @@ is provided by the user, e.g, filter on certain location or vehicle type, etc., 
 In the example below, I have an  *Express* loaded movement, *NCL.AE4.0745* in the dump area whose time and locations match the empty movement in the shift
 *AE4.TEMP102*. I executed **Propose Shift** and expected that this movement to be obsorbed by the mentioned shift. The executionw as successful
 and I received a notification about the number of movements with proposal. The output xlsx file, namely, *shift_proposals-Mon.xlsx* was dumped
-in *LION_HOME_PATH\\LionDataDump* directory (in LION Desktop).
+in *LION_PROJECT_HOME\\LionDataDump* directory (in LION Desktop).
 
 .. image:: images/propose-shift.png
    :width: 940
@@ -192,7 +192,7 @@ the vocal portal feature enables users to verbally record their comments directl
 
 KPI Report
 ------------
-This function generates a Microsoft Excel file named **kpi-report.xlsx**. The file is automatically saved in the *LION_HOME_PATH\\LionDataDump*
+This function generates a Microsoft Excel file named **kpi-report.xlsx**. The file is automatically saved in the *LION_PROJECT_HOME\\LionDataDump*
 directory on the Desktop version of LION. The Excel file contains a comprehensive set of Key Performance Indicators (KPIs). These KPIs are presented 
 in an overall schedule format, and are further broken down by vehicle type and contractor type, distinguishing between Employed and 
 Subcontractor categories
@@ -300,9 +300,9 @@ Scenario-Dropdown
    :width: 940
    :height: 300
 
-On click, the list of all scenarios available in *LION_HOME_PATH\\Scenarios* will be displayed. User can select a scenario to import in the app.
+On click, the list of all scenarios available in *LION_PROJECT_HOME\\Scenarios* will be displayed. User can select a scenario to import in the app.
 These scenarios, with extension of *.lion* can be distributed with a user with LION app installed. The *.lion* file must be located in user's
-*LION_HOME_PATH\\Scenarios* to be able to see in the scenario drop-down list.
+*LION_PROJECT_HOME\\Scenarios* to be able to see in the scenario drop-down list.
 
 MasterPlan-Dropdown
 --------------------

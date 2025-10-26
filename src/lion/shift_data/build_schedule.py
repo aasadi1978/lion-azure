@@ -1,4 +1,3 @@
-from concurrent.futures.process import BrokenProcessPool
 from datetime import datetime
 import logging
 from lion.changeovers.validate_changeovers_data import validate_changeovers
@@ -16,7 +15,7 @@ from lion.ui.ui_params import UI_PARAMS
 from lion.utils import safe_copy
 from lion.utils.popup_notifier import show_error
 from lion.logger.exception_logger import log_exception
-from lion.utils.process_pool_manager import ProcessPoolManager
+
 
 """
 Assumes that data copied to local tables: shifts, local_movements
@@ -98,45 +97,84 @@ class BuildSchedule():
         return _dct_baseline_schedule, _dct_baseline_movements
 
     def __build_baseline(self) -> tuple[dict, dict] | None:
-        
+
         _dct_baseline_schedule = {}
         _dct_m_shift_id = {}
         logging.info("Building baseline schedule ...")
 
         try:
+            # Update supplier info before processing
             DriversInfo.update_suppliers()
             scn_shift_ids_records = DriversInfo.get_all_valid_records()
-            executor = ProcessPoolManager.get_executor()
 
-            try:
-                transformed_shift_data_list = list(
-                    executor.map(transform_shift_record, scn_shift_ids_records)
-                )
-            except BrokenProcessPool:
-                # Automatically restart pool and retry once
-                ProcessPoolManager.restart_executor()
-                executor = ProcessPoolManager.get_executor()
-                transformed_shift_data_list = list(
-                    executor.map(transform_shift_record, scn_shift_ids_records)
-                )
-            except Exception as e:
-                logging.error(f"Error during multiprocessing shifts info: {str(e)}")
-                return None
+            transformed_shift_data_list = []
+            for rec in scn_shift_ids_records:
+                try:
+                    result = transform_shift_record(rec)
+                    if result:
+                        transformed_shift_data_list.append(result)
+                except Exception as e:
+                    logging.error(f"Error transforming shift record {rec}: {e}")
 
             for shift_info_tuple in transformed_shift_data_list:
-                if shift_info_tuple:
-                    shift_id, dct_base_schedule, dct_m_shift = shift_info_tuple
-                    _dct_baseline_schedule[shift_id] = dct_base_schedule
-                    _dct_m_shift_id.update(dct_m_shift)
+                if not shift_info_tuple:
+                    continue
+                shift_id, dct_base_schedule, dct_m_shift = shift_info_tuple
+                _dct_baseline_schedule[shift_id] = dct_base_schedule
+                _dct_m_shift_id.update(dct_m_shift)
 
         except Exception as e:
-            logging.error(f"Multiprocessing shifts info failed: {str(e)}")
+            logging.exception(f"Error while building baseline schedule: {e}")
             return None
 
         if not _dct_baseline_schedule or not _dct_m_shift_id:
+            logging.warning("Baseline schedule or shift mapping is empty — returning None.")
             return None
 
         return _dct_baseline_schedule, _dct_m_shift_id
+
+
+    # def __build_baseline_multiprocessing(self) -> tuple[dict, dict] | None:
+    #     from lion.utils.process_pool_manager import ProcessPoolManager
+    #     from concurrent.futures.process import BrokenProcessPool
+    #     _dct_baseline_schedule = {}
+    #     _dct_m_shift_id = {}
+    #     logging.info("Building baseline schedule ...")
+
+    #     try:
+    #         DriversInfo.update_suppliers()
+    #         scn_shift_ids_records = DriversInfo.get_all_valid_records()
+    #         executor = ProcessPoolManager.get_executor()
+
+    #         try:
+    #             transformed_shift_data_list = list(
+    #                 executor.map(transform_shift_record, scn_shift_ids_records)
+    #             )
+    #         except BrokenProcessPool:
+    #             # Automatically restart pool and retry once
+    #             ProcessPoolManager.restart_executor()
+    #             executor = ProcessPoolManager.get_executor()
+    #             transformed_shift_data_list = list(
+    #                 executor.map(transform_shift_record, scn_shift_ids_records)
+    #             )
+    #         except Exception as e:
+    #             logging.error(f"Error during multiprocessing shifts info: {str(e)}")
+    #             return None
+
+    #         for shift_info_tuple in transformed_shift_data_list:
+    #             if shift_info_tuple:
+    #                 shift_id, dct_base_schedule, dct_m_shift = shift_info_tuple
+    #                 _dct_baseline_schedule[shift_id] = dct_base_schedule
+    #                 _dct_m_shift_id.update(dct_m_shift)
+
+    #     except Exception as e:
+    #         logging.error(f"Multiprocessing shifts info failed: {str(e)}")
+    #         return None
+
+    #     if not _dct_baseline_schedule or not _dct_m_shift_id:
+    #         return None
+
+    #     return _dct_baseline_schedule, _dct_m_shift_id
 
 
     def _build_baseline_movements(self) -> dict | None:

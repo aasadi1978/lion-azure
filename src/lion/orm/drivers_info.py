@@ -17,7 +17,7 @@ from lion.orm.scenarios import Scenarios
 from lion.utils.popup_notifier import show_error
 from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
-from lion.config.paths import LION_HOME_PATH
+from lion.config.paths import LION_PROJECT_HOME
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.utcnow import utcnow
 
@@ -1045,7 +1045,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
         """
         In the case user has a file with a list of shiftnames with asscoicated driver name, then
         this module can update autoamtically if user dumps a csv file called suppliers.csv with two headers [shiftname, supplier], 
-        headers must be low case, and place it in LION_HOME_PATH director.
+        headers must be low case, and place it in LION_PROJECT_HOME director.
         If employed, please use 'FedEx Express'
         """
 
@@ -1054,7 +1054,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
             try:
 
-                file_path = LION_HOME_PATH / 'suppliers.csv'
+                file_path = LION_PROJECT_HOME / 'suppliers.csv'
                 if file_path.exists():
 
                     df_data = read_csv(file_path, sep=',', header=0)

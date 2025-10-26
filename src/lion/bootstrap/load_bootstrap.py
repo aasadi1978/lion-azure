@@ -47,15 +47,7 @@ try:
         LION_PROJECT_HOME / LION_SHARED_DIR_NAME))).resolve()
     LION_SHARED_DIR.mkdir(parents=True, exist_ok=True)
 
-    # If LION_HOME_PATH is not set, it will be assumed to be the same as LION_PROJECT_HOME
-    # For production, we remove the LION_HOME_PATH variable from the .env file to avoid confusion.
-    lion_home_name = getenv('LION_HOME_PATH', "")
-    LION_HOME_PATH = Path(lion_home_name).resolve() if len(lion_home_name) > 0 else LION_PROJECT_HOME
-    LION_HOME_PATH.mkdir(parents=True, exist_ok=True)
-    del lion_home_name
-
     # Making the following paths available for their consumer paths.py module
-    environ['LION_HOME_PATH'] = str(LION_HOME_PATH)
     environ['LION_PROJECT_HOME'] = str(LION_PROJECT_HOME)
     environ['LION_LOG_FILE_PATH'] = str(LION_LOG_FILE_PATH)
     environ['LION_STATIC_PATH'] = str(LION_PKG_MODULES_PATH / "static")

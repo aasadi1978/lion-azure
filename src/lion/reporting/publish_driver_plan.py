@@ -11,7 +11,7 @@ from lion.reporting.generate_driver_report import DRIVER_REPORT
 from lion.utils.empty_dir import empty_dir
 
 
-def gen_driver_report(dct_params: dict, **kwargs):
+def gen_driver_report(dct_params: dict, *args, **kwargs) -> str | None:
 
     try:
 

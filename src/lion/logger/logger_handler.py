@@ -11,7 +11,7 @@ def initialize_logger(
     log_file_path: Path = None,
     log_level: int = logging.DEBUG,
     max_bytes: int = 10 * 1024 * 1024,  # 10MB
-    backup_count: int = 5,
+    backup_count: int = 1,
     console_output: bool = True
 ) -> logging.Logger:
     """

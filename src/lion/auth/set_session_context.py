@@ -1,5 +1,4 @@
-from flask import Flask
-from requests import session
+from flask import Flask, session
 from sqlalchemy import text
 
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB

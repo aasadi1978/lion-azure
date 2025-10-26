@@ -35,15 +35,6 @@ class DeltaLogFile(metaclass=SingletonMeta):
         self.DELTA_DB_CON_STR: str = ''
         self.DF_MOVEMENTS = DataFrame()
         self.DF_MOVEMENTS_EXCLUDED_FROM_OPT = DataFrame()
-        self._log_file = paths.DELTA_DATA_LOG_PATH / 'delta.log'
-
-        if paths.DELTA_DATA_LOG_PATH.exists():
-            rmtree(paths.DELTA_DATA_LOG_PATH)
-            
-        paths.DELTA_DATA_LOG_PATH.mkdir(parents=True, exist_ok=True)
-
-        with open(self._log_file, mode):
-            pass
 
         self._initialized = True
     
@@ -110,14 +101,7 @@ class DeltaLogFile(metaclass=SingletonMeta):
         timestamp = str(datetime.now())[:19]
         msg2log = f"\n{timestamp}: {message}"
 
-        try:
-            with open(self._log_file, 'a') as f:
-                f.writelines(msg2log)
-        except Exception as err:
-            error_message = f"\n{timestamp}|{str(err)}\n"
-            with open(self._log_file, 'a') as f:
-                f.writelines(error_message)
-            msg2log = error_message
+        logging.info(msg2log)
 
         log_status(message=msg2log)
 

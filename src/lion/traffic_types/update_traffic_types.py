@@ -1,6 +1,6 @@
 from lion.logger.exception_logger import log_exception
 from pandas import read_excel
-from lion.config.paths import LION_FILES_PATH, LION_HOME_PATH
+from lion.config.paths import LION_FILES_PATH, LION_PROJECT_HOME
 from os.path import join
 from lion.utils.is_file_updated import is_file_updated
 from lion.orm.traffic_type import TrafficType
@@ -14,8 +14,8 @@ def update_traffic_types(force_update=False):
     Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
     """
 
-    _filepath = LION_HOME_PATH / 'traffic_types.xlsx'
-    f_dir = LION_HOME_PATH
+    _filepath = LION_PROJECT_HOME / 'traffic_types.xlsx'
+    f_dir = LION_PROJECT_HOME
 
     if not _filepath.exists():
         f_dir = LION_FILES_PATH

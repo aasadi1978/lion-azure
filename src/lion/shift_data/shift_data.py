@@ -50,7 +50,6 @@ class ShiftData():
             return
         
         try:
-            logging.info(f"Initializing global UI_SHIFT_DATA ...")
             self.clean_initialization_shift_data()
 
             self.__scn_name = Scenarios.fetch_scn_name()
@@ -58,7 +57,8 @@ class ShiftData():
             self.__xAxis_range_start = UserParams.get_param(
                 param='xAxis_range_start', if_null=combine_date_time(
                     LION_DATES[self.__weekday], '0000'))
-
+        
+            logging.info(f"Initializing global UI_SHIFT_DATA 2 s...")
             self.__xAxis_range_end = UserParams.get_param(param='xAxis_range_end', if_null=combine_date_time(
                 LION_DATES[self.__weekday] + timedelta(days=1), '2300'))
 

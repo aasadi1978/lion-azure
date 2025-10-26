@@ -1,6 +1,5 @@
 
 from flask import Blueprint, jsonify
-from lion.utils.run_detached import DETACHEDRUNS
 from lion.optimization import run_optimization_from_delta
 from lion.optimization.cache_params import cache_optimization_params
 from lion.optimization import run_optimization
@@ -22,22 +21,6 @@ optim_bp = Blueprint('optimization', __name__)
 def run_optimization_module():
     return jsonify(run_optimization.run())
 
-@optim_bp.route('/run-optimization-detached', methods=['POST'])
-def run_optimization_detached():
-    try:
-        run_id = DETACHEDRUNS.run_immediate(
-            run_optimization.run,
-            process_title="optimization-run",
-            # bind='lion_optimization_db',
-            **retrieve_form_data()
-        )
-
-        return jsonify({
-            'code': 200,
-            'message': f'Optimization run started in background. run_id={run_id}.',
-        })
-    except Exception as e:
-        return jsonify({'code': 400, 'message': f'Failed to start optimization: {str(e)}'})
 
 @optim_bp.route('/run-optimize-delta-movements', methods=['POST'])
 def run_optimize_delta_movements():

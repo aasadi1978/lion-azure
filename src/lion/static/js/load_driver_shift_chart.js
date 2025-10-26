@@ -926,7 +926,7 @@ async function load_driver_shift_chart(
             {
               text: 'Update suppliers',
               //This module updates suppliers, subcontractor name or Employed, based on suppliers.csv file
-              //located in LION_HOME_PATH. The csv file has two columns, Shiftname, Supplier
+              //located in LION_PROJECT_HOME. The csv file has two columns, Shiftname, Supplier
               onclick: function () {
                 update_suppliers();
               },

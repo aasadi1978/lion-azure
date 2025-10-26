@@ -25,7 +25,9 @@ def load_shift_data_if_needed() -> dict:
             build_status = BuildSchedule().load_baseline_shift_data()
             if build_status:
                 scnname = UI_SHIFT_DATA.scn_name
-                logging.info(f"Baseline shift data for {scnname} loaded successfully.")
+                logging.info(f"Baseline shift data for <-- {scnname} --> loaded successfully.")
+                logging.info(f"Number of shifts: {len(UI_SHIFT_DATA.optimal_drivers)}")
+                logging.info(f"Number of movements: {len(UI_SHIFT_DATA.dict_all_movements)}")
                 UI_SHIFT_DATA.scn_name = scnname
             else:
                 message = 'Failed to load baseline shift data.'

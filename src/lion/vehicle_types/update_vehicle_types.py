@@ -1,5 +1,5 @@
 from pandas import read_excel
-from lion.config.paths import LION_FILES_PATH, LION_HOME_PATH
+from lion.config.paths import LION_FILES_PATH, LION_PROJECT_HOME
 from lion.logger.exception_logger import log_exception
 from lion.orm.vehicle_type import VehicleType
 
@@ -11,7 +11,7 @@ def update_vehicle_types():
     Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
     """
 
-    _filepath = LION_HOME_PATH / 'vehicles.xlsx'
+    _filepath = LION_PROJECT_HOME / 'vehicles.xlsx'
 
     if not _filepath.exists():
         _filepath = LION_FILES_PATH / 'vehicles.xlsx'

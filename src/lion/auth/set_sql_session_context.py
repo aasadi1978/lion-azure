@@ -1,4 +1,5 @@
-from flask import current_app
+import logging
+from flask import session
 from sqlalchemy import event
 
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
@@ -9,7 +10,6 @@ def set_sql_session_context(dbapi_connection, connection_record, connection_prox
     # For a high-traffic app, a cleaner pattern is to let SQLAlchemy automatically set the session 
     # context whenever it reuses a pooled connection:
 
-    from flask import session
     if "user" not in session:
         return
     
@@ -24,4 +24,4 @@ def set_sql_session_context(dbapi_connection, connection_record, connection_prox
     cursor.close()
 
     # This will help confirm that the session context is being applied correctly per user request.
-    current_app.logger.debug(f"SQL context set for user={user_id}, groups={group_str}")
+    logging.debug(f"SQL context set for user={user_id}, groups={group_str}")

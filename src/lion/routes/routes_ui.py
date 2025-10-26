@@ -8,7 +8,6 @@ from lion.orm.changeover import Changeover
 from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
 from lion.orm.shift_movement_entry import ShiftMovementEntry
-from lion.utils.run_detached import DETACHEDRUNS
 from lion.orm.drivers_info import DriversInfo
 from lion.reporting.publish_driver_plan import gen_driver_report
 from lion.ui import changeover_chart
@@ -427,29 +426,13 @@ def extract_dep_arrivals_data():
 
 @ui_bp.route('/gen-driver-report', methods=['POST'])
 def generate_driver_report():
+
     try:
         dct_params = retrieve_form_data()
-        # Use run_immediate for truly non-blocking execution
-        run_id = DETACHEDRUNS.run_immediate(gen_driver_report, dct_params=dct_params, process_title="driver-report")
-        
+        status = gen_driver_report(dct_params=dct_params)
         return jsonify({
             'code': 200, 
-            'message': f'Driver report generation started in background. run_id={run_id}.',
+            'message': status,
         })
     except Exception:
         return jsonify({'code': 400, 'message': log_exception(popup=False)})
-
-
-@ui_bp.route('/detached-run-status', methods=['GET'])
-def get_detached_run_status():
-    """Get status of detached runs."""
-    try:
-        run_id = request.args.get('run_id')
-        if run_id:
-            status = DETACHEDRUNS.get_process_status(run_id)
-        else:
-            status = DETACHEDRUNS.get_process_status()
-        
-        return {'code': 200, 'data': status}
-    except Exception:
-        return {'code': 400, 'message': log_exception(popup=False)}

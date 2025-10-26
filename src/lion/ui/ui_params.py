@@ -86,6 +86,7 @@ class UIParams(metaclass=SingletonMeta):
         except Exception as e:
             log_exception(f"Error initializing UIParams: {e}")
 
+        logging.info(f"Initializing global UI_PARAMS completed.")
         self._initialized = True
 
     def is_new_lion_version(self) -> bool:
