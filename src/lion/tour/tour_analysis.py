@@ -32,8 +32,6 @@ class TourAnalysis():
     def initialize(self):
 
         if not self._initialized:
-
-            logging.info(f"Initializing UI_TOUR_ANALYSIS ...")
             try:
                 self.__is_loaded = IsLoaded()
                 self.__tour_cost = TourCost()

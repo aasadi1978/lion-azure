@@ -41,6 +41,7 @@ if "%ERRORLEVEL%" NEQ "0" (
 call lion
 if "%ERRORLEVEL%"=="0" (
     echo LION started successfully ...
+    @REM start "" http://127.0.0.1:8000
 )
 
 :: Start waitress for production on windows (Use Gunicorn if Python is running linux container)

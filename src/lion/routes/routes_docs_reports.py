@@ -9,7 +9,7 @@ from lion.ui.ui_params import UI_PARAMS
 from lion.utils.kill_file import kill_file
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
-from flask import Blueprint, jsonify, redirect, render_template, request, session, url_for
+from flask import Blueprint, render_template, request
 
 from lion.orm.drivers_info import DriversInfo
 from lion.utils.get_week_num import get_week_num
@@ -17,31 +17,9 @@ from lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
 
 from lion.utils.popup_notifier import show_error, show_popup
 
-top_blueprint = Blueprint('lion', __name__)
+docs_reports_bp = Blueprint('docs_reports', __name__)
 
-@top_blueprint.route('/')
-def home():
-    user = session.get("user")
-    if not user:
-        return redirect("/login")
-    
-    return redirect(url_for('ui.loading_schedule'))
-
-@top_blueprint.route("/health-check", methods=["GET"])
-def health():
-    return jsonify({"status": "ok"}), 200
-
-@top_blueprint.route("/userinfo")
-def userinfo():
-    user = session.get("user")
-    return jsonify({
-        "user_id": user.get("sub"),
-        "email": user.get("preferred_username"),
-        "groups": user.get("groups", [])
-    })
-
-
-@top_blueprint.route('/display-schedule-docs', methods=['GET'])
+@docs_reports_bp.route('/display-schedule-docs', methods=['GET'])
 def disp_schedule_docs():
 
     message = ''
@@ -57,22 +35,22 @@ def disp_schedule_docs():
     return render_template('documentation.html', options=options)
 
 
-@top_blueprint.route('/view_report_wait/<shiftname>', methods=['GET', 'POST'])
+@docs_reports_bp.route('/view_report_wait/<shiftname>', methods=['GET', 'POST'])
 def view_report_wait(shiftname):
     params = {'redirect_url': f'/view_report/{shiftname}',
               'message': 'Extracting driver plan'}
     return render_template('wait.html', params=params)
 
 
-@top_blueprint.route('/lion_message/<message>', methods=['GET', 'POST'])
+@docs_reports_bp.route('/lion_message/<message>', methods=['GET', 'POST'])
 def lion_message(message='This is a test!'):
     return render_template('message.html', message={'info': message, 'error': '', 'title': 'Info'})
 
-@top_blueprint.route('/lion_error/<error>', methods=['GET', 'POST'])
+@docs_reports_bp.route('/lion_error/<error>', methods=['GET', 'POST'])
 def lion_error(error='This is a test!'):
     return render_template('message.html', message={'info': '', 'error': error, 'title': 'ERROR'})
 
-@top_blueprint.route('/view_report/<shiftname>', methods=['GET', 'POST'])
+@docs_reports_bp.route('/view_report/<shiftname>', methods=['GET', 'POST'])
 def view_report(shiftname):
 
     _err_msg = ''
@@ -224,8 +202,44 @@ def view_report(shiftname):
         'error': '',
         'info': f'Driver plan was successfully exported in {minutes} minutes!'})
 
+@docs_reports_bp.route('/status_page', methods=['GET'])
+def status_page():
+    with open(LION_LOG_FILE_PATH, 'r') as f:
+        log_content = f.readlines()
 
-# @top_blueprint.route('/display-locations-on-map', methods=['GET'])
+    return render_template('status_page.html', 
+                           options={'vsn': LATEST_JS_MODIFICATION_TIME, 
+                                    'status': log_content})
+
+
+@docs_reports_bp.route('/disp_popup', methods=['POST'])
+def disp_popup():
+
+    try:
+        requested_data = request.form['requested_data']
+        requested_data = json_loads(requested_data)
+        msg = requested_data['message']
+        type = requested_data['type']
+        title = requested_data['title']
+
+        if type == 'error':
+            try:
+                show_error(message=msg)
+            except Exception:
+                log_exception(popup=False)
+        else:
+            try:
+                show_popup(message=msg, mytitle=title)
+            except Exception:
+                log_exception(popup=False)
+
+        return {}
+
+    except Exception:
+        show_error(f'Post method disp_popup failed! {log_exception(False)}')
+        return {}
+
+# @docs_reports_bp.route('/display-locations-on-map', methods=['GET'])
 # def disp_locs():
 
 #     __dct_ftprnt = Location.to_dict()
@@ -253,43 +267,4 @@ def view_report(shiftname):
 #                'LION_BING_API_KEY': getenv('LION_BING_API_KEY')}
 
 #     return render_template('disp-locations.html', options=options)
-
-
-@top_blueprint.route('/status_page', methods=['GET'])
-def status_page():
-    with open(LION_LOG_FILE_PATH, 'r') as f:
-        log_content = f.readlines()
-
-    return render_template('status_page.html', 
-                           options={'vsn': LATEST_JS_MODIFICATION_TIME, 
-                                    'status': log_content})
-
-
-@top_blueprint.route('/disp_popup', methods=['POST'])
-def disp_popup():
-
-    try:
-        requested_data = request.form['requested_data']
-        requested_data = json_loads(requested_data)
-        msg = requested_data['message']
-        type = requested_data['type']
-        title = requested_data['title']
-
-        if type == 'error':
-            try:
-                show_error(message=msg)
-            except Exception:
-                log_exception(popup=False)
-        else:
-            try:
-                show_popup(message=msg, mytitle=title)
-            except Exception:
-                log_exception(popup=False)
-
-        return {}
-
-    except Exception:
-        show_error(f'Post method disp_popup failed! {log_exception(False)}')
-        return {}
-
 

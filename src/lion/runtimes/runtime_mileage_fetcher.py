@@ -25,15 +25,17 @@ class RuntimeMileageFetcher():
         pass
 
     def __initialize(self):
-        
-        self.__dict_dist_time = defaultdict(lambda: defaultdict(dict))
-        self.__dict_dist_time.update(RuntimesMileages.to_dict())
-        self.__user_dt_scenario = 'Default'
-        self._initialized = True
+        try:
+            self.__dict_dist_time = defaultdict(lambda: defaultdict(dict))
+            self.__dict_dist_time.update(RuntimesMileages.to_dict())
+            self.__user_dt_scenario = 'Default'
+            self._initialized = True
+        except Exception:
+            self._initialized = False
+            log_exception()
 
     def initialize(self):
         if not self._initialized:
-            logging.info(f"Initializing RuntimesMileages ...")
             self.__initialize()
 
     def reset(self):

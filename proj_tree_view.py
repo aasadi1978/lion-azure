@@ -27,7 +27,7 @@ def generate(dir_path=Path(".").resolve(), prefix=""):
 
 if __name__ == '__main__':
 
-    dir_path = Path(".").resolve() / 'src'
+    dir_path = Path(__file__).parent.resolve()
     if not dir_path.exists():
         print(f'Error: Directory {dir_path} does not exist.')
         exit(1)

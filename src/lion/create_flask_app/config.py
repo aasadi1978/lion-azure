@@ -1,13 +1,12 @@
-import asyncio
 from datetime import timedelta
 import logging
 from os import getenv
-import sys
 
 from lion.bootstrap import LION_BOOTSTRAP_CONFIG as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
 from lion.config import paths
-from lion.create_flask_app.azure_db_connection import azure_connection_with_retry
+from lion.create_flask_app.azure_sql_manager import SQLALCHEMY_DATABASE_URI
 
+LION_DEFAULT_SQLDB_PATH_BIND = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
 
 def configure_lion_app() -> dict:
     """
@@ -16,21 +15,22 @@ def configure_lion_app() -> dict:
 
     try:
 
-        SQLALCHEMY_DATABASE_URI = asyncio.run(azure_connection_with_retry())
-        if not SQLALCHEMY_DATABASE_URI:
-            logging.warning("Azure SQL Database connection string not found or could not be established.")
-            sys.exit(1)
+        # SQLALCHEMY_DATABASE_URI = asyncio.run(azure_connection_with_retry())
+        # if not SQLALCHEMY_DATABASE_URI:
+        #     logging.warning("Azure SQL Database connection string not found or could not be established.")
+        #     sys.exit(1)
             
         lion_config.setdefault('SQLALCHEMY_BINDS', {})
 
-        if not SQLALCHEMY_DATABASE_URI:
-            # NOTE: Fallback to local DB if Azure connection string is not available
-            # This is mainly for development and testing purposes. when trying to upload data to Azure,
-            # we consolidate all data in the local DB called data.db first before pushing to Azure.
-            SQLALCHEMY_DATABASE_URI = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
-            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
-        else:
-            lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind':  f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"})
+        # if not SQLALCHEMY_DATABASE_URI:
+        #     # NOTE: Fallback to local DB if Azure connection string is not available
+        #     # This is mainly for development and testing purposes. when trying to upload data to Azure,
+        #     # we consolidate all data in the local DB called data.db first before pushing to Azure.
+        #     SQLALCHEMY_DATABASE_URI = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
+        #     lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind': SQLALCHEMY_DATABASE_URI})
+        # else:
+        
+        lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind':  LION_DEFAULT_SQLDB_PATH_BIND})
 
         lion_config.update({
             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,

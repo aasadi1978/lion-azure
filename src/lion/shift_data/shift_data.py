@@ -5,7 +5,6 @@ import logging
 from lion.config.libraries import OS_PATH
 from lion.config.paths import LION_DIAGNOSTICS_PATH, LION_LOGS_PATH
 from lion.movement.movements_manager import UI_MOVEMENTS
-from lion.orm.scenarios import Scenarios
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.safe_copy import secure_copy
 from lion.utils.df2csv import export_dataframe_as_csv
@@ -22,7 +21,6 @@ from lion.logger.status_logger import log_message, log_message
 from lion.bootstrap.constants import LION_DATES, MOVEMENT_DUMP_AREA_NAME, RECYCLE_BIN_NAME, LOC_STRING_SEPERATOR
 from lion.utils.is_loaded import IsLoaded
 from lion.orm.shift_index import ShiftIndex
-from lion.orm.user_params import UserParams
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from sqlalchemy.exc import SQLAlchemyError
 from lion.tour.cost import TourCost
@@ -52,15 +50,21 @@ class ShiftData():
         try:
             self.clean_initialization_shift_data()
 
-            self.__scn_name = Scenarios.fetch_scn_name()
-            self.__n_drivers_per_page = UserParams.get_param(param='page_size')
-            self.__xAxis_range_start = UserParams.get_param(
-                param='xAxis_range_start', if_null=combine_date_time(
-                    LION_DATES[self.__weekday], '0000'))
+            # self.__scn_name = Scenarios.fetch_scn_name()
+            self.__n_drivers_per_page = 15 # UserParams.get_param(param='page_size')
+            # self.__xAxis_range_start = UserParams.get_param(
+            #     param='xAxis_range_start', if_null=combine_date_time(
+            #         LION_DATES[self.__weekday], '0000'))
         
-            logging.info(f"Initializing global UI_SHIFT_DATA 2 s...")
-            self.__xAxis_range_end = UserParams.get_param(param='xAxis_range_end', if_null=combine_date_time(
-                LION_DATES[self.__weekday] + timedelta(days=1), '2300'))
+
+            self.__xAxis_range_start =combine_date_time(
+                    LION_DATES[self.__weekday], '0000')
+    
+            self.__xAxis_range_end = combine_date_time(
+                LION_DATES[self.__weekday] + timedelta(days=1), '2300')
+        
+            # self.__xAxis_range_end = UserParams.get_param(param='xAxis_range_end', if_null=combine_date_time(
+            #     LION_DATES[self.__weekday] + timedelta(days=1), '2300'))
 
             if type(self.__xAxis_range_start) == str:
                 self.__xAxis_range_start = datetime.strptime(
@@ -119,7 +123,6 @@ class ShiftData():
                 {'driver': RECYCLE_BIN_NAME, 'tour_id': 2, 'shift_id': 2})
             
             self._initialized = True
-            logging.info(f"UI_SHIFT_DATA initialized successfully.")
 
         except Exception:
             log_exception('ShiftData was not initialized!')
@@ -164,6 +167,15 @@ class ShiftData():
         except Exception:
             log_exception(
                     popup=True, remarks='ShiftData could not be initialised!')
+
+    @property
+    def xAxis_range_start(self):
+        return self.__xAxis_range_start
+
+    @property
+    def xAxis_range_end(self):
+        return self.__xAxis_range_end
+
 
     @property
     def dct_missing_used_movements(self):
@@ -529,6 +541,8 @@ class ShiftData():
 
     @property
     def scn_name(self):
+        from lion.orm.scenarios import Scenarios
+        self.__scn_name = Scenarios.fetch_scn_name()
         return self.__scn_name
 
     @scn_name.setter
@@ -1419,11 +1433,10 @@ class ShiftData():
                 self.__xAxis_range_end = self.__xAxis_range_end - \
                     timedelta(hours=__h)
 
-            UserParams.update(xAxis_range_start=self.__xAxis_range_start,
-                              xAxis_range_end=self.__xAxis_range_end)
 
         except Exception:
             self.__exception_message = log_exception(False)
+
 
     def update_double_shifts(self, list_db_shifts=[]):
 

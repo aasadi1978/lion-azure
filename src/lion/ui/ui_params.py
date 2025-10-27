@@ -74,7 +74,6 @@ class UIParams(metaclass=SingletonMeta):
 
     def initialize(self):
 
-        logging.info(f"Initializing global UI_PARAMS ...")
         try:
             for field_name, field_def in self.__dataclass_fields__.items():
                 if field_def.default_factory is not MISSING:
@@ -83,11 +82,13 @@ class UIParams(metaclass=SingletonMeta):
                     setattr(self, str(field_name).upper(), field_def.default)
                 else:
                     setattr(self, str(field_name).upper(), None)
+                
+                self._initialized = True
+                
         except Exception as e:
             log_exception(f"Error initializing UIParams: {e}")
 
-        logging.info(f"Initializing global UI_PARAMS completed.")
-        self._initialized = True
+            self._initialized = False
 
     def is_new_lion_version(self) -> bool:
         try:

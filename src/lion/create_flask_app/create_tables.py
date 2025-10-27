@@ -1,5 +1,4 @@
 import logging
-from os import getenv
 from flask import Flask
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
@@ -32,7 +31,7 @@ def create_all(app: Flask):
             from lion.orm.time_stamp import TimeStamp
             from lion.orm.user_directory import UserDirectory
             from lion.orm.user_params import UserParams as AzureUserParams
-            from lion.orm.user import User
+            # from lion.orm.user import User
             # from lion.orm.scenarios import Scenarios
             from lion.logger.log_entry import LogEntry
 

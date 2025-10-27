@@ -37,7 +37,6 @@ class MovementManager():
             return
         
         try:
-            logging.info(f"Initializing UI_MOVEMENTS (MovementManager) ...")
             self.__dct_lane_info = defaultdict(dict)
             self.__dict_movement_color = deepcopy(MOVEMENT_TYPE_COLOR)
             self.__vehicle = 1

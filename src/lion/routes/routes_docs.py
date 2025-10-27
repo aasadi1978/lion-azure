@@ -4,6 +4,7 @@ from datetime import datetime
 from json import loads as json_loads
 from os import path as os_path
 from lion.config.paths import LION_PROJECT_HOME, LION_SHARED_DIR
+from lion.utils.login_required import login_required
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
 from flask import Blueprint, request
@@ -15,6 +16,7 @@ from lion.utils.popup_notifier import show_popup
 user_docs_blueprint = Blueprint('bp_docs', __name__)
 
 @user_docs_blueprint.route('/docs/')
+@login_required
 def load_user_manual():
     return send_from_directory(LION_STATIC_PATH / 'user-manual', 'index.html')
 

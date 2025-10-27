@@ -90,7 +90,6 @@ class DriversUI():
     def __initialize(self):
 
         try:
-            logging.info(f"Initializing DRIVERS_UI ...")
             self._optimization_output_dir = f"{LION_OPTIMIZATION_PATH}"
             self._dct_cached_info = TTLCache(maxsize=100, ttl=300)
             self._dct_cached_optimization_data = TTLCache(maxsize=100, ttl=6 * 60 * 60)
@@ -357,6 +356,10 @@ class DriversUI():
 
     def set_axis_ranges(self, **dct_params):
         UI_SHIFT_DATA.set_axis_ranges(**dct_params)
+
+        UserParams.update(xAxis_range_start=UI_SHIFT_DATA.xAxis_range_start,
+                            xAxis_range_end=UI_SHIFT_DATA.xAxis_range_end)
+
         return get_chart_data(page_num=dct_params['page_num'])
 
     def blank_shift(self, **dct_params):

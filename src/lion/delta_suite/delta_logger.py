@@ -1,9 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 import logging
-from shutil import rmtree
 
-from lion.config import paths
 from dataclasses import dataclass
 from lion.logger.status_logger import log_message as log_status
 from pandas import DataFrame
@@ -29,15 +27,18 @@ class DeltaLogFile(metaclass=SingletonMeta):
         if self._initialized:
             return
         
-        logging.info(f"Initializing DELTA_LOGGER ...")
-        self.DELTA_GLOBAL_ERROR: str = ''
-        self.DELTA_GLOBAL_WARNING: str = ''
-        self.DELTA_DB_CON_STR: str = ''
-        self.DF_MOVEMENTS = DataFrame()
-        self.DF_MOVEMENTS_EXCLUDED_FROM_OPT = DataFrame()
+        try:
+            self.DELTA_GLOBAL_ERROR: str = ''
+            self.DELTA_GLOBAL_WARNING: str = ''
+            self.DELTA_DB_CON_STR: str = ''
+            self.DF_MOVEMENTS = DataFrame()
+            self.DF_MOVEMENTS_EXCLUDED_FROM_OPT = DataFrame()
 
-        self._initialized = True
-    
+            self._initialized = True
+        
+        except Exception:
+            exc_logger()
+        
     def update_df_movements(self, df_movements):
         """
         Updates the DataFrame containing movements.

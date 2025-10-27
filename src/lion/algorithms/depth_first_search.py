@@ -28,9 +28,6 @@ class DepthFirstSearch():
 
         if not self._initialized:
 
-            if not reset:
-                logging.info(f"Initializing DFS ...")
-
             try:
                 self.__keep_tours_with_all_loaded_movements_only = False
                 self.__set_input_movements = set()
@@ -44,6 +41,7 @@ class DepthFirstSearch():
                 self._initialized = True
 
             except Exception:
+                self._initialized = False
                 self.__xcption_logger.log_exception("Initializing DFS failed!")
 
     def reset(self):

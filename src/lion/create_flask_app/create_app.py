@@ -1,4 +1,5 @@
 import logging
+from os import getenv
 
 from setproctitle import getproctitle
 from lion.config import paths
@@ -82,8 +83,6 @@ class CreateAPP:
                         static_folder=paths.LION_STATIC_PATH)
             
             Bootstrap(lion_app)
-            lion_app.secret_key = 'Lipsol1978'
-            # config = configure_lion_app(cold_start=cold_start)
 
             if not LION_CONFIG:
                 logging.critical(f"Failed to configure the Flask app! Exiting the app with code 1 for {getproctitle()}")
@@ -93,6 +92,7 @@ class CreateAPP:
                 return
             
             lion_app.config.from_mapping(LION_CONFIG)
+            lion_app.secret_key = getenv('FLASK_SECRET_KEY')
 
             LION_SQLALCHEMY_DB.init_app(lion_app)
             bcrypt = Bcrypt(lion_app)

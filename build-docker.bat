@@ -19,7 +19,10 @@ if %errorlevel% neq 0 (
 echo ==========================================================
 echo Building Docker image...
 
-docker build -t asadi1978/lion-azure-lion-app:latest .
+set /p tag=Enter the Docker image tag (default is 'latest'):
+if "%tag%"=="" set tag=latest
+
+docker build -t asadi1978/lion-azure-lion-app:%tag% .
 if %errorlevel% neq 0 (
     echo Docker build failed.
     pause
@@ -28,7 +31,7 @@ if %errorlevel% neq 0 (
 
 echo ==========================================================
 echo Pushing Docker image to Docker Hub...
-docker push asadi1978/lion-azure-lion-app:latest
+docker push asadi1978/lion-azure-lion-app:%tag%
 if %errorlevel% neq 0 (
     echo Docker push failed.
     pause

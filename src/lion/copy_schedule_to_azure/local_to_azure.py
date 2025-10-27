@@ -17,7 +17,7 @@ from lion.orm_local.cost import Cost as LocalCost
 from lion.orm_local.orm_runtimes_mileages import RuntimesMileages as LocalRuntimesMileages
 from lion.orm_local.location import Location as LocalLocation
 from lion.orm_local.resources import Resources as LocalResources
-from lion.orm_local.user import User as LocalUser
+# from lion.orm_local.user import User as LocalUser
 from lion.orm_local.groups import GroupName as LocalGroupName
 from lion.orm_local.scenarios import Scenarios as LocalScenarios
 # --- IMPORTS: AZURE ORM MODELS ---
@@ -32,7 +32,7 @@ from lion.orm.cost import Cost as AzureCost
 from lion.orm.orm_runtimes_mileages import RuntimesMileages as AzureRuntimesMileages
 from lion.orm.location import Location as AzureLocation
 from lion.orm.resources import Resources as AzureResources
-from lion.orm.user import User as AzureUser
+# from lion.orm.user import User as AzureUser
 from lion.orm.groups import GroupName as AzureGroupName
 from lion.orm.scenarios import Scenarios as AzureScenarios
 
@@ -87,43 +87,43 @@ def copy_drivers_info(exclude_fields=None):
     return False
 
 
-def copy_user_table():
+# def copy_user_table():
 
-    try:
+#     try:
 
-        records = LocalUser.query.all()
-        if records:
-            # Convert to Azure-compatible instances
-            azure_objects = [
-                AzureUser(
-                    **{attr: getattr(r, attr)
-                    for attr in r.__dict__
-                    if not attr.startswith('_')}
-                )
-                for r in records
-            ]
+#         records = LocalUser.query.all()
+#         if records:
+#             # Convert to Azure-compatible instances
+#             azure_objects = [
+#                 AzureUser(
+#                     **{attr: getattr(r, attr)
+#                     for attr in r.__dict__
+#                     if not attr.startswith('_')}
+#                 )
+#                 for r in records
+#             ]
 
-            LION_SQLALCHEMY_DB.session.query(AzureUser).delete()
-            LION_SQLALCHEMY_DB.session.commit()
+#             LION_SQLALCHEMY_DB.session.query(AzureUser).delete()
+#             LION_SQLALCHEMY_DB.session.commit()
 
-            LION_SQLALCHEMY_DB.session.bulk_save_objects(azure_objects)
-            LION_SQLALCHEMY_DB.session.commit()
+#             LION_SQLALCHEMY_DB.session.bulk_save_objects(azure_objects)
+#             LION_SQLALCHEMY_DB.session.commit()
 
-        return len(AzureUser.query.all()) == len(azure_objects)
+#         return len(AzureUser.query.all()) == len(azure_objects)
 
-    except SQLAlchemyError as e:
-        log_exception(popup=False, remarks=f"{str(e)}")
-        LION_SQLALCHEMY_DB.session.rollback()
+#     except SQLAlchemyError as e:
+#         log_exception(popup=False, remarks=f"{str(e)}")
+#         LION_SQLALCHEMY_DB.session.rollback()
 
-    except Exception:
-        log_exception(popup=False)
-        LION_SQLALCHEMY_DB.session.rollback()
+#     except Exception:
+#         log_exception(popup=False)
+#         LION_SQLALCHEMY_DB.session.rollback()
     
-    finally:
-        LION_SQLALCHEMY_DB.session.close()
-        LION_SQLALCHEMY_DB.engine.dispose()
+#     finally:
+#         LION_SQLALCHEMY_DB.session.close()
+#         LION_SQLALCHEMY_DB.engine.dispose()
 
-    return False
+#     return False
 
 # --- GENERIC COPY FUNCTION ---
 def copy_data(local_cls, azure_cls, exclude_fields=None):
@@ -225,7 +225,7 @@ def start_copy(app: Flask):
 
         results = {}
         results['DriversInfo'] = copy_drivers_info()
-        results['User'] = copy_user_table()
+        # results['User'] = copy_user_table()
 
         for local_cls, azure_cls in table_pairs:
             try:

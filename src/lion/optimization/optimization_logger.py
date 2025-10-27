@@ -22,22 +22,27 @@ class OptimizationLogFile(metaclass=SingletonMeta):
         if self._initialized:
             return
 
-        logging.info(f"Initializing OPT_LOGGER ...")
-        self.TEMP_DIR = paths.LION_OPTIMIZATION_PATH
-        self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
-        self._log_file = self.TEMP_DIR / 'optimization.log'
+        try:
+            self.TEMP_DIR = paths.LION_OPTIMIZATION_PATH
+            self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
+            self._log_file = self.TEMP_DIR / 'optimization.log'
 
-        self.OPT_GLOBAL_ERROR = ''
-        self.OPT_GLOBAL_WARNING = ''
+            self.OPT_GLOBAL_ERROR = ''
+            self.OPT_GLOBAL_WARNING = ''
 
-        message = f"Optimization module log initialised. on {str(datetime.now())[:19]} By: {LION_FLASK_APP.config['LION_USER_FULL_NAME']}"
+            message = f"Optimization module log initialised. on {str(datetime.now())[:19]} By: {LION_FLASK_APP.config['LION_USER_FULL_NAME']}"
 
-        with open(self._log_file, mode) as f:
-            f.write(message)
+            with open(self._log_file, mode) as f:
+                f.write(message)
 
-        log_status(message=message)
+            log_status(message=message)
 
-        self._initialized = True
+            self._initialized = True
+
+        except Exception:
+            self._initialized = False
+            exc_logger()
+
 
     def reset(self):
 

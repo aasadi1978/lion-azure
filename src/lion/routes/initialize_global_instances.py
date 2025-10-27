@@ -1,6 +1,6 @@
 import logging
+import sys
 from flask import Flask
-
 
 def initialize_all(app: Flask):
 
@@ -30,3 +30,5 @@ def initialize_all(app: Flask):
             logging.info(f"Initializing global singletons for {app.name} completed successfully.")
         except Exception as e:
             logging.critical(f'Error during global instances initialization: {e}')
+            sys.exit(1)
+
