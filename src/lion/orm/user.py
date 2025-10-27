@@ -1,5 +1,6 @@
 from flask import g, session
 from sqlalchemy.exc import SQLAlchemyError
+from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.create_flask_app.create_app import BCRYPT
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
@@ -16,36 +17,50 @@ class User(LION_SQLALCHEMY_DB.Model):
     email = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(200), nullable=False)
     role = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False, default='Scheduler')
     password_hash = LION_SQLALCHEMY_DB.Column('password_hash', LION_SQLALCHEMY_DB.String(500), nullable=False, default='')
-    lang = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False, default='GB') 
+    lang = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False, default='GB')
+    last_picked_scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer)
 
     def __init__(self, **kwargs):
 
-        self.user_id = str(kwargs.get('user_id', self.user_id))
-        self.object_id = kwargs['object_id']
+        self.user_id = str(kwargs.get('user_id', 'guest'))
+        self.object_id = str(kwargs.get('object_id', 'guest'))
         self.role = kwargs.get('role', 'Scheduler')
-        self.user_name = kwargs['user_name']
-        self.email = kwargs['email']
+        self.user_name = kwargs.get('user_name', 'Guest')
+        self.email = kwargs.get('email', 'guest@host.com')
         self.lang = kwargs.get('lang', 'GB')
         self.password_hash = kwargs.get('password_hash', '')
+        self.last_picked_scn_id = kwargs.get('last_picked_scn_id', session.get('current_scn_id', None) or g.get('current_scn_id', 1))
 
     @classmethod
     def load_user(cls):
 
-        dct_lion_user: dict = {}
+        current_group = session.get('current_group', None) or g.get('current_group', None)
+        
         try:
+            
+            dct_lion_user: dict = {}
             userobj = cls.query.first()
-            dct_lion_user = userobj.__dict__
-            dct_lion_user.setdefault('groups', GroupName.get_user_groups())
 
+            if userobj is not None:
+                dct_lion_user = userobj.__dict__
+            else:
+                guest = User()
+                dct_lion_user = guest.__dict__
+
+            dct_lion_user.setdefault('groups', GroupName.get_user_groups())
             del dct_lion_user['password_hash']
             
         except Exception:
             log_exception('user not found!')
-            dct_lion_user = {}
-
+            dct_lion_user = {'user_id': 'guest',
+                             'group_name': LION_DEFAULT_GROUP_NAME,
+                             'user_name': 'Guest'
+                             }
 
         session['current_user'] = dct_lion_user
+        session['current_group'] = current_group or LION_DEFAULT_GROUP_NAME
         g.current_user = dct_lion_user
+        g.current_group = current_group or LION_DEFAULT_GROUP_NAME
 
         return dct_lion_user
 
@@ -207,38 +222,15 @@ class User(LION_SQLALCHEMY_DB.Model):
             return True
 
     @classmethod
-    def update(cls, **kwargs):
-
+    def set_scn_id(cls, scn_id):
         try:
+            userObj: User = cls.query.first()
 
-            userid = str(kwargs.get('user_id',  ''))
-
-            user_name = kwargs.get('user_name',  '')
-            role = kwargs.get('role',  'Scheduler')
-            proxy = kwargs.get('proxy',  '')
-
-            existing_obj = cls.query.filter(cls.user_id == userid).first()
-
-            if existing_obj is None:
-
-                new_obj = User(
-                    user_id=userid,
-                    user_name=user_name,
-                    proxy=proxy,
-                    role=role
-                )
-                LION_SQLALCHEMY_DB.session.add(new_obj)
+            if userObj:
+                userObj.last_picked_scn_id = scn_id
                 LION_SQLALCHEMY_DB.session.commit()
-
-            else:
-                existing_obj.user_name = user_name
-                existing_obj.role = role
-                existing_obj.proxy = proxy
-                LION_SQLALCHEMY_DB.session.commit()
-
-        except SQLAlchemyError as err:
-            log_exception(popup=False, remarks=f"{str(err)}")
-
-        except Exception:
+            
+        except SQLAlchemyError:
             LION_SQLALCHEMY_DB.session.rollback()
-            log_exception(popup=False)
+            log_exception("Failed to set scn_id!")
+            return True

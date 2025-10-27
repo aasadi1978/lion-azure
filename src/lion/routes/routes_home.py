@@ -14,7 +14,7 @@ def index():
 
     except Exception:
         return render_template('message.html', 
-                        message=jsonify({'error': log_exception('Home page failed.')}))
+                               message=jsonify({'error': log_exception('Home page failed.')}))
 
 @home_bp.route("/health-check", methods=["GET"])
 def health_check():
@@ -29,9 +29,6 @@ def login_callback():
         if not user:
             return render_template('access-denied.html')
 
-        print('========================')
-        print(user)
-        print('========================')
         return redirect(url_for('ui.loading_schedule'))
     
     except Exception:

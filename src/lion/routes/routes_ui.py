@@ -9,6 +9,7 @@ from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
 from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.orm.drivers_info import DriversInfo
+from lion.orm.user import User
 from lion.reporting.publish_driver_plan import gen_driver_report
 from lion.ui import changeover_chart
 from lion.ui.basket import basket_chart
@@ -346,6 +347,7 @@ def import_selected_schedule():
             g.current_scn_name = scnname
             session['current_scn_id'] = scn_id_copy
             session['current_scn_name'] = scnname
+            User.set_scn_id(scn_id=scn_id_copy)
 
             if ShiftMovementEntry.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy) and \
                Changeover.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy):

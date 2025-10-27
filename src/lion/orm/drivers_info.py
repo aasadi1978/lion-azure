@@ -3,7 +3,7 @@ from datetime import datetime
 import logging
 from pickle import UnpicklingError
 from typing import List
-from flask import g
+from flask import g, session
 from pandas import read_csv
 from sqlalchemy import and_, func
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -89,9 +89,14 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
             return 0, 'Invalid source scenario ID.'
         
         try:
-            selected_scn_rows = cls.query.filter(cls.scn_id==scn_id).all()
+            selected_scn_rows: list[DriversInfo] = cls.query.filter(cls.scn_id==scn_id).all()
             if not selected_scn_rows:
                 return 0, 'No rows found for the given scenario ID.'
+            
+            # Relationship btwn scn_id and group_name is 1-1
+            scn_group = selected_scn_rows[0].group_name
+            session['current_group'] = scn_group
+            g.current_group = scn_group
 
             scnname=f"COPY: {Scenarios.scn_name(scn_id)}"
             new_scn_id = Scenarios.register_new_scenario(scn_name=scnname)

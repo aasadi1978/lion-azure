@@ -15,10 +15,10 @@ class AutoScopedQuery(BaseQuery):
         "user_id": "user_id",
     }
 
-    current_user = {'scn_id': int(getattr(g, "current_scn_id", 0)) or int(session.get("current_scn_id", 0)),
-                    'user_id': session.get("current_user", {}).get('user_id', '') or g.get("current_user", {}).get('user_id', '')}
+    _current_user = {'scn_id': int(getattr(g, "current_scn_id", 0)) or int(session.get("current_scn_id", 0)),
+                    'user_id': session.get("_current_user", {}).get('user_id', '') or g.get("_current_user", {}).get('user_id', '')}
 
-    user_groups = session.get("current_user", {}).get('groups', []) or g.get("current_user", {}).get('groups', [])
+    _current_group = session.get("current_group", None) or g.get("current_group", None)
 
     def _apply_scope(self):
 
@@ -27,7 +27,7 @@ class AutoScopedQuery(BaseQuery):
             if not has_request_context():
                 return self
             
-            if not self.current_user.get('user_id', ''):
+            if not self._current_user.get('user_id', ''):
                 return self
             
             entity = self._only_full_mapper_zero("apply_scope").class_
@@ -44,14 +44,19 @@ class AutoScopedQuery(BaseQuery):
                     continue
 
                 user_field = self._user_field_map.get(scope_field)
-                if not hasattr(self.current_user, user_field):
+                if not hasattr(self._current_user, user_field):
                     continue
 
-                if scope_field=='group_name' and self.user_groups and hasattr(entity, "group_name"):
-                    filters.append(getattr(entity, "group_name", '').in_(self.user_groups))
+
+                if scope_field=='group_name' and hasattr(entity, "group_name"):
+
+                    if not self._current_group:
+                        raise Exception('Unknown group name.')
+
+                    filters.append(getattr(entity, "group_name", '') == self._current_group)
                     continue
 
-                user_value = getattr(self.current_user, user_field)
+                user_value = getattr(self._current_user, user_field)
                 if user_value is not None:
                     filters.append(getattr(entity, scope_field) == user_value)
 

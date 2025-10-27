@@ -1,4 +1,6 @@
 from sqlalchemy import and_
+from sqlalchemy.exc import SQLAlchemyError
+from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 
@@ -18,12 +20,20 @@ class GroupName(LION_SQLALCHEMY_DB.Model):
 
 
     @classmethod
-    def get_user_groups(cls):
+    def get_user_groups(cls) -> list:
+
+        groups = []
         try:
-            return [grp for grp, in cls.query.with_entities(cls.group_name).all()]
+            groups = [grp for grp, in cls.query.with_entities(cls.group_name).all()]
+        except SQLAlchemyError:
+            groups = []
+            log_exception(popup=False, remarks=f"get_user_groups failed.")
+
         except Exception:
-            log_exception(popup=False, remarks=f"set_user_scope failed.")
-            return []
+            groups=[]
+            log_exception(popup=False, remarks=f"get_user_groups failed.")
+        
+        return groups or [LION_DEFAULT_GROUP_NAME]
         
 
     @classmethod

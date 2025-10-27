@@ -1,6 +1,7 @@
 import logging
 from flask import Flask, g
 from sqlalchemy.exc import SQLAlchemyError
+from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.create_flask_app.create_app import LION_FLASK_APP, LION_SQLALCHEMY_DB
 
 # --- IMPORTS: LOCAL ORM MODELS ---
@@ -48,8 +49,8 @@ def copy_drivers_info(exclude_fields=None):
         updated_records_with_group_name: list[AzureDriversInfo] = []
 
         for rcrd in records:
-            rcrd.group_name = LION_FLASK_APP.config['LION_USER_GROUP_NAME']
-            rcrd.user_id = LION_FLASK_APP.config['LION_USER_ID']
+            rcrd.group_name = g.get('current_group')
+            rcrd.user_id = g.get('current_user_id')
             updated_records_with_group_name.append(rcrd)
 
         extend_records = [AzureDriversInfo(
@@ -158,11 +159,9 @@ def copy_data(local_cls, azure_cls, exclude_fields=None):
         # Add user/group metadata if applicable
         for obj in azure_objects:
             if hasattr(obj, 'group_name'):
-                obj.group_name = LION_FLASK_APP.config.get('LION_USER_GROUP_NAME')
+                obj.group_name = g.get('current_group')
             if hasattr(obj, 'user_id'):
-                obj.user_id = LION_FLASK_APP.config.get('LION_USER_ID')
-            if hasattr(obj, 'object_id'):
-                obj.object_id = LION_FLASK_APP.config.get('LION_OBJECT_ID')
+                obj.user_id = g.get('current_user_id')
 
         # Bulk insert
         LION_SQLALCHEMY_DB.session.bulk_save_objects(azure_objects)
@@ -198,6 +197,10 @@ def start_copy(app: Flask):
     with app.app_context():
 
         g.current_scn_id = 1  # Default scenario ID for context
+        g.current_scn_name = 'demo'
+        g.current_group = LION_DEFAULT_GROUP_NAME
+        g.current_user_id = 'guest123'
+
         logging.info("Starting data copy from local ORM to Azure ORM...")
 
         table_pairs = [
