@@ -197,7 +197,7 @@ def start_copy(app: Flask):
 
     with app.app_context():
 
-        g.scn_id = 1  # Default scenario ID for context
+        g.current_scn_id = 1  # Default scenario ID for context
         logging.info("Starting data copy from local ORM to Azure ORM...")
 
         table_pairs = [

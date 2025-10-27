@@ -4,6 +4,7 @@ from os import getenv, listdir, path
 from lion.optimization.opt_params import OPT_PARAMS
 from lion.orm.drivers_info import DriversInfo
 from lion.config.paths import LION_OPTIMIZATION_PATH
+from lion.orm.shiftid_sequence import ShiftIdSequence
 from lion.tour.dct_tour import DctTour
 from lion.utils.elapsed_time import ElapsedTime
 from gurobipy import GRB, Model as grb_Model, quicksum as grb_quicksum
@@ -694,8 +695,7 @@ class Optimize():
                             dct_loc_shft_cntr[dloc] += 1
                             return dct_loc_shft_cntr[dloc]
 
-                        new_shift_id = DriversInfo.get_new_id()
-
+                        dct_shift_ids = ShiftIdSequence.reserve_mapped_shift_ids(list_of_items=__set_final_tours)
                         for shiftname in __set_final_tours:
 
                             dloc = self.__shift_ctrl_location[shiftname]
@@ -710,13 +710,12 @@ class Optimize():
                                 {'driver': new_shiftname,
                                 'shiftname': new_shiftname,
                                 'is_fixed': False,
-                                'shift_id': new_shift_id,
+                                'shift_id': dct_shift_ids[shiftname],
                                 'weekday': 'Mon'})
 
                             self.__optimal_tours.update(
-                                {new_shift_id: DctTour(**dct_tour)})
-                            
-                            new_shift_id += 1
+                                {dct_shift_ids[shiftname]: DctTour(**dct_tour)})
+                        
                     else:
                         self.__optimal_tours = {}
                         return

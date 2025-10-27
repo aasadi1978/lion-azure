@@ -1,14 +1,6 @@
 @echo off
 cls
 
-@REM docker-compose up --build
-@REM if %errorlevel% neq 0 (
-@REM     echo Docker build failed.
-@REM     pause
-@REM     exit /b %errorlevel%
-@REM )
-
-@REM -u asadi1978 -p %DOCKER_HUB_PASSWORD%
 docker login
 if %errorlevel% neq 0 (
     echo Docker login failed.

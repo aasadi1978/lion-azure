@@ -39,6 +39,7 @@ def configure_lion_app() -> dict:
             })
 
         user_group = getenv('LION_USER_GROUP_NAME', "UnknownGroup")
+        lion_config.update({'LION_USER_ID': getenv('LION_USER_ID', 'Guest')})
         lion_config.update({'LION_OBJECT_ID': getenv('LION_OBJECT_ID', getenv('LION_USER_ID', 'Guest'))})
         lion_config.update({'LION_USER_GROUP_NAME': user_group})
         lion_config.update({'LION_USER_REGION_NAME': lion_config.get("LION_USER_REGION_NAME", "") if len(lion_config.get("LION_USER_REGION_NAME", "")) >= 2 else "GB"})

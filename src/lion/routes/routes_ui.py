@@ -3,7 +3,7 @@ from os import environ
 from json import loads as json_loads
 
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
-from flask import Blueprint, abort, jsonify, render_template, request, g
+from flask import Blueprint, abort, jsonify, render_template, request, g, session
 from lion.orm.changeover import Changeover
 from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
@@ -342,8 +342,10 @@ def import_selected_schedule():
         scn_id_copy, scnname = DriversInfo.duplicate_scn(scn_id=scn_id)
         if isinstance(scn_id_copy, int) and scn_id_copy > 0:
 
-            g.scn_id = scn_id_copy
-            g.scn_name = scnname
+            g.current_scn_id = scn_id_copy
+            g.current_scn_name = scnname
+            session['current_scn_id'] = scn_id_copy
+            session['current_scn_name'] = scnname
 
             if ShiftMovementEntry.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy) and \
                Changeover.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy):

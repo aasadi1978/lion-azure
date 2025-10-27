@@ -36,7 +36,7 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
 
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
-        self.scn_id = attrs.get('scn_id', g.scn_id)
+        self.scn_id = attrs.get('scn_id', g.current_scn_id)
 
     @classmethod
     def duplicate_scn(cls, from_scn_id: int, to_scn_id: int) -> bool:

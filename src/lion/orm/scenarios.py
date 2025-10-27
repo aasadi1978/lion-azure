@@ -1,17 +1,16 @@
-from datetime import datetime
-from time import timezone
-from flask import g
+from flask import g, session
 from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from lion.logger.exception_logger import log_exception
 from lion.utils.utcnow import utcnow
+from lion.orm.scenario_sequence import  ScenarioSequence
 
 
 class Scenarios(LION_SQLALCHEMY_DB.Model):
 
-    __scope_hierarchy__ = [] # No scope restriction which means that all users can access
+    __scope_hierarchy__ = ['scn_id'] # No scope restriction which means that all users can access
     __tablename__ = 'scenarios'
 
     scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, primary_key=True, autoincrement=True)
@@ -32,23 +31,36 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
 
     @classmethod
     def get_available_scenarios(cls):
+        """
+        Returns all scenarios visible to the current user's groups.
+        Bypasses scn_id scoping but filters by group_name.
+        """
         try:
-            records = cls.query.all()
-            sorted_records = sorted(records, key=lambda x: x.timestamp, reverse=True)
-            return [rcrd.scn_name for rcrd in sorted_records] if records else []
+
+            user_groups = session.get("current_user", {}).get('groups', []) or g.get("current_user", {}).get('groups', [])
+
+            # --- Build base query (bypass AutoScopedQuery) ---
+            query = LION_SQLALCHEMY_DB.session.query(cls)
+
+            if user_groups:
+                query = query.filter(cls.group_name.in_(user_groups))
+            else:
+                return []
+
+            records = query.order_by(cls.timestamp.desc()).all()
+            return [rcrd.scn_name for rcrd in records] if records else []
 
         except SQLAlchemyError as err:
-            log_exception(popup=False, remarks=f"{str(err)}")
+            log_exception(popup=False, remarks=f"Database error in get_available_scenarios: {err}")
 
-        except Exception:
-            log_exception(popup=False)
+        except Exception as e:
+            log_exception(popup=False, remarks=f"Unexpected error in get_available_scenarios: {e}")
 
         return []
-
     @classmethod
     def update_docs(cls, docs=''):
 
-        scn_id =g.get('active_scn_id', 1)
+        scn_id =g.get('current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -90,7 +102,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def update_scn_name(cls, scn_name):
 
-        scn_id = g.get('active_scn_id', 1)
+        scn_id = g.get('current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -131,7 +143,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_password(cls):
 
-        scn_id=g.get('active_scn_id', 1)
+        scn_id=g.get('current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -152,7 +164,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def set_password(cls, password='lionuk2020'):
 
-        scn_id=g.get('active_scn_id', 1)
+        scn_id=g.get('current_scn_id', 1)
         hashdpwd = BCRYPT.generate_password_hash(
             password).decode('utf-8')
 
@@ -175,7 +187,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def check_password(cls, password):
 
-        scn_id=g.get('active_scn_id', 1)
+        scn_id=g.get('current_scn_id', 1)
         if password == 'lionuk2020' or scn_id == 0:
             return True
 
@@ -210,21 +222,26 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
 
         try:
 
-            new_obj = Scenarios(scn_name=params.get('scn_name', 'ScnPlaceHolder'))
-            LION_SQLALCHEMY_DB.session.add(new_obj)
-            LION_SQLALCHEMY_DB.session.commit()
+            scn_id = ScenarioSequence.get_next_scenario_id()
 
-            return new_obj.scn_id
+            if scn_id:
+
+                new_obj = Scenarios(scn_name=params.get('scn_name', 'ScnPlaceHolder'), scn_id=scn_id)
+                LION_SQLALCHEMY_DB.session.add(new_obj)
+                LION_SQLALCHEMY_DB.session.commit()
+
+                return scn_id
 
         except Exception:
             log_exception(popup=False)
             LION_SQLALCHEMY_DB.session.rollback()
-            return None
+        
+        return None
 
     @classmethod
     def fetch_scn_name(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('active_scn_id', 1)
+            scn_id = scn_id or g.get('current_scn_id', 1)
             record: Scenarios = cls.query.filter(cls.scn_id == scn_id).first()
             
             if record:
@@ -250,7 +267,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def docs(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('active_scn_id', 1)
+            scn_id = scn_id or g.get('current_scn_id', 1)
             obj = cls.query.with_entities(
                 cls.docs).filter(cls.scn_id == scn_id).first()
             if obj:

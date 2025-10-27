@@ -1,8 +1,6 @@
 from sqlalchemy.orm import Query as BaseQuery
 from flask import has_request_context, session, g
-from flask_login import current_user
 from sqlalchemy import and_
-
 from lion.logger.exception_logger import log_exception
 
 class AutoScopedQuery(BaseQuery):
@@ -17,60 +15,56 @@ class AutoScopedQuery(BaseQuery):
         "user_id": "user_id",
     }
 
-    def _get_scn_id(self):
-        try:
-            self._scn_id = int(getattr(g, "scn_id", None)) or int(session.get("active_scn_id", 0))
-            self._group_name = getattr(g, "group_name", None) or session.get("active_group_name", 0)
+    current_user = {'scn_id': int(getattr(g, "current_scn_id", 0)) or int(session.get("current_scn_id", 0)),
+                    'user_id': session.get("current_user", {}).get('user_id', '') or g.get("current_user", {}).get('user_id', '')}
 
-        except Exception:
-            log_exception(popup=False, remarks="Failed to retrieve scn_id or group_name from session or g.")
-            self._scn_id = None
-            self._group_name = None
+    user_groups = session.get("current_user", {}).get('groups', []) or g.get("current_user", {}).get('groups', [])
 
     def _apply_scope(self):
 
-        if not has_request_context():
-            return self
+        try:
 
-        if not getattr(current_user, "is_authenticated", False):
-            return self
+            if not has_request_context():
+                return self
+            
+            if not self.current_user.get('user_id', ''):
+                return self
+            
+            entity = self._only_full_mapper_zero("apply_scope").class_
+            hierarchy = getattr(entity, "__scope_hierarchy__", ["group_name"])
+
+            if hierarchy == []:
+                return self
+
+            filters = []
+
+            for scope_field in hierarchy:
+
+                if not hasattr(entity, scope_field):
+                    continue
+
+                user_field = self._user_field_map.get(scope_field)
+                if not hasattr(self.current_user, user_field):
+                    continue
+
+                if scope_field=='group_name' and self.user_groups and hasattr(entity, "group_name"):
+                    filters.append(getattr(entity, "group_name", '').in_(self.user_groups))
+                    continue
+
+                user_value = getattr(self.current_user, user_field)
+                if user_value is not None:
+                    filters.append(getattr(entity, scope_field) == user_value)
+
+            # Apply logic based on declared hierarchy
+            if not filters:
+                return self
+
+            condition = and_(*filters)
+            return self.enable_assertions(False).filter(condition)
         
-        entity = self._only_full_mapper_zero("apply_scope").class_
-        hierarchy = getattr(entity, "__scope_hierarchy__", ["group_name"])
-
-        if hierarchy == []:
+        except Exception:
+            log_exception('_apply_scope failed.')
             return self
-
-        self._get_scn_id()
-
-        filters = []
-
-        for scope_field in hierarchy:
-            if not hasattr(entity, scope_field):
-                continue
-
-            user_field = self._user_field_map.get(scope_field)
-            if not hasattr(current_user, user_field):
-                continue
-
-            user_value = getattr(current_user, user_field)
-            if user_value is not None:
-                filters.append(getattr(entity, scope_field) == user_value)
-
-        if self._scn_id is not None and "scn_id" not in hierarchy and hasattr(entity, "scn_id"):
-            filters.append(getattr(entity, "scn_id") == self._scn_id)
-
-        if self._group_name is not None and "group_name" not in hierarchy and hasattr(entity, "group_name"):
-            filters.append(getattr(entity, "group_name") == self._group_name)
-
-        # Apply logic based on declared hierarchy
-        if not filters:
-            return self
-
-        # Combine according to hierarchy: the higher-level scopes are applied first
-        # (e.g., SCN → GROUP → USER), meaning broader access first, narrower next.
-        condition = and_(*filters)
-        return self.enable_assertions(False).filter(condition)
 
     # --- Same helper overrides ---
     def filter(self, *args, **kwargs):

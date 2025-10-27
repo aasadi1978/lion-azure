@@ -2,7 +2,6 @@ from collections import defaultdict
 from datetime import datetime
 import logging
 from pickle import UnpicklingError
-from time import timezone
 from typing import List
 from flask import g
 from pandas import read_csv
@@ -20,13 +19,14 @@ from cachetools import TTLCache
 from lion.config.paths import LION_PROJECT_HOME
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.utcnow import utcnow
+from lion.orm.shiftid_sequence import ShiftIdSequence
 
 drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
 
 class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
-    __scope_hierarchy__ = ["scn_id", "group_name"]
+    __scope_hierarchy__ = ["scn_id"]
     __tablename__ = 'drivers_info'
 
     """
@@ -63,7 +63,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
 
-        self.scn_id = attrs.get('scn_id', g.scn_id)
+        self.scn_id = attrs.get('scn_id', g.current_scn_id)
         self.shiftname = attrs.get('shiftname', '')
         self.ctrl_loc = attrs.get('ctrl_loc', attrs.get('start_loc', ''))
         self.start_loc = attrs.get('start_loc', attrs.get('ctrl_loc', ''))
@@ -533,24 +533,15 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_new_id(cls):
 
-        if len(cls.query.all()) == 0:
-            return 1001
-
         try:
-
-            next_id = cls.query.with_entities(
-                func.max(cls.shift_id)).scalar()
-
-            if not next_id:
-                next_id = 1001
-
+            return ShiftIdSequence.get_next_shift_id()
         except SQLAlchemyError as err:
             log_message(f"{str(err)}")
 
         except Exception:
             log_message(f"{exc_logger.log_exception(popup=False)}")
 
-        return next_id + 1
+        return None
 
     @classmethod
     def register_new(cls, **kwargs):

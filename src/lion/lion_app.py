@@ -1,10 +1,11 @@
 import logging
-from flask import jsonify, redirect, render_template, request, session, url_for
+from flask import jsonify, request
 from sqlalchemy import text
 from sqlalchemy.exc import SQLAlchemyError
 
 # Make sure bootstrap is imported first to setup env variables and logging
 # bootstrap does not have any circular dependencies
+# from lion.create_flask_app.create_tables import create_all
 from lion.logger.exception_logger import log_exception
 import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -23,6 +24,7 @@ def _create_app():
 
 # Gunicorn on azure container will import this variable
 app = _create_app()
+# create_all(app=app)
 
 @app.route("/health-check", methods=["GET"])
 def health_check():

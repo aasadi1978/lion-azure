@@ -47,7 +47,7 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
         self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
         self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
         self.extended_str_id = attrs.get('extended_str_id', f"{attrs.get('str_id', '')}|{self.movement_id}")
-        self.scn_id = attrs.get('scn_id', g.scn_id)
+        self.scn_id = attrs.get('scn_id', g.current_scn_id)
 
     @property
     def shift_ids(cls):

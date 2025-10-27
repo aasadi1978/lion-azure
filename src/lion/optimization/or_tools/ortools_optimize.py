@@ -16,6 +16,7 @@ from lion.utils.sqldb import SqlDb
 from lion.xl.write_excel import write_excel as xlwriter
 from linecache import checkcache, getline
 from sys import exc_info
+from lion.orm.shiftid_sequence import ShiftIdSequence
 
 """
 OR-Tools (short for Operations Research Tools) developed by Google is open-source and free to use. It's released under 
@@ -644,7 +645,7 @@ class Optimize():
                                 dct_loc_shft_cntr[dloc] += 1
                                 return dct_loc_shft_cntr[dloc]
                         
-                            new_shift_id = DriversInfo.get_new_id()
+                            dct_shift_ids = ShiftIdSequence.reserve_mapped_shift_ids(list_of_items=list(__set_final_tours))
                             for shiftname in __set_final_tours:
 
                                 dloc = self.__shift_ctrl_location[shiftname]
@@ -659,13 +660,12 @@ class Optimize():
                                     {'driver': new_shiftname,
                                     'shiftname': new_shiftname,
                                     'is_fixed': False,
-                                    'shift_id': new_shift_id,
+                                    'shift_id': dct_shift_ids[shiftname],
                                     'weekday': 'Mon'})
 
                                 self.__optimal_tours.update(
-                                    {new_shift_id: DctTour(**dct_tour)})
+                                    {dct_shift_ids[shiftname]: DctTour(**dct_tour)})
                                 
-                                new_shift_id += 1
                         else:
                             self.__optimal_tours = {}
                             return
