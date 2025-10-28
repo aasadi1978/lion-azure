@@ -8,22 +8,18 @@ __pycache__/
 # if necessary.
 /*
 !src/
-# !*.bat
 !technical-doc/
 !user-manual/
 !*.md
 !.gitignore
 !requirements.txt
 !project_tree_view.txt
-# !*.toml
 !*.py
-# !*.in
 !.env.example
 !.debug_mode_on
 !orchestrator
-# !.docker*
-# !.docker*
 !.github
+
 
 
 # Ignore specific directories
@@ -33,6 +29,8 @@ technical-doc/dist
 technical-doc/venv
 src/lion/static/cache
 src/lion/static/uploads
+*.toml
+*.bat
 
 
 */__archive__/*
