@@ -23,18 +23,20 @@ jobs:
       # - name: Install dependencies
       - name: Install dependencies and package
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
+          python -m venv .venv
+          source .venv/bin/activate
           pip install --upgrade pip setuptools
           pip install .
-          
+          pip show lion
+          python -c "from lion.lion_app import app; print(f'✅ lion.app loaded: {type(app)}')"
+
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: lion-flask-app
           path: |
             .
-            !antenv/
+            !.venv/
 
   deploy:
     runs-on: ubuntu-latest

@@ -21,6 +21,15 @@ if %errorlevel% neq 0 (
     exit /b %errorlevel%
 )
 
+@REM echo ==========================================================
+@REM echo Running ..
+@REM docker run -p 8000:8000 lion-app
+@REM if %errorlevel% neq 0 (
+@REM     echo Docker push failed.
+@REM     pause
+@REM     exit /b %errorlevel%
+@REM )
+
 echo ==========================================================
 echo Pushing Docker image to Docker Hub...
 docker push asadi1978/lion-azure-lion-app:%tag%
