@@ -75,6 +75,7 @@ class User(LION_SQLALCHEMY_DB.Model):
                                   'scn_name': scn_name or LION_DDEMO_SCN_NAME})
 
             dct_lion_user.pop('password_hash', None)
+            dct_lion_user.pop('_sa_instance_state', None)
 
             session['user'] = dct_lion_user
 
