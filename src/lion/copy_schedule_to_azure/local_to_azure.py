@@ -2,7 +2,7 @@ import logging
 from flask import Flask, g
 from sqlalchemy.exc import SQLAlchemyError
 from lion.bootstrap.constants import LION_DDEMO_SCN_NAME, LION_DEFAULT_GROUP_NAME
-from lion.create_flask_app.create_app import LION_FLASK_APP, LION_SQLALCHEMY_DB
+from lion.create_flask_app.create_app import LION_SQLALCHEMY_DB
 
 # --- IMPORTS: LOCAL ORM MODELS ---
 from lion.logger.exception_logger import log_exception
@@ -10,7 +10,6 @@ from pickle import dumps as pkl_dumps
 from lion.orm_local.shift_movement_entry import ShiftMovementEntry as LocalShiftMovementEntry
 from lion.orm_local.user_params import UserParams as LocalUserParams
 from lion.orm_local.operators import Operator as LocalOperator
-from lion.orm_local.vehicle_type import VehicleType as LocalVehicleType
 from lion.orm_local.traffic_type import TrafficType as LocalTrafficType
 from lion.orm_local.changeover import Changeover as LocalChangeover
 from lion.orm_local.drivers_info import DriversInfo as LocalDriversInfo
@@ -18,14 +17,12 @@ from lion.orm_local.cost import Cost as LocalCost
 from lion.orm_local.orm_runtimes_mileages import RuntimesMileages as LocalRuntimesMileages
 from lion.orm_local.location import Location as LocalLocation
 from lion.orm_local.resources import Resources as LocalResources
+from lion.orm_local.time_stamp import TimeStamp as LocalTimeStamp
 # from lion.orm_local.user import User as LocalUser
-from lion.orm_local.groups import GroupName as LocalGroupName
-from lion.orm_local.scenarios import Scenarios as LocalScenarios
 # --- IMPORTS: AZURE ORM MODELS ---
 from lion.orm.shift_movement_entry import ShiftMovementEntry as AzureShiftMovementEntry
 from lion.orm.user_params import UserParams as AzureUserParams
 from lion.orm.operators import Operator as AzureOperator
-from lion.orm.vehicle_type import VehicleType as AzureVehicleType
 from lion.orm.traffic_type import TrafficType as AzureTrafficType
 from lion.orm.changeover import Changeover as AzureChangeover
 from lion.orm.drivers_info import DriversInfo as AzureDriversInfo
@@ -34,8 +31,7 @@ from lion.orm.orm_runtimes_mileages import RuntimesMileages as AzureRuntimesMile
 from lion.orm.location import Location as AzureLocation
 from lion.orm.resources import Resources as AzureResources
 # from lion.orm.user import User as AzureUser
-from lion.orm.groups import GroupName as AzureGroupName
-from lion.orm.scenarios import Scenarios as AzureScenarios
+from lion.orm.time_stamp import TimeStamp as AzureTimeStamp
 
 def copy_drivers_info(exclude_fields=None):
 
@@ -208,7 +204,7 @@ def start_copy(app: Flask):
             (LocalUserParams, AzureUserParams),
             # (LocalLogEntry, AzureLogEntry),
             (LocalOperator, AzureOperator),
-            (LocalVehicleType, AzureVehicleType),
+            # (LocalVehicleType, AzureVehicleType),
             # (LocalPickleDumps, AzurePickleDumps),
             (LocalTrafficType, AzureTrafficType),
             (LocalChangeover, AzureChangeover),
@@ -219,7 +215,7 @@ def start_copy(app: Flask):
             (LocalLocation, AzureLocation),
             # (LocalOptMovements, AzureOptMovements),
             (LocalResources, AzureResources),
-            # (LocalTimeStamp, AzureTimeStamp),
+            (LocalTimeStamp, AzureTimeStamp),
             # (LocalGroupName, AzureGroupName),
             # (LocalScenarios, AzureScenarios),
             # (LocalUser, AzureUser),  # Handled separately due to exclude fields

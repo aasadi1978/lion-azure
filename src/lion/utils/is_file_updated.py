@@ -8,6 +8,9 @@ def is_file_updated(filename, Path=None) -> bool:
 
     try:
         
+        if not filename:
+            return False
+
         filename_basename = path.basename(filename)
         filename_current_timestamp = get_file_ts(filename=filename, Path=Path)
 
