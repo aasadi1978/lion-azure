@@ -19,6 +19,8 @@ __pycache__/
 !.debug_mode_on
 !orchestrator
 !.github
+!*.toml
+
 
 
 
@@ -29,7 +31,6 @@ technical-doc/dist
 technical-doc/venv
 src/lion/static/cache
 src/lion/static/uploads
-*.toml
 *.bat
 
 

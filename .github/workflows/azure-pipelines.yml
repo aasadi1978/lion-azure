@@ -20,12 +20,11 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      # - name: Install dependencies
+      - name: Install dependencies and package
         run: |
-          python -m venv antenv
-          source antenv/bin/activate
           pip install --upgrade pip setuptools
-          pip install -r requirements.txt
+          pip install .
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
