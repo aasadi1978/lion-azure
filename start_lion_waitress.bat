@@ -38,17 +38,17 @@ if "%ERRORLEVEL%" NEQ "0" (
     exit /b 1
 )
 
-call lion
-if "%ERRORLEVEL%"=="0" (
-    echo LION started successfully ...
-    @REM start "" http://127.0.0.1:8000
-)
+@REM call lion
+@REM if "%ERRORLEVEL%"=="0" (
+@REM     echo LION started successfully ...
+@REM     @REM start "" http://127.0.0.1:8000
+@REM )
 
 :: Start waitress for production on windows (Use Gunicorn if Python is running linux container)
 @REM echo Starting waitress...
 @REM start "" http://127.0.0.1:8080/lion
 
-@REM waitress-serve --host=127.0.0.1 --port=8000 lion.lion_app:app
+waitress-serve --host=127.0.0.1 --port=8000 lion.lion_app:app
 
 
 
