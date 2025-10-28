@@ -23,6 +23,7 @@ __pycache__/
 !orchestrator
 !.docker*
 !.docker*
+!.github
 
 
 # Ignore specific directories
