@@ -1,7 +1,6 @@
 import logging
 from os import getenv
 
-from setproctitle import getproctitle
 from lion.config import paths
 from flask_bootstrap import Bootstrap
 from flask import Flask
@@ -74,7 +73,7 @@ class CreateAPP:
     def create(self):
 
         if self._initialized and self.is_app_valid():
-            logging.info(f"Flask app and Bcrypt instances already created for {getproctitle()}")
+            logging.info(f"Flask app and Bcrypt instances already created.")
             return
         
         try:
@@ -85,7 +84,7 @@ class CreateAPP:
             Bootstrap(lion_app)
 
             if not LION_CONFIG:
-                logging.critical(f"Failed to configure the Flask app! Exiting the app with code 1 for {getproctitle()}")
+                logging.critical(f"Failed to configure the Flask app! Exiting the app with code 1")
                 self._app = None
                 self._bcrypt = None
                 self._initialized = False
@@ -105,16 +104,16 @@ class CreateAPP:
             self._bcrypt = bcrypt
 
             if self.is_app_valid():
-                logging.info(f"Flask app and Bcrypt instances created successfully for {getproctitle()}")
+                logging.info(f"Flask app and Bcrypt instances created successfully.")
             else:
-                logging.critical(f"Flask app or Bcrypt instance is invalid after creation! Exiting the app with code 1 for {getproctitle()}")
+                logging.critical(f"Flask app or Bcrypt instance is invalid after creation! Exiting the app with code 1.")
                 self._app = None
                 self._bcrypt = None
                 self._initialized = False
 
         except Exception as e:
             logging.critical(
-                f"Error at flask_app.py. The app could not be initialized! {str(e)} for {getproctitle()}")
+                f"Error at flask_app.py. The app could not be initialized! {str(e)}")
             self._app = None
             self._bcrypt = None
             self._initialized = False

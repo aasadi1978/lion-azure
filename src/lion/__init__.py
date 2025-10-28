@@ -1,9 +1,7 @@
-from os import environ, getpid
+from os import environ
 from pathlib import Path
 
-import setproctitle
 from lion.logger.logger_handler import initialize_logger
-setproctitle.setproctitle(f"py-lion-main:{getpid()}")
 
 initialize_logger()
 LION_PROJECT_HOME = Path(str(Path().resolve())).resolve()

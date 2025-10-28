@@ -3,7 +3,6 @@ import logging.handlers
 from os import getenv, getpid
 from pathlib import Path
 import sys
-from setproctitle import getproctitle
 
 
 
@@ -52,10 +51,10 @@ def initialize_logger(
 
     try:
         # Create formatter with process name from getproctitle()
-        try:
-            process_name = getproctitle()
-        except ImportError:
-            process_name = getpid()
+        # try:
+        #     process_name = getproctitle()
+        # except ImportError:
+        process_name = getpid()
 
         formatter = logging.Formatter(
             f"{process_name} | %(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(message)s",

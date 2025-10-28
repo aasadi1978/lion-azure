@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from setproctitle import getproctitle
+
 
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
@@ -22,7 +22,7 @@ def toggle_processes(app: Flask = LION_FLASK_APP, **kwargs):
 
         try:
             from lion.maintenance.pid_manager import PIDManager
-            proc_title = getproctitle()
+            proc_title = 'lion-app-session'
             pid = os.getpid()
             PIDManager.register_pid(pid=pid, process_name=proc_title if proc_title else f'lion-python-{pid}', 
                                     is_redundant=kwargs.get('is_redundant', False))
