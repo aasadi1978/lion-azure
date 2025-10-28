@@ -4,6 +4,8 @@ from sqlalchemy.exc import SQLAlchemyError, ProgrammingError, OperationalError
 from lion.logger.status_logger import log_message
 from cachetools import TTLCache
 
+from lion.utils.session_manager import SESSION_MANAGER
+
 
 class LocationMapper(LION_SQLALCHEMY_DB.Model):
 
@@ -21,8 +23,9 @@ class LocationMapper(LION_SQLALCHEMY_DB.Model):
     def __init__(self, **loc_data):
         self.loc_code = loc_data.get('loc_code', '')
         self.mapping = loc_data.get('mapping', '')
-        self.user_id = str(loc_data.get('user_id', ''))
-        self.group_name = str(loc_data.get('group_name', ''))
+        self.group_name = loc_data.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(loc_data.get('user_id', SESSION_MANAGER.get('user_id')))
+
 
     def __repr__(self):
         return f"<LocationMapper(loc_code='{self.loc_code}', mapping='{self.mapping}', user_id='{self.user_id}', group_name='{self.group_name}')>"

@@ -1,6 +1,5 @@
 from collections import defaultdict
 from lion.logger.exception_logger import log_exception
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.orm.location_mapping import LocationMapper
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,6 +10,8 @@ from pandas import DataFrame, read_excel
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.is_file_updated import is_file_updated
 from cachetools import TTLCache
+
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class Location(LION_SQLALCHEMY_DB.Model):
@@ -56,7 +57,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
         self.longitude = loc_data.get('longitude', 0)
         self.town = loc_data.get('town', '')
         self.postcode = loc_data.get('postcode', '')
-        self.country_code = UI_PARAMS.LION_REGION
+        self.country_code = loc_data.get('country_code', '')
         self.chgover_driving_min = loc_data.get('chgover_driving_min', 10)
         self.chgover_non_driving_min = loc_data.get(
             'chgover_non_driving_min', 15)
@@ -66,8 +67,8 @@ class Location(LION_SQLALCHEMY_DB.Model):
         self.turnaround_min = loc_data.get('turnaround_min', 25)
         self.live_stand_load = loc_data.get('live_stand_load', 'Stand Load')
         self.ctrl_depot = loc_data.get('ctrl_depot', '')
-        self.group_name = loc_data.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
-        self.user_id = str(loc_data.get('user_id', LION_FLASK_APP.config.get('LION_USER_ID', '0')))
+        self.group_name = loc_data.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(loc_data.get('user_id', SESSION_MANAGER.get('user_id')))
 
     def __repr__(self):
         return f"<Location(location_name='{self.location_name}')>"
@@ -87,18 +88,6 @@ class Location(LION_SQLALCHEMY_DB.Model):
         except Exception:
             log_exception(popup=False, remarks='Could not fetch group name')
             return ''
-
-    @classmethod
-    def validate_region(cls) -> bool:
-
-        rgns = set([cntry for cntry, in cls.query.with_entities(cls.country_code).all()])
-
-        if len(rgns) == 1:
-            
-            rgn = rgns.pop()
-            LION_FLASK_APP.config['LION_USER_REGION_NAME'] = rgn
-            LION_FLASK_APP.config['LION_USER_LANGUAGE_NAME'] = rgn
-            UI_PARAMS.LION_REGION = rgn
 
     @classmethod
     def get_attr_value(cls, loc_code=None, attribute=''):
@@ -240,7 +229,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
                 pass
 
         try:
-            location_objs = cls.query.filter(cls.country_code == UI_PARAMS.LION_REGION).all()
+            location_objs = cls.query.all()
 
             _dct_footprint = {
                 loc_obj.loc_code: {
@@ -282,8 +271,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
             if loc_code != '':
 
                 location = cls.query.filter(
-                    cls.loc_code == loc_data['loc_code'], 
-                    cls.country_code == UI_PARAMS.LION_REGION).first()
+                    cls.loc_code == loc_data['loc_code']).first()
 
                 if location is not None:
                     # Update attributes of the existing record
@@ -311,7 +299,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
             if loc_code != '':
 
                 location = cls.query.filter(
-                    cls.loc_code == loc_data['loc_code'], cls.country_code == UI_PARAMS.LION_REGION).first()
+                    cls.loc_code == loc_data['loc_code']).first()
 
                 if location is not None:
                     # Update attributes of the existing record
@@ -336,10 +324,19 @@ class Location(LION_SQLALCHEMY_DB.Model):
         return loc_code in cls.dct_locations_cache['dct_footprint']
 
     @classmethod
+    def validate_region(cls) -> bool:
+
+        rgns = set([cntry for cntry, in cls.query.with_entities(cls.country_code).all()])
+
+        if len(rgns) == 1:
+            rgn = rgns.pop()
+            UI_PARAMS.LION_REGION = rgn
+
+    @classmethod
     def no_customers(cls):
         try:
             return [loc for loc, in cls.query.with_entities(
-                cls.loc_code).filter(cls.loc_type.lower() != 'customer', cls.country_code == UI_PARAMS.LION_REGION).all()]
+                cls.loc_code).filter(cls.loc_type.lower() != 'customer').all()]
 
         except SQLAlchemyError as err:
             log_message(message=str(err))
@@ -372,7 +369,7 @@ class Location(LION_SQLALCHEMY_DB.Model):
                     for loc_code in dct_loc_names:
 
                         location = cls.query.filter(
-                            cls.loc_code == loc_code, cls.country_code == UI_PARAMS.LION_REGION).first()
+                            cls.loc_code == loc_code).first()
 
                         if location is not None:
                             cls.location_name = dct_loc_names[loc_code]

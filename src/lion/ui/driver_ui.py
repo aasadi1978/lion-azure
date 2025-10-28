@@ -18,6 +18,7 @@ from lion.ui.filter_tours import apply_filters
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 from lion.ui.options import refresh_options
 from lion.utils.concat import concat
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.to_lion_datetime import to_lion_datetime
 from lion.utils.safe_copy import secure_copy
 from lion.utils.empty_dir import empty_dir
@@ -125,7 +126,7 @@ class DriversUI():
             self._dct_movement_type_colors = MOVEMENT_TYPE_COLOR
 
             self._egis_scn = UserParams.get_param('runtimes_scenario')
-            self._user_display_name = LION_FLASK_APP.config['LION_USER_FULL_NAME']
+            self._user_display_name = SESSION_MANAGER.get('user_name')
 
             self._bar_width = [int(x) for x in UserParams.get_param(
                 'bar_width', if_null='45;40;35').split(';')]

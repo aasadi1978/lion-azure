@@ -209,3 +209,4 @@ LION_STRG_CONTAINER_LOGS: str = 'logs'
 LION_STRG_CONTAINER_OPTIMIZATION: str = 'optimization'
 
 LION_DEFAULT_GROUP_NAME:str='fedex-lion-demo'
+LION_DDEMO_SCN_NAME: str = 'demo'

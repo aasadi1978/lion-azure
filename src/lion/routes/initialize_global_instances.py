@@ -2,6 +2,8 @@ import logging
 import sys
 from flask import Flask
 
+from lion.utils.session_manager import SESSION_MANAGER
+
 def initialize_all(app: Flask):
 
     with app.app_context():
@@ -26,6 +28,7 @@ def initialize_all(app: Flask):
             UI_TOUR_ANALYSIS.initialize()
             DELTA_LOGGER.reset()
             OPT_LOGGER.reset()
+            SESSION_MANAGER.initialize()
 
             logging.info(f"Initializing global singletons for {app.name} completed successfully.")
         except Exception as e:

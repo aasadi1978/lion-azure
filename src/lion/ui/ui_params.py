@@ -1,6 +1,4 @@
 from dataclasses import MISSING, dataclass, field
-import logging
-from os import getenv
 from typing import Dict, List, Set
 
 from lion.logger.exception_logger import log_exception
@@ -14,7 +12,7 @@ class UIParams(metaclass=SingletonMeta):
     _instance = None
 
     CHANGEOVERS_VALIDATED: bool = False
-    LION_REGION: str = getenv('LION_USER_REGION_NAME', 'GB')
+    LION_REGION: str = 'GB'
     LIST_FILTERED_SHIFT_IDS: List[str] = field(default_factory=list)
     LIST_SELECTED_CHANGEOVERS: List[str] = field(default_factory=list)
     DICT_DRIVERS_PER_PAGE: Dict= field(default_factory=dict)

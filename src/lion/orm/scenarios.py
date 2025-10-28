@@ -1,9 +1,10 @@
-from flask import g, session
-from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
+from flask import g, has_request_context, session
+from lion.create_flask_app.create_app import BCRYPT
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from lion.logger.exception_logger import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.utcnow import utcnow
 from lion.orm.scenario_sequence import  ScenarioSequence
 
@@ -24,10 +25,11 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
         self.scn_name = attrs['scn_name']
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
         self.password = attrs.get('password', '')
-        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
         self.timestamp = attrs.get('timestamp', utcnow())
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
 
     @classmethod
     def get_available_scenarios(cls):
@@ -37,18 +39,17 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
         """
         try:
 
-            user_groups = session.get("current_user", {}).get('groups', []) or g.get("current_user", {}).get('groups', [])
+            if has_request_context():
+                user_groups = session.get("current_user", {}).get('groups', []) or g.get("current_user", {}).get('groups', [])
+                query = LION_SQLALCHEMY_DB.session.query(cls)
 
-            # --- Build base query (bypass AutoScopedQuery) ---
-            query = LION_SQLALCHEMY_DB.session.query(cls)
+                if user_groups:
+                    query = query.filter(cls.group_name.in_(user_groups))
+                else:
+                    return []
 
-            if user_groups:
-                query = query.filter(cls.group_name.in_(user_groups))
-            else:
-                return []
-
-            records = query.order_by(cls.timestamp.desc()).all()
-            return [rcrd.scn_name for rcrd in records] if records else []
+                records = query.order_by(cls.timestamp.desc()).all()
+                return [rcrd.scn_name for rcrd in records] if records else []
 
         except SQLAlchemyError as err:
             log_exception(popup=False, remarks=f"Database error in get_available_scenarios: {err}")
@@ -60,7 +61,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def update_docs(cls, docs=''):
 
-        scn_id =g.get('current_scn_id', 1)
+        scn_id =g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -102,7 +103,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def update_scn_name(cls, scn_name):
 
-        scn_id = g.get('current_scn_id', 1)
+        scn_id = g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -143,7 +144,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_password(cls):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -164,7 +165,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def set_password(cls, password='lionuk2020'):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
         hashdpwd = BCRYPT.generate_password_hash(
             password).decode('utf-8')
 
@@ -187,14 +188,14 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def check_password(cls, password):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
         if password == 'lionuk2020' or scn_id == 0:
             return True
 
         existing_obj = cls.query.filter(cls.scn_id == scn_id).first()
 
         if existing_obj:
-            if str(existing_obj.user_id) == str(LION_FLASK_APP.config['LION_USER_ID']):
+            if str(existing_obj.user_id) == str(SESSION_MANAGER.get('user_id')):
                 return True
             
             try:
@@ -241,17 +242,18 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def fetch_scn_name(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('current_scn_id', 1)
+            scn_id = scn_id or g.get('lion_current_scn_id', 1)
             record: Scenarios = cls.query.filter(cls.scn_id == scn_id).first()
             
             if record:
                 return record.scn_name
+            
         except SQLAlchemyError as e:
+            log_exception(popup=False, remarks=f'failed to get scn_name: {str(e)}')
+            return None
+        except Exception:
             log_exception(popup=False, remarks='failed to get scn_name')
-            return str(e)[:30]
-        except Exception as e:
-            log_exception(popup=False, remarks='failed to get scn_name')
-            return str(e)[:30]
+            return None
 
     @classmethod
     def get_scn_id(cls, scn_name):
@@ -267,7 +269,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def docs(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('current_scn_id', 1)
+            scn_id = scn_id or g.get('lion_current_scn_id', 1)
             obj = cls.query.with_entities(
                 cls.docs).filter(cls.scn_id == scn_id).first()
             if obj:

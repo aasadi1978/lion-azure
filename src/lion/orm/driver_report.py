@@ -1,6 +1,6 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class DriverReport(LION_SQLALCHEMY_DB.Model):
@@ -37,11 +37,13 @@ class DriverReport(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
         for attr in attrs:
-            grp = attrs.pop('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-            usrid = attrs.pop('user_id', LION_FLASK_APP.config['LION_USER_ID'])
-            self.group_name = grp
-            self.user_id = usrid
+            attrs.pop('group_name', None)
+            attrs.pop('user_id', None)
             setattr(self, attr, attrs[attr])
+            setattr(self, 'group_name', attrs.get('group_name', SESSION_MANAGER.get('group_name')))
+            setattr(self, 'user_id', attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
+
 
     @classmethod
     def delete_shift_id(cls, shift_id):

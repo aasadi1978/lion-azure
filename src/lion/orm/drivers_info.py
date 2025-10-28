@@ -3,10 +3,8 @@ from datetime import datetime
 import logging
 from pickle import UnpicklingError
 from typing import List
-from flask import g, session
 from pandas import read_csv
 from sqlalchemy import and_, func
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.orm.operators import Operator
 import lion.logger.exception_logger as exc_logger
@@ -18,6 +16,7 @@ from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
 from lion.config.paths import LION_PROJECT_HOME
 from lion.ui.ui_params import UI_PARAMS
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.utcnow import utcnow
 from lion.orm.shiftid_sequence import ShiftIdSequence
 
@@ -63,7 +62,6 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
 
-        self.scn_id = attrs.get('scn_id', g.current_scn_id)
         self.shiftname = attrs.get('shiftname', '')
         self.ctrl_loc = attrs.get('ctrl_loc', attrs.get('start_loc', ''))
         self.start_loc = attrs.get('start_loc', attrs.get('ctrl_loc', ''))
@@ -76,14 +74,31 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
         self.del_flag = attrs.get('del_flag', False)
         self.timestamp = attrs.get('timestamp', utcnow())
         self.data = attrs.get('data', None)
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+        self.scn_id = attrs.get('scn_id', SESSION_MANAGER.get('scn_id'))
 
         for dy in ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']:
             setattr(self, dy, attrs.get(dy, False))
 
     @classmethod
     def duplicate_scn(cls, scn_id):
+        """
+        Duplicates a scenario by creating a copy of all driver information rows associated with the given scenario ID.
+        Args:
+            scn_id (int): The ID of the scenario to duplicate.
+        Returns:
+            tuple: A tuple containing:
+                - int: The new scenario ID if successful, 0 if failed
+                - str: The new scenario name if successful, error message if failed
+        Raises:
+            Exception: If there is an error during the database operations
+        Notes:
+            - Creates a new scenario with name "COPY: <original_scenario_name>"
+            - Copies all driver info rows from source scenario to new scenario
+            - Sets the current group in session and g based on source scenario
+            - Uses bulk save for efficient database insertion
+        """
 
         if not scn_id:
             return 0, 'Invalid source scenario ID.'
@@ -95,8 +110,6 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
             
             # Relationship btwn scn_id and group_name is 1-1
             scn_group = selected_scn_rows[0].group_name
-            session['current_group'] = scn_group
-            g.current_group = scn_group
 
             scnname=f"COPY: {Scenarios.scn_name(scn_id)}"
             new_scn_id = Scenarios.register_new_scenario(scn_name=scnname)
@@ -133,9 +146,9 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
         except Exception as err:
             exc_logger.log_exception(popup=False)
             log_message(f'save shift data failed! {str(err)}')
-            return 0, str(err)
+            return 0, str(err), ''
 
-        return new_scn_id, scnname
+        return new_scn_id, scnname, scn_group
 
 
     @classmethod
@@ -189,12 +202,10 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
             if not timestamp:
                 timestamp = datetime.now()
 
-            _user = LION_FLASK_APP.config['LION_USER_ID']
-
             for record in obj_to_modify:
 
                 record.timestamp = timestamp
-                record.user = _user
+                record.user_id = SESSION_MANAGER.get('user_id')
                 record.double_man = record.double_man or dct_tours[record.shift_id].get(
                     'double_man', False)
 

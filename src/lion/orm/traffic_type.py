@@ -1,6 +1,6 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class TrafficType(LION_SQLALCHEMY_DB.Model):
@@ -19,8 +19,10 @@ class TrafficType(LION_SQLALCHEMY_DB.Model):
         self.traffic_type = attrs.get('traffic_type', '')
         self.traffic_type_color = attrs.get('traffic_type_color', '')
         self.abbr = attrs.get('abbr', '')
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
-        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
+
 
     @classmethod
     def update(cls, **kwargs):

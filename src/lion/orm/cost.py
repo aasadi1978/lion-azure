@@ -1,5 +1,5 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class Cost(LION_SQLALCHEMY_DB.Model):
@@ -18,7 +18,8 @@ class Cost(LION_SQLALCHEMY_DB.Model):
         self.operator = attrs.get('operator', '')
         self.cost_component = attrs.get('cost_component', '')
         self.value = attrs.get('value', 0)
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+
 
     @classmethod
     def to_dict(cls, operator=None):

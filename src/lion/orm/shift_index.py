@@ -2,11 +2,11 @@ from collections import defaultdict
 from datetime import datetime
 from sqlalchemy.exc import SQLAlchemyError
 import re
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 from lion.ui.ui_params import UI_PARAMS
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.split_list import split_list
 from lion.logger.status_logger import log_message
 from cachetools import TTLCache
@@ -24,13 +24,14 @@ class ShiftIndex(LION_SQLALCHEMY_DB.Model):
     ctrl_loc = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(150), nullable=False)
     idx = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False)
     group_name = LION_SQLALCHEMY_DB.Column(
-        LION_SQLALCHEMY_DB.String(150), nullable=True)
+        LION_SQLALCHEMY_DB.String(150), nullable=True, default=SESSION_MANAGER.get('group_name'))
 
     def __init__(self, **attrs):
         self.shiftname = attrs.get('shiftname', '')
         self.ctrl_loc = attrs.get('ctrl_loc', '')
         self.idx = attrs.get('idx', 0)
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+        self.group_name = attrs.get('group_name', )
+
 
     @classmethod
     def clear_all(cls):

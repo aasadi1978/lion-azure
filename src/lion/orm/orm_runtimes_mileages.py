@@ -1,12 +1,13 @@
 from collections import defaultdict
 from lion.orm.pickle_dumps import PickleDumps
 from sqlalchemy import and_, tuple_
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.orm.location import Location
 from lion.logger.exception_logger import log_exception
 from lion.logger.exception_logger  import log_exception
 from cachetools import TTLCache
+
+from lion.utils.session_manager import SESSION_MANAGER
 
 class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
 
@@ -43,7 +44,7 @@ class RuntimesMileages(LION_SQLALCHEMY_DB.Model):
         self.rest_time = kwargs.get('rest_time')
         self.drivers = kwargs.get('drivers')
         self.remarks = kwargs.get('remarks')
-        self.group_name = kwargs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+        self.group_name = kwargs.get('group_name', SESSION_MANAGER.get('group_name'))
 
 
     @classmethod

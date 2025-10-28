@@ -2,13 +2,11 @@ from collections import defaultdict
 from datetime import datetime, timedelta
 import logging
 from typing import List
-from flask import g
-from sqlalchemy import and_, not_
+from sqlalchemy import and_
 from sqlalchemy.exc import SQLAlchemyError
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 import lion.logger.exception_logger as exc_logger
-from lion.bootstrap.constants import LION_DATES, MIN_REPOS_MOVEMENT_ID, INIT_LOADED_MOV_ID, MOVEMENT_DUMP_AREA_NAME, RECYCLE_BIN_NAME
+from lion.bootstrap.constants import LION_DATES, INIT_LOADED_MOV_ID, MOVEMENT_DUMP_AREA_NAME, RECYCLE_BIN_NAME
 from lion.movement.dct_movement import DictMovement
 from lion.orm.drivers_info import DriversInfo
 from lion.orm.user_params import UserParams
@@ -16,6 +14,7 @@ from lion.logger.status_logger import log_message
 from lion.runtimes.runtime_mileage_fetcher import UI_RUNTIMES_MILEAGES
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils import dict2class
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
@@ -44,10 +43,10 @@ class ShiftMovementEntry(LION_SQLALCHEMY_DB.Model):
         self.is_loaded = not is_repos
         self.loc_string = attrs.get('loc_string', '')
         self.tu_dest = attrs.get('tu_dest', '')
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
         self.extended_str_id = attrs.get('extended_str_id', f"{attrs.get('str_id', '')}|{self.movement_id}")
-        self.scn_id = attrs.get('scn_id', g.current_scn_id)
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+        self.scn_id = attrs.get('scn_id', SESSION_MANAGER.get('scn_id'))
 
     @property
     def shift_ids(cls):

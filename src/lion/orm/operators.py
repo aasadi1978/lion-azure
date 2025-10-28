@@ -1,10 +1,11 @@
 from typing import List
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
 from lion.utils.print2console import display_in_console
 from cachetools import TTLCache
+
+from lion.utils.session_manager import SESSION_MANAGER
 
 dct_oper_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
 
@@ -21,7 +22,9 @@ class Operator(LION_SQLALCHEMY_DB.Model):
 
     def __init__(self, **attrs):
         self.operator = attrs.get('operator', '')
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config.get('LION_USER_GROUP_NAME', 'To Be Validated'))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+
+
 
     @classmethod
     def list_operators(cls):    

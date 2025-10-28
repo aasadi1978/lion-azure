@@ -1,6 +1,6 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class UserParams(LION_SQLALCHEMY_DB.Model):
@@ -23,8 +23,10 @@ class UserParams(LION_SQLALCHEMY_DB.Model):
         self.html_element_id = attrs.get('html_element_id', '')
         self.category = attrs.get('category', 'General')
         self.default_value = attrs.get('default_value', 'General')
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
-        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
+
 
     @classmethod
     def to_elem_dict(cls):

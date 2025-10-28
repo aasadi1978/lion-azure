@@ -2,6 +2,7 @@ from flask import g, session
 from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.utcnow import utcnow
 
 
@@ -21,9 +22,12 @@ class ScenarioSequence(LION_SQLALCHEMY_DB.Model):
 
     group_name = LION_SQLALCHEMY_DB.Column(
         LION_SQLALCHEMY_DB.String(255),
-        default=session.get('current_group', LION_DEFAULT_GROUP_NAME) or g.get('current_group', LION_DEFAULT_GROUP_NAME),
+        default=SESSION_MANAGER.get('group_name'),
         nullable=False
     )
+
+    def __init__(self, **attrs):
+        self.group_name = attrs.get('group_name', )
 
     @classmethod
     def get_next_scenario_id(cls):

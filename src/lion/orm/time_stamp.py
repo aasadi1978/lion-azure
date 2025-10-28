@@ -1,6 +1,7 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from datetime import datetime, timezone
+
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class TimeStamp(LION_SQLALCHEMY_DB.Model):
@@ -18,8 +19,10 @@ class TimeStamp(LION_SQLALCHEMY_DB.Model):
     def __init__(self, **attrs):
         self.setting_name = attrs.get('setting_name', '')
         self.timestamp = attrs.get('timestamp', datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S'))
-        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
 
     @classmethod
     def update(cls, **settings):

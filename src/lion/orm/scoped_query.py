@@ -1,24 +1,27 @@
 from sqlalchemy.orm import Query as BaseQuery
-from flask import has_request_context, session, g
+from flask import has_request_context
 from sqlalchemy import and_
 from lion.logger.exception_logger import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 
 class AutoScopedQuery(BaseQuery):
     """
     Automatically applies hierarchical access control based on __scope_hierarchy__.
     Supports scn_id, group_name, and user_id scopes, with model-level priority.
+    __scope_hierarchy__ =  ["scn_id", "user_id", "group_name"]
     """
 
-    _user_field_map = {
-        "scn_id": "scn_id",
-        "group_name": "group_name",
-        "user_id": "user_id",
-    }
+    def _get_current_user(self):
 
-    _current_user = {'scn_id': int(getattr(g, "current_scn_id", 0)) or int(session.get("current_scn_id", 0)),
-                    'user_id': session.get("_current_user", {}).get('user_id', '') or g.get("_current_user", {}).get('user_id', '')}
+        scn_id = SESSION_MANAGER.get('scn_id', 0)
+        user_id = SESSION_MANAGER.get('user_id', 0)
+        group_name = SESSION_MANAGER.get('group_name', None)
 
-    _current_group = session.get("current_group", None) or g.get("current_group", None)
+        if scn_id and user_id and group_name and len(str(scn_id)) > 0 and len(str(user_id)) > 0 and len(str(group_name)) > 0:
+            return {'scn_id': scn_id, 'user_id': user_id, 'group_name': group_name}
+        
+        return {}
+
 
     def _apply_scope(self):
 
@@ -27,7 +30,8 @@ class AutoScopedQuery(BaseQuery):
             if not has_request_context():
                 return self
             
-            if not self._current_user.get('user_id', ''):
+            _current_user = self._get_current_user()
+            if not _current_user:
                 return self
             
             entity = self._only_full_mapper_zero("apply_scope").class_
@@ -37,28 +41,12 @@ class AutoScopedQuery(BaseQuery):
                 return self
 
             filters = []
-
             for scope_field in hierarchy:
 
-                if not hasattr(entity, scope_field):
-                    continue
+                _apply_filter_flag: bool = hasattr(entity, scope_field) and _current_user.get(scope_field, None)
 
-                user_field = self._user_field_map.get(scope_field)
-                if not hasattr(self._current_user, user_field):
-                    continue
-
-
-                if scope_field=='group_name' and hasattr(entity, "group_name"):
-
-                    if not self._current_group:
-                        raise Exception('Unknown group name.')
-
-                    filters.append(getattr(entity, "group_name", '') == self._current_group)
-                    continue
-
-                user_value = getattr(self._current_user, user_field)
-                if user_value is not None:
-                    filters.append(getattr(entity, scope_field) == user_value)
+                if _apply_filter_flag:
+                    filters.append(getattr(entity, scope_field) == _current_user[scope_field])
 
             # Apply logic based on declared hierarchy
             if not filters:

@@ -48,7 +48,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def update_docs(cls, docs=''):
 
-        scn_id =g.get('current_scn_id', 1)
+        scn_id =g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -90,7 +90,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def update_scn_name(cls, scn_name):
 
-        scn_id = g.get('current_scn_id', 1)
+        scn_id = g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -131,7 +131,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def get_password(cls):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
 
         try:
             existing_obj = cls.query.filter(cls.scn_id == int(scn_id)).first()
@@ -152,7 +152,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def set_password(cls, password='lionuk2020'):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
         hashdpwd = BCRYPT.generate_password_hash(
             password).decode('utf-8')
 
@@ -175,7 +175,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def check_password(cls, password):
 
-        scn_id=g.get('current_scn_id', 1)
+        scn_id=g.get('lion_current_scn_id', 1)
         if password == 'lionuk2020' or scn_id == 0:
             return True
 
@@ -224,7 +224,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def fetch_scn_name(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('current_scn_id', 1)
+            scn_id = scn_id or g.get('lion_current_scn_id', 1)
             record: Scenarios = cls.query.filter(cls.scn_id == scn_id).first()
             
             if record:
@@ -250,7 +250,7 @@ class Scenarios(LION_SQLALCHEMY_DB.Model):
     @classmethod
     def docs(cls, scn_id=None):
         try:
-            scn_id = scn_id or g.get('current_scn_id', 1)
+            scn_id = scn_id or g.get('lion_current_scn_id', 1)
             obj = cls.query.with_entities(
                 cls.docs).filter(cls.scn_id == scn_id).first()
             if obj:

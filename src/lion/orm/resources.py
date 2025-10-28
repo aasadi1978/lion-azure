@@ -1,10 +1,10 @@
 import logging
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 from sqlalchemy.exc import SQLAlchemyError
 from lion.logger.exception_logger import log_exception
 from lion.ui.ui_params import UI_PARAMS
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class Resources(LION_SQLALCHEMY_DB.Model):
@@ -29,9 +29,11 @@ class Resources(LION_SQLALCHEMY_DB.Model):
         self.employed = attrs.get('employed', 0)
         self.subco = attrs.get('subco', 0)
         self.total = attrs.get('total', 0)
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
-        self.region = attrs.get('region', UI_PARAMS.LION_REGION)
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+        self.scn_id = attrs.get('scn_id', SESSION_MANAGER.get('scn_id'))
+        self.region = attrs.get('region', SESSION_MANAGER.get('region', 'GB'))
+
 
     @classmethod
     def get_driver_locations(cls):
@@ -90,7 +92,7 @@ class Resources(LION_SQLALCHEMY_DB.Model):
     def dct_employed_by_user(cls):
 
         try:
-            records = Resources.query.filter(cls.region==UI_PARAMS.LION_REGION).all()
+            records = Resources.query.all()
             return {rcrd.loc_code: rcrd.employed for rcrd in records}
 
         except Exception as err:
@@ -102,7 +104,7 @@ class Resources(LION_SQLALCHEMY_DB.Model):
     def dct_subco_by_user(cls):
 
         try:
-            records = Resources.query.filter(cls.region==UI_PARAMS.LION_REGION).all()
+            records = Resources.query.all()
             return {rcrd.loc_code: rcrd.subco for rcrd in records}
 
         except Exception:
@@ -113,8 +115,7 @@ class Resources(LION_SQLALCHEMY_DB.Model):
     def dct_total_by_user(cls):
 
         try:
-            return dict(cls.query.with_entities(cls.loc_code, cls.total).filter(
-                cls.region==UI_PARAMS.LION_REGION).all())
+            return dict(cls.query.with_entities(cls.loc_code, cls.total).all())
 
         except Exception:
             LION_SQLALCHEMY_DB.session.rollback()
@@ -125,7 +126,7 @@ class Resources(LION_SQLALCHEMY_DB.Model):
 
         try:
             records = cls.query.filter(
-                cls.loc_code == loc_code, cls.region==UI_PARAMS.LION_REGION).all()
+                cls.loc_code == loc_code).all()
             return records.pop().employed
 
         except Exception:
@@ -136,7 +137,7 @@ class Resources(LION_SQLALCHEMY_DB.Model):
 
         try:
             records = cls.query.filter(
-                cls.loc_code == loc_code, cls.region==UI_PARAMS.LION_REGION).all()
+                cls.loc_code == loc_code).all()
             return records.pop().subco
 
         except Exception:

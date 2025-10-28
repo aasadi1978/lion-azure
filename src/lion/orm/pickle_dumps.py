@@ -1,7 +1,8 @@
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
 from pickle import dumps as pickle_dumps, loads as pickle_loads
+
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class PickleDumps(LION_SQLALCHEMY_DB.Model):
@@ -20,8 +21,9 @@ class PickleDumps(LION_SQLALCHEMY_DB.Model):
     def __init__(self, **attrs):
         self.filename = attrs.get('filename', '')
         self.content = attrs.get('content', None)
-        self.user_id = str(attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID']))
-        self.group_name = str(attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME']))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
+
 
     @classmethod
     def get_content(cls, filename=None, method_if_null=None, if_null=None):

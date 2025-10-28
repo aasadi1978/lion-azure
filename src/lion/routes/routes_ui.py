@@ -3,7 +3,7 @@ from os import environ
 from json import loads as json_loads
 
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
-from flask import Blueprint, abort, jsonify, render_template, request, g, session
+from flask import Blueprint, jsonify, render_template, request
 from lion.orm.changeover import Changeover
 from lion.logger.log_entry import LogEntry
 from lion.orm.scenarios import Scenarios
@@ -11,6 +11,7 @@ from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.orm.drivers_info import DriversInfo
 from lion.orm.user import User
 from lion.reporting.publish_driver_plan import gen_driver_report
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.ui import changeover_chart
 from lion.ui.basket import basket_chart
 from lion.ui.basket.basket_shifts import get_basket_shift_ids
@@ -19,7 +20,6 @@ from lion.ui.save_ui_params import refresh_schedule_filters
 from lion.orm.shift_index import ShiftIndex
 from lion.shift_data.save_schedule import save_final_version_of_schedule
 from lion.shift_data.shift_data import UI_SHIFT_DATA
-from lion.utils.dispose_db_engine import shutdown_db_engine
 from lion.utils.flask_request_manager import retrieve_form_data
 from lion.orm.location import Location
 from lion.orm.user_params import UserParams
@@ -40,14 +40,14 @@ import lion.utils.reset_global_instances as reset_globals
 
 ui_bp = Blueprint('ui', __name__)
 
-@ui_bp.before_request
-def block_requests():
-    """
-    Before running any route in the ui_bp blueprint, first call this function. If it returns or raises an error (like abort(503)), 
-    stop the request there.
-    """
-    if UI_PARAMS.REQUEST_BLOCKER:
-        abort(503, description="A background operation is running. Try again shortly.")
+# @ui_bp.before_request
+# def block_requests():
+#     """
+#     Before running any route in the ui_bp blueprint, first call this function. If it returns or raises an error (like abort(503)), 
+#     stop the request there.
+#     """
+#     if UI_PARAMS.REQUEST_BLOCKER:
+#         abort(503, description="A background operation is running. Try again shortly.")
 
 @ui_bp.route('/loading_schedule/')
 def loading_schedule():
@@ -56,13 +56,43 @@ def loading_schedule():
 
     return render_template('wait.html', params=params)
 
+@ui_bp.route('/schedule/')
+def schedule():
+    flaskWarningsOff()
+
+    # This is triggered when window.location.href = '/loading_schedule/' is called
+    try:
+
+        # Location.update_loc_names()
+        refresh_traffic_type_colors()
+        
+        DRIVERS_UI.set_barwidth()
+        DRIVERS_UI.clear_cache()
+
+        status = load_shift_data_if_needed()
+
+        if status.get('code', 200) == 200:
+            status = apply_filters()
+
+        status = refresh_options()
+
+        if status.get('code', 200) == 200:
+            return render_template('driver_schedule.html', options=UI_PARAMS.OPTIONS)
+        
+        return render_template('driver_schedule.html', options={})
+
+    except Exception as e:
+        return render_template('message.html', 
+                               message={'title': 'ERROR',
+                                        'error': f'Loading schedule failed!\n{log_exception(popup=False)}'})
+
 @ui_bp.route('/cold-schedule-reload/', methods=['POST'])
 def cold_schedule_reload():
 
     cold_start_error = ''
     try:
-        UI_PARAMS.REQUEST_BLOCKER = True
-        shutdown_db_engine()
+        # UI_PARAMS.REQUEST_BLOCKER = True
+        # shutdown_db_engine()
 
         if not FLASK_APP_INSTANCE.is_app_valid():
             logging.info("Cold schedule reload: Creating new Flask app instance ...")
@@ -92,44 +122,13 @@ def cold_schedule_reload():
         cold_start_error = f"Cold schedule reload failed: {str(e)}"
         logging.error(cold_start_error)
 
-    finally:
-        UI_PARAMS.REQUEST_BLOCKER = False
+    # finally:
+    #     UI_PARAMS.REQUEST_BLOCKER = False
 
     if cold_start_error:
         return jsonify({'code': 400, 'error': cold_start_error, 'chart_data': {}})
 
     return jsonify({'chart_data': get_chart_data(), 'code': 200, 'message': 'Schedule reloaded successfully.'})
-
-@ui_bp.route('/schedule/')
-def schedule():
-    flaskWarningsOff()
-
-    # This is triggered when window.location.href = '/loading_schedule/' is called
-
-    try:
-
-        Location.update_loc_names()
-        refresh_traffic_type_colors()
-        
-        DRIVERS_UI.set_barwidth()
-        DRIVERS_UI.clear_cache()
-
-        status = load_shift_data_if_needed()
-
-        if status.get('code', 200) == 200:
-            status = apply_filters()
-
-        status = refresh_options()
-
-        if status.get('code', 200) == 200:
-            return render_template('driver_schedule.html', options=UI_PARAMS.OPTIONS)
-        
-        return render_template('driver_schedule.html', options={})
-
-    except Exception as e:
-        return render_template('message.html', 
-                               message={'title': 'ERROR',
-                                        'error': f'Loading schedule failed!\n{log_exception(popup=False)}'})
 
 @ui_bp.route('/update-page-number', methods=['POST'])
 def update_page_num():
@@ -334,19 +333,20 @@ def get_chart():
 @ui_bp.route('/load-selected-schedule', methods=['post'])
 def import_selected_schedule():
 
-    UI_PARAMS.REQUEST_BLOCKER = True
+    # UI_PARAMS.REQUEST_BLOCKER = True
 
     try:
         dct_params = retrieve_form_data()
         scn_id = Scenarios.get_scn_id(scn_name=dct_params.get('scn_name', ''))
 
-        scn_id_copy, scnname = DriversInfo.duplicate_scn(scn_id=scn_id)
+        scn_id_copy, scnname, group_name = DriversInfo.duplicate_scn(scn_id=scn_id)
         if isinstance(scn_id_copy, int) and scn_id_copy > 0:
 
-            g.current_scn_id = scn_id_copy
-            g.current_scn_name = scnname
-            session['current_scn_id'] = scn_id_copy
-            session['current_scn_name'] = scnname
+            SESSION_MANAGER.set_user_context(
+                current_scn_id=scn_id_copy, 
+                scn_name=scnname,
+                group_name=group_name)
+            
             User.set_scn_id(scn_id=scn_id_copy)
 
             if ShiftMovementEntry.duplicate_scn(from_scn_id=scn_id, to_scn_id=scn_id_copy) and \
@@ -369,8 +369,8 @@ def import_selected_schedule():
     except Exception:
         return return_exception_code(popup=False)
 
-    finally:
-        UI_PARAMS.REQUEST_BLOCKER = False
+    # finally:
+    #     UI_PARAMS.REQUEST_BLOCKER = False
 
 @ui_bp.route('/save-final-vsn-schedule', methods=['post'])
 def export_local_schedule_data():

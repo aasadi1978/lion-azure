@@ -3,6 +3,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
+from lion.utils.session_manager import SESSION_MANAGER
 
 class GroupName(LION_SQLALCHEMY_DB.Model):
 
@@ -15,8 +16,8 @@ class GroupName(LION_SQLALCHEMY_DB.Model):
     user_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(255), nullable=True, default='1')
 
     def __init__(self, **attrs):
-        self.group_name = attrs.get('group_name', '')
-        self.user_id = str(attrs.get('user_id', 'Guest'))
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = str(attrs.get('user_id', SESSION_MANAGER.get('user_id')))
 
 
     @classmethod

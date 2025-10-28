@@ -7,7 +7,7 @@ from pandas import concat, isnull, read_sql
 from lion.utils.sqldb import SQLDB
 from lion.create_flask_app.create_app import LION_FLASK_APP
 
-def validate_region_and_lang():
+def validate_lang():
     """
     Validates the region by checking if the DELTA database connection string is set.
     Returns:
@@ -28,11 +28,6 @@ def validate_region_and_lang():
         if not cntry_codes[0]:
             DELTA_LOGGER.log_message("Country code is empty in the DELTA database.")
             return False
-
-        LION_FLASK_APP.config['LION_USER_REGION_NAME'] = str(cntry_codes[0]).upper()
-        LION_FLASK_APP.config['LION_USER_LANGUAGE_NAME'] = str(cntry_codes[0]).upper()
-
-        DELTA_LOGGER.log_message(f"Region validated: {LION_FLASK_APP.config['LION_USER_REGION_NAME']}")
 
     except Exception as e:
         DELTA_LOGGER.log_exception(popup=False, remarks=str(e))
@@ -63,7 +58,7 @@ def read_locations():
     error_occurred = False
     try:
         
-        if not validate_region_and_lang():
+        if not validate_lang():
             raise Exception(f"Region validation failed: {DELTA_LOGGER.DELTA_GLOBAL_ERROR}")
         
         access_conn = pyodbc_connect(DELTA_LOGGER.DELTA_DB_CON_STR)

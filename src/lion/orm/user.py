@@ -1,10 +1,10 @@
 from flask import g, session
 from sqlalchemy.exc import SQLAlchemyError
-from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
-from lion.create_flask_app.create_app import BCRYPT
+from lion.bootstrap.constants import LION_DDEMO_SCN_NAME, LION_DEFAULT_GROUP_NAME
+from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger  import log_exception
-from lion.orm.groups import GroupName
+from lion.utils.session_manager import SESSION_MANAGER
 
 class User(LION_SQLALCHEMY_DB.Model):
 
@@ -18,23 +18,42 @@ class User(LION_SQLALCHEMY_DB.Model):
     role = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False, default='Scheduler')
     password_hash = LION_SQLALCHEMY_DB.Column('password_hash', LION_SQLALCHEMY_DB.String(500), nullable=False, default='')
     lang = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(50), nullable=False, default='GB')
-    last_picked_scn_id = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer)
+    current_scn_id= LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.Integer, nullable=False, default=1)
 
     def __init__(self, **kwargs):
 
-        self.user_id = str(kwargs.get('user_id', 'guest'))
+        self.user_id = session.get('lion_current_user_id', None) or g.get('lion_current_user_id', 1)
         self.object_id = str(kwargs.get('object_id', 'guest'))
         self.role = kwargs.get('role', 'Scheduler')
         self.user_name = kwargs.get('user_name', 'Guest')
         self.email = kwargs.get('email', 'guest@host.com')
         self.lang = kwargs.get('lang', 'GB')
         self.password_hash = kwargs.get('password_hash', '')
-        self.last_picked_scn_id = kwargs.get('last_picked_scn_id', session.get('current_scn_id', None) or g.get('current_scn_id', 1))
+        self.current_scn_id = SESSION_MANAGER.get('scn_name')
 
     @classmethod
-    def load_user(cls):
+    def load_user_context(cls):
+        """
+        Load and set the user context for the current session.
+        This method retrieves the user data from the database, adds group information,
+        and sets up the user context with scenario information.
+        Returns:
+            dict: A dictionary containing user information with the following keys:
+                - User model attributes (excluding password_hash)
+                - groups: List of user groups
+                - lion_current_group: Current active group (defaults to LION_DEFAULT_GROUP_NAME)
+                - lion_current_scn_id: Current scenario ID (defaults to 1)
+                - lion_current_scn_name: Current scenario name (defaults to LION_DDEMO_SCN_NAME)
+        Raises:
+            Exception: If user is not found in database (handled internally)
+        Note:
+            - If no user is found, creates an empty User object
+            - Removes password_hash from returned dictionary for security
+            - Uses session or g object to get lion_current_group
+        """
 
-        current_group = session.get('current_group', None) or g.get('current_group', None)
+        lion_current_group = SESSION_MANAGER.get('group_name')
+        scn_name = SESSION_MANAGER.get('scn_name')
         
         try:
             
@@ -44,23 +63,30 @@ class User(LION_SQLALCHEMY_DB.Model):
             if userobj is not None:
                 dct_lion_user = userobj.__dict__
             else:
-                guest = User()
-                dct_lion_user = guest.__dict__
+                raise Exception('User not found!')
 
-            dct_lion_user.setdefault('groups', GroupName.get_user_groups())
-            del dct_lion_user['password_hash']
-            
         except Exception:
             log_exception('user not found!')
-            dct_lion_user = {'user_id': 'guest',
-                             'group_name': LION_DEFAULT_GROUP_NAME,
-                             'user_name': 'Guest'
-                             }
+            dct_lion_user = User().__dict__
 
-        session['current_user'] = dct_lion_user
-        session['current_group'] = current_group or LION_DEFAULT_GROUP_NAME
-        g.current_user = dct_lion_user
-        g.current_group = current_group or LION_DEFAULT_GROUP_NAME
+        try:
+
+            dct_lion_user.update({'group_name': lion_current_group or LION_DEFAULT_GROUP_NAME,
+                                  'scn_name': scn_name or LION_DDEMO_SCN_NAME})
+
+            dct_lion_user.pop('password_hash', None)
+
+            session['user'] = dct_lion_user
+
+            LION_FLASK_APP.config['LION_USER_ID'] = dct_lion_user['user_id']
+            LION_FLASK_APP.config['LION_USER_GROUP_NAME'] = dct_lion_user['group_name']
+            LION_FLASK_APP.config['LION_USER_ROLE'] = dct_lion_user['role']
+            LION_FLASK_APP.config['LION_USER_FULL_NAME'] = dct_lion_user['user_name']
+            LION_FLASK_APP.config['LION_REGION_LANGUAGE'] = dct_lion_user['lang']
+
+        except Exception:
+            log_exception('Setting user context failed')
+            dct_lion_user = {}
 
         return dct_lion_user
 
@@ -223,14 +249,19 @@ class User(LION_SQLALCHEMY_DB.Model):
 
     @classmethod
     def set_scn_id(cls, scn_id):
+        """
+        Updates current_scn_idfield to rememebnr user's latest scenario
+        """
         try:
             userObj: User = cls.query.first()
 
             if userObj:
-                userObj.last_picked_scn_id = scn_id
+                setattr(userObj, 'current_scn_id', scn_id)
                 LION_SQLALCHEMY_DB.session.commit()
             
         except SQLAlchemyError:
             LION_SQLALCHEMY_DB.session.rollback()
             log_exception("Failed to set scn_id!")
-            return True
+        except Exception:
+            log_exception("Failed to set scn_id!")
+

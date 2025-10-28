@@ -1,13 +1,12 @@
 import logging
 from typing import List, Set
 from cachetools import TTLCache
-from flask import g
 from sqlalchemy.exc import SQLAlchemyError
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.status_logger import log_message
 from lion.utils.popup_notifier import show_error
 from lion.orm.shift_movement_entry import ShiftMovementEntry
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class Changeover(LION_SQLALCHEMY_DB.Model):
@@ -34,9 +33,9 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
         self.tu_dest = attrs.get('tu_dest', attrs.get(
             'tu', self.loc_string.split('.').pop()))
 
-        self.group_name = attrs.get('group_name', LION_FLASK_APP.config['LION_USER_GROUP_NAME'])
-        self.user_id = attrs.get('user_id', LION_FLASK_APP.config['LION_USER_ID'])
-        self.scn_id = attrs.get('scn_id', g.current_scn_id)
+        self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
+        self.user_id = attrs.get('user_id', SESSION_MANAGER.get('user_id'))
+        self.scn_id = attrs.get('scn_id', SESSION_MANAGER.get('scn_id'))
 
     @classmethod
     def duplicate_scn(cls, from_scn_id: int, to_scn_id: int) -> bool:
@@ -251,7 +250,3 @@ class Changeover(LION_SQLALCHEMY_DB.Model):
             LION_SQLALCHEMY_DB.session.rollback()
 
 
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        LION_SQLALCHEMY_DB.create_all()
