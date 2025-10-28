@@ -23,8 +23,10 @@ jobs:
       # - name: Install dependencies
       - name: Install dependencies and package
         run: |
+          python -m venv antenv
+          source antenv/bin/activate
           pip install --upgrade pip setuptools
-          pip install .
+          pip install -r requirements.txt
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
