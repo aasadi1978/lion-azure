@@ -54,6 +54,21 @@ jobs:
       id-token: write
       contents: read
 
+    env:
+      AZURE_SQL_USER: ${{ secrets.AZURE_SQL_USER }}
+      AZURE_SQL_PASS: ${{ secrets.AZURE_SQL_PASS }}
+      AZURE_SQL_SERVER: ${{ secrets.AZURE_SQL_SERVER }}
+      AZURE_SQL_DB: ${{ secrets.AZURE_SQL_DB }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      AZURE_SUBSCRIPTION: ${{ secrets.AZURE_SUBSCRIPTION }}
+      AZURE_LION_APP_TENANT_ID: ${{ secrets.AZURE_LION_APP_TENANT_ID }}
+      AZURE_LION_APP_CLIENT_ID: ${{ secrets.AZURE_LION_APP_CLIENT_ID }}
+      AZURE_LION_APP_OBJECT_ID: ${{ secrets.AZURE_LION_APP_OBJECT_ID }}
+      AZURE_LION_APP_CLIENT_SECRET: ${{ secrets.AZURE_LION_APP_CLIENT_SECRET }}
+      FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+      AZURE_STORAGE_CONNECTION_STRING: ${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}
+      LION_APP: lion.lion_app:app
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
@@ -71,17 +86,31 @@ jobs:
       # Dynamically set Azure App Settings before deployment
       - name: Configure Azure App Settings
         run: |
+          echo "Configuring Azure App Settings..."
           az webapp config appsettings set \
-            --name ${{ env.AZURE_WEBAPP_NAME }} \
-            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
-            --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true WEBSITES_DISABLE_ORYX=false \
-            AZURE_SQL_USER=${{ secrets.AZURE_SQL_USER }} AZURE_SQL_PASS=${{ secrets.AZURE_SQL_PASS }} AZURE_SQL_SERVER=${{ secrets.AZURE_SQL_SERVER }} AZURE_SQL_DB=${{ secrets.AZURE_SQL_DB }} \
-            AZURE_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }} AZURE_RESOURCE_GROUP=${{ secrets.AZURE_RESOURCE_GROUP }} AZURE_SUBSCRIPTION=${{ secrets.AZURE_SUBSCRIPTION }} \
-            AZURE_LION_APP_TENANT_ID=${{ secrets.AZURE_LION_APP_TENANT_ID }} AZURE_LION_APP_CLIENT_ID=${{ secrets.AZURE_LION_APP_CLIENT_ID }} \
-            AZURE_LION_APP_OBJECT_ID=${{ secrets.AZURE_LION_APP_OBJECT_ID }} AZURE_LION_APP_CLIENT_SECRET=${{ secrets.AZURE_LION_APP_CLIENT_SECRET }} FLASK_ENV=${{env.FLASK_ENV}} \
-            FLASK_SECRET_KEY=${{ secrets.FLASK_SECRET_KEY }} WEBSITES_CONTAINER_START_TIME_LIMIT=${{ env.WEBSITES_CONTAINER_START_TIME_LIMIT }} \
-            AZURE_STORAGE_CONNECTION_STRING=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} WEBSITES_ENABLE_APP_SERVICE_STORAGE=${{env.WEBSITES_ENABLE_APP_SERVICE_STORAGE}} \
-            WEBSITES_PORT=${{env.WEBSITES_PORT}}  PORT=${{env.WEBSITES_PORT}} 
+            --name "$AZURE_WEBAPP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --settings \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
+              WEBSITES_DISABLE_ORYX=false \
+              AZURE_SQL_USER="$AZURE_SQL_USER" \
+              AZURE_SQL_PASS="$AZURE_SQL_PASS" \
+              AZURE_SQL_SERVER="$AZURE_SQL_SERVER" \
+              AZURE_SQL_DB="$AZURE_SQL_DB" \
+              AZURE_SUBSCRIPTION_ID="$AZURE_SUBSCRIPTION_ID" \
+              AZURE_RESOURCE_GROUP="$AZURE_RESOURCE_GROUP" \
+              AZURE_SUBSCRIPTION="$AZURE_SUBSCRIPTION" \
+              AZURE_LION_APP_TENANT_ID="$AZURE_LION_APP_TENANT_ID" \
+              AZURE_LION_APP_CLIENT_ID="$AZURE_LION_APP_CLIENT_ID" \
+              AZURE_LION_APP_OBJECT_ID="$AZURE_LION_APP_OBJECT_ID" \
+              AZURE_LION_APP_CLIENT_SECRET="$AZURE_LION_APP_CLIENT_SECRET" \
+              FLASK_ENV="$FLASK_ENV" \
+              FLASK_SECRET_KEY="$FLASK_SECRET_KEY" \
+              WEBSITES_CONTAINER_START_TIME_LIMIT="$WEBSITES_CONTAINER_START_TIME_LIMIT" \
+              AZURE_STORAGE_CONNECTION_STRING="$AZURE_STORAGE_CONNECTION_STRING" \
+              WEBSITES_ENABLE_APP_SERVICE_STORAGE="$WEBSITES_ENABLE_APP_SERVICE_STORAGE" \
+              WEBSITES_PORT="$WEBSITES_PORT" \
+              PORT="$WEBSITES_PORT"
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
@@ -89,3 +118,14 @@ jobs:
         with:
           app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
+    
+      - name: set startup command
+        run: |
+          az webapp config set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --startup-file "gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
+
+      - name: Verify startup command
+        run: |
+          az webapp config show \
+            --name "$AZURE_WEBAPP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --query siteConfig.appCommandLine
