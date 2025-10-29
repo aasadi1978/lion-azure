@@ -2,8 +2,6 @@
 requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
-[tool.setuptools.bdist_wheel]
-dist-name = "lion-latest"
 
 [project]
 name = "lion"
