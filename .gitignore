@@ -20,11 +20,13 @@ __pycache__/
 !orchestrator
 !.github
 !*.toml
+!.deploy
 
 
 
 
 # Ignore specific directories
+secrets.sh
 user-manual/dist
 user-manual/venv
 technical-doc/dist

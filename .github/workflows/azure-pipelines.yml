@@ -6,6 +6,12 @@ on:
       - master
   workflow_dispatch:
 
+env:
+  AZURE_WEBAPP_NAME: lion
+  PYTHON_VSN: '3.12'
+  AZURE_RESOURCE_GROUP: rg-lion-app
+
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +24,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ env.PYTHON_VSN }}
 
       # - name: Install dependencies
       - name: Install dependencies and package
@@ -27,13 +33,13 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip setuptools
           pip install .
-          pip show lion
-          echo "✅ lion installed; skipping app import due to missing env vars."
+          pip show ${{ env.AZURE_WEBAPP_NAME }}
+          echo "${{ env.AZURE_WEBAPP_NAME }} installed; skipping app import due to missing env vars."
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
-          name: lion-flask-app
+          name: ${{ env.AZURE_WEBAPP_NAME }}
           path: |
             .
             !.venv/
@@ -49,18 +55,27 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: lion-flask-app
+          name: ${{ env.AZURE_WEBAPP_NAME }}
 
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_5B026A751B2C41CB904E28DFBE0BF0A7 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D1EA8B0CB0A6452EB61D86EC2166F59A }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0F366397AB794420AE9F78492E6DFA18 }}
+          client-id: ${{ secrets.AZURE_LION_APP_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_LION_APP_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+
+      # Dynamically set Azure App Settings before deployment
+      - name: Configure Azure App Settings
+        run: |
+          az webapp config appsettings set \
+            --name ${{ env.AZURE_WEBAPP_NAME }} \
+            --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+            --settings SCM_DO_BUILD_DURING_DEPLOYMENT=true WEBSITES_DISABLE_ORYX=false
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'lion'
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
           slot-name: 'Production'
