@@ -11,6 +11,7 @@ from lion.ui.ui_params import UI_PARAMS
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 from lion.logger.exception_logger import return_exception_code
 from lion.create_flask_app.create_app import LION_FLASK_APP
+from lion.utils.session_manager import SESSION_MANAGER
 
 def update_all_locs(_dict_footprint):
 
@@ -74,7 +75,7 @@ def refresh_options(**kwargs):
                             'operators': Operator.list_operators(),
                             'dict_footprint': _dict_footprint,
                             'datetimefrom': CALENDAR_DATE_FROM,
-                            'title': f"{TAG_NAME}/{LION_FLASK_APP.config['LION_USER_ROLE']}",
+                            'title': f"{TAG_NAME}/{SESSION_MANAGER.get('role')}",
                             'traffic_type': 'Express',
                             'filtering_loc_codes': [] if len(UI_PARAMS.FILTERING_LOC_CODES) > 10 else UI_PARAMS.FILTERING_LOC_CODES,
                             'basket_drivers':  list(set(my_shifts_in_basket)) if my_shifts_in_basket else pre_load_my_shifts_in_basket(),

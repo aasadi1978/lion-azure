@@ -81,7 +81,6 @@ class User(LION_SQLALCHEMY_DB.Model):
 
             LION_FLASK_APP.config['LION_USER_ID'] = dct_lion_user['user_id']
             LION_FLASK_APP.config['LION_USER_GROUP_NAME'] = dct_lion_user['group_name']
-            LION_FLASK_APP.config['LION_USER_ROLE'] = dct_lion_user['role']
             LION_FLASK_APP.config['LION_REGION_LANGUAGE'] = dct_lion_user['lang']
 
         except Exception:
