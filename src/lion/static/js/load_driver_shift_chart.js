@@ -107,39 +107,50 @@ function is_chart_data_ok(dct_chart_data) {
 
 async function validate_chart_data(dct_chart_data) {
 
-  for (let attempt = 0; attempt < 5; attempt++) {
-    if (is_chart_data_ok(dct_chart_data)) return dct_chart_data;
+  let max_attempts=5
+  for (let attempt = 0; attempt < max_attempts + 1; attempt++) {
+
+    if (is_chart_data_ok(dct_chart_data)) return dct_chart_data
+
+    await new Promise(r => setTimeout(r, 1000));
     console.log(`Chart data not ready (attempt ${attempt + 1})`);
-    await new Promise(r => setTimeout(r, 1000)); // wait 1 sec before retry
-  }
 
-  let status_cold_start_notification = await create_popup_async(
-    (title = 'Loading issue'),
-    (message =
-      'We ran into an issue when loading the schedule. Please wait for a retry ... You will be notified when it is done.'),
-    (type = 'Info')
-  );
-
-  if (status_cold_start_notification == 'OK') {
     let status_cold_start = sync_post('/cold-schedule-reload/', {});
-
-    if (status_cold_start.code == 400) {
-      create_popup((title = 'Error'), (message = status_cold_start.error));
+    if (status_cold_start.code == 200) {
+        dct_chart_data = status_cold_start.chart_data;
     } else {
-      dct_chart_data = status_cold_start.chart_data;
+      dct_chart_data = {}
 
-      if (is_chart_data_ok(dct_chart_data)) {
-        create_popup(
-          (title = 'Info'),
+      if (attempt >= max_attempts) {
+        status_cold_start_notification = await create_popup_async(
+          (title = 'Loading issue'),
           (message =
-            'Validation: Schedule reloaded. Please try again in a few seconds.')
+            'We ran into an issue when loading the schedule. Please wait for a retry ... You will be notified when it is done.'),
+          (type = 'Info')
         );
 
-        return dct_chart_data;
+        if (status_cold_start_notification == 'OK') {
+          let status_cold_start = sync_post('/cold-schedule-reload/', {});
+
+          if (status_cold_start.code == 400) {
+            create_popup((title = 'Error'), (message = status_cold_start.error));
+          } else {
+            dct_chart_data = status_cold_start.chart_data;
+
+            if (is_chart_data_ok(dct_chart_data)) {
+              create_popup(
+                (title = 'Info'),
+                (message =
+                  'Validation: Schedule reloaded. Please try again in a few seconds.')
+              );
+
+              return dct_chart_data;
+            }
+          }
+        }
       }
     }
   }
-
   return {};
 }
 
