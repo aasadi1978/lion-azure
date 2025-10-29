@@ -36,8 +36,8 @@ jobs:
           source .venv/bin/activate
           pip install --upgrade pip setuptools
           pip install .
-          pip show ${{ env.AZURE_WEBAPP_NAME }}
-          echo "${{ env.AZURE_WEBAPP_NAME }} installed; skipping app import due to missing env vars."
+          pip show $AZURE_WEBAPP_NAME
+          echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
@@ -91,8 +91,8 @@ jobs:
             --name "$AZURE_WEBAPP_NAME" \
             --resource-group "$AZURE_RESOURCE_GROUP" \
             --settings \
-              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-              WEBSITES_DISABLE_ORYX=false \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=false \
+              WEBSITES_DISABLE_ORYX=true \
               AZURE_SQL_USER="$AZURE_SQL_USER" \
               AZURE_SQL_PASS="$AZURE_SQL_PASS" \
               AZURE_SQL_SERVER="$AZURE_SQL_SERVER" \
