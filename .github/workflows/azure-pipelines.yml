@@ -37,8 +37,8 @@ jobs:
           pip install --upgrade pip setuptools
           pip install .
           pip show $AZURE_WEBAPP_NAME
-          echo $AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars.
-          echo =============================================================
+          echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
+          echo "============================================================="
 
       - name: Create wheel distribution
         run: |
@@ -48,7 +48,7 @@ jobs:
 
           python -m build --wheel
           find dist/ -name "*.whl" -exec mv {} dist/lion-latest-${WHEEL_TAG}.whl \;
-          echo =============================================================
+          echo "============================================================="
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
