@@ -31,6 +31,10 @@ echo To delete a tag, use git tag -d tagname
 echo ------------------------------------------------------------
 
 set /p tag=Enter tag name (or press Enter to skip tagging -  will delete the tag if exists):
+if ("%tag%"=="") (
+    set "tag=lion-app-latest"
+)
+
 if "%tag%" neq "" (
 
     git tag -d "%tag%" 2>nul
