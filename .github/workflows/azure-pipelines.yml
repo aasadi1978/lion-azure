@@ -35,7 +35,7 @@ jobs:
           python -m venv antenv
           source antenv/bin/activate
           pip install --upgrade pip setuptools
-          pip install -r requirements
+          pip install -r requirements.txt
           pip install .
           pip show $AZURE_WEBAPP_NAME
           echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
