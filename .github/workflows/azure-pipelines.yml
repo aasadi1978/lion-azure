@@ -32,9 +32,10 @@ jobs:
       # - name: Install dependencies
       - name: Install dependencies and package
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
+          python -m venv antenv
+          source antenv/bin/activate
           pip install --upgrade pip setuptools
+          pip install -r requirements
           pip install .
           pip show $AZURE_WEBAPP_NAME
           echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
@@ -45,7 +46,7 @@ jobs:
           name: ${{ env.AZURE_WEBAPP_NAME }}
           path: |
             .
-            !.venv/
+            !antenv/
 
   deploy:
     runs-on: ubuntu-latest
@@ -82,6 +83,12 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_D1EA8B0CB0A6452EB61D86EC2166F59A }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_0F366397AB794420AE9F78492E6DFA18 }}
 
+      - name: Disable Oryx
+        run: |
+          az webapp config appsettings set \
+            --name "$AZURE_WEBAPP_NAME" \
+            --resource-group "$AZURE_RESOURCE_GROUP" \
+            --settings WEBSITES_DISABLE_ORYX=true SCM_DO_BUILD_DURING_DEPLOYMENT=false
 
       # Dynamically set Azure App Settings before deployment
       - name: Configure Azure App Settings
