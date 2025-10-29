@@ -30,21 +30,26 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VSN }}
       
-      - name: update pyproject.toml with the new app version
-        run: |
-          pip install tomli-w
-          python app_config.py --version $LION_APP_VERSION
-
       # - name: Install dependencies
-      - name: Install dependencies and package
+      - name: Activating virtual env antenv
         run: |
           python -m venv antenv
           source antenv/bin/activate
           pip install --upgrade pip setuptools
+          echo "============================================================="
+
+      - name: Install dependencies and package
+        run: |
+          source antenv/bin/activate
+          pip install --upgrade pip setuptools
+          pip install tomli-w
+          python app_config.py --version $LION_APP_VERSION
+
           pip install .
           pip show $AZURE_WEBAPP_NAME
           echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
           echo "============================================================="
+
 
       - name: Create wheel distribution
         run: |
