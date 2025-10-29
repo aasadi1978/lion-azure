@@ -65,32 +65,14 @@
 
 <script >
   function set_ui_params() {
-    document.getElementById('id-page-number-disp').innerText =
-        '1/' + window.n_pages + ' pages (' + window.n_all_drivers + ' tours)';
-
-    document
-      .getElementById('id-jump-to-page')
-      .addEventListener('keyup', function (event) {
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          let v = Number($('#id-jump-to-page').val());
-
-          if (Number.isInteger(v)) {
-            if (v <= window.n_pages && v > 0) {
-              update_page_num(v);
-              get_chart_data();
-            }
-          }
-        }
-      });
 
     // Execute a function when the user releases a key on the keyboard
     document
-      .getElementById('id-jump-to-page-II')
+      .getElementById('id-page-to-form')
       .addEventListener('keyup', function (event) {
         if (event.keyCode === 13) {
           event.preventDefault();
-          let v = Number($('#id-jump-to-page-II').val());
+          let v = Number($('#id-page-to-form').val());
 
           if (Number.isInteger(v)) {
             if (v <= window.n_pages && v > 0) {
@@ -99,21 +81,6 @@
             }
           }
         }
-      });
-
-    document
-      .getElementById('id-page-number-disp')
-      .addEventListener('change', function (event) {
-        event.preventDefault();
-
-        let str_page = document.getElementById('id-page-number-disp').value;
-
-        let str_val = str_page.split('/')[0];
-        str_val = str_val.replace('Navigate plan: ', '');
-        window.currPage = Number(str_val);
-        update_page_num(window.currPage);
-        set_default_title();
-        get_chart_data();
       });
 
     let prebutton = document.getElementById('btn-Previous');
@@ -272,177 +239,6 @@
     document.title = options.title;
     window.default_title = options.title;
 
-    // let slider2 = document.getElementById('id-utilisation-double-slider');
-    // if (slider2 && !slider2.noUiSlider) {
-    //   noUiSlider.create(slider2, {
-    //     start: window.utilisation_range,
-    //     connect: true,
-    //     range: { min: 0, max: 100 },
-    //   });
-
-    //   slider2.noUiSlider.on('update', function (values) {
-    //     document.getElementById(
-    //       'id-slider-shift-utilisation-value'
-    //     ).innerText = `Time Utilisation: between ${Math.ceil(
-    //       values[0]
-    //     )}% and ${Math.ceil(values[1])}%`;
-    //   });
-
-    //   slider2.noUiSlider.on('end', function (values) {
-    //     set_utilisation_slider_range([
-    //       Math.ceil(Number(values[0])),
-    //       Math.ceil(Number(values[1])),
-    //     ]);
-    //   });
-    // }
-
-    // document.getElementById('id-page-number-disp').innerText =
-    //   '1/' + window.n_pages + ' pages (' + window.n_all_drivers + ' tours)';
-
-    // document
-    //   .getElementById('id-jump-to-page')
-    //   .addEventListener('keyup', function (event) {
-    //     if (event.keyCode === 13) {
-    //       event.preventDefault();
-    //       let v = Number($('#id-jump-to-page').val());
-
-    //       if (Number.isInteger(v)) {
-    //         if (v <= window.n_pages && v > 0) {
-    //           update_page_num(v);
-    //           get_chart_data();
-    //         }
-    //       }
-    //     }
-    //   });
-
-    // // Execute a function when the user releases a key on the keyboard
-    // document
-    //   .getElementById('id-jump-to-page-II')
-    //   .addEventListener('keyup', function (event) {
-    //     if (event.keyCode === 13) {
-    //       event.preventDefault();
-    //       let v = Number($('#id-jump-to-page-II').val());
-
-    //       if (Number.isInteger(v)) {
-    //         if (v <= window.n_pages && v > 0) {
-    //           update_page_num(v);
-    //           get_chart_data();
-    //         }
-    //       }
-    //     }
-    //   });
-
-    // document
-    //   .getElementById('id-page-number-disp')
-    //   .addEventListener('change', function (event) {
-    //     event.preventDefault();
-
-    //     let str_page = document.getElementById('id-page-number-disp').value;
-
-    //     let str_val = str_page.split('/')[0];
-    //     str_val = str_val.replace('Navigate plan: ', '');
-    //     window.currPage = Number(str_val);
-    //     update_page_num(window.currPage);
-    //     set_default_title();
-    //     get_chart_data();
-    //   });
-
-    // let prebutton = document.getElementById('btn-Previous');
-    // prebutton.onclick = function () {
-    //   prebutton.focus();
-    //   let curpg = window.currPage;
-    //   curpg--;
-    //   window.currPage = curpg;
-    //   update_page_num(curpg);
-    //   get_chart_data();
-    // };
-
-    // let nxtbutton = document.getElementById('btn-Next');
-    // nxtbutton.onclick = function () {
-    //   nxtbutton.focus();
-    //   let curpg = window.currPage;
-    //   curpg++;
-    //   window.currPage = curpg;
-    //   update_page_num(curpg);
-    //   document.getElementById('btn-Previous').disabled = false;
-    //   get_chart_data();
-    // };
-
-    // document.addEventListener('DOMContentLoaded', function () {
-    //   get_chart_data();
-    // });
-
-    // $(document).ready(function () {
-    //   refresh_options();
-    // });
-
-    // window.onload = function () {
-    //   document.getElementById('chart-assign-drivers').style.display = 'block';
-    // };
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
-    //     e.preventDefault();
-    //     show_popup((id = 'id-manage-optimization'));
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'm' || e.key === 'M')) {
-    //     e.preventDefault();
-    //     show_popup('id-insert-movement-frame');
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
-    //     e.preventDefault();
-    //     export_local_schedule();
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
-    //     e.preventDefault();
-    //     undo();
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
-    //     e.preventDefault();
-    //     show_popup((id = 'id-insert-driver-frame'));
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
-    //     e.preventDefault();
-    //     show_popup((id = 'id-insert-location-frame'));
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.ctrlKey && (e.key === 'r' || e.key === 'R')) {
-    //     e.preventDefault();
-    //     show_popup((id = 'id-manage-runtimes'));
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.altKey && (e.key === 'm' || e.key === 'M')) {
-    //     e.preventDefault();
-    //     document.getElementById('id-remove-map').click();
-    //     add_remove_map();
-    //   }
-    // });
-
-    // window.addEventListener('keydown', function (e) {
-    //   if (e.keyCode === 116) {
-    //     e.preventDefault();
-    //     refresh_all();
-    //   }
-    // });
   });
 </script>
 
@@ -814,7 +610,7 @@
           <div id="parent-chart-assign-drivers">
             <div
               id="chart-assign-drivers"
-              style="width: 70vw; height: 85vh; overflow: auto"
+              style="width: 97vw; height: 85vh; overflow: auto"
             ></div>
           </div>
 

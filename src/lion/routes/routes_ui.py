@@ -1,7 +1,6 @@
 import logging
 from os import environ
 from json import loads as json_loads
-
 from lion.delta_suite.import_delta_into_lion_main import import_delta_data
 from flask import Blueprint, jsonify, render_template, request
 from lion.orm.changeover import Changeover
@@ -122,8 +121,6 @@ def cold_schedule_reload():
         cold_start_error = f"Cold schedule reload failed: {str(e)}"
         logging.error(cold_start_error)
 
-    # finally:
-    #     UI_PARAMS.REQUEST_BLOCKER = False
 
     if cold_start_error:
         return jsonify({'code': 400, 'error': cold_start_error, 'chart_data': {}})

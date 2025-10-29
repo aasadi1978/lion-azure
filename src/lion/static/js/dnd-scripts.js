@@ -9,17 +9,7 @@ function load_chart_on_full_page_load(chart_data) {
 
 function update_page_num(pagenum) {
   window.currPage = Number(pagenum);
-  document.getElementById('id-jump-to-page').value = window.currPage;
-  document.getElementById('id-jump-to-page-II').value = window.currPage;
-  document.getElementById('id-page-number-disp').innerText =
-    window.currPage +
-    '/' +
-    window.n_pages +
-    ' pages (' +
-    window.n_drivers +
-    '/' +
-    window.n_all_drivers +
-    ' tours)';
+  document.getElementById('id-page-to-form').value = window.currPage;
 
   let page_status = sync_post(
     '/update-page-number',
@@ -49,10 +39,16 @@ function clear_user_changes() {
   );
 }
 
-function get_chart_data() {
-  add_remove_map((load_chart = false));
+function get_chart_data(...args) {
+  // Support Python-like *args and **kwargs:
+  // - positional args go into dct_params.args (array)
+  // - if the last arg is a plain object it's treated as kwargs and merged into dct_params
 
-  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {}));
+
+  let dct_params = {};
+  if (args.length > 0) dct_params.args = args;
+
+  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = dct_params));
 
   load_driver_shift_chart((dct_chart_data = get_chart_data_status));
   scrollIntoDiv((getElementById = 'id-all_maps'));
@@ -524,77 +520,6 @@ function save_filter_params(dctparams_data = {}) {
   return sync_post('/refresh-schedule-filter', (dct_params = dctparams_data));
 }
 
-// load_filtered_shift_data to load_filtered_schedule.js
-
-// let doubleClicker = {
-//   clickedOnce: false,
-//   timer: null,
-//   timeBetweenClicks: 400,
-// };
-
-// function resetDoubleClick() {
-//   clearTimeout(doubleClicker.timer);
-//   doubleClicker.timer = null;
-//   doubleClicker.clickedOnce = false;
-// }
-
-// the actual callback for a double-click event
-//DoubleClick DbClick
-// let run_actions_on_dblClick = function (e, point) {
-//   let lcstr = point.loc_string;
-
-//   if (lcstr == undefined) {
-//     point = point.point;
-//   }
-
-//   if (point.loc_string.substr(0, 5) == 'Shift') {
-//     window.selected_tours_to_take_action = [];
-//     delete_if_blank_else_fixUnfix((shift = point.shift_id));
-//   } else {
-//     if (point && point.x) {
-//       double_clicked_movement_id = point.object_id;
-//       let __lcstrng = point.loc_string;
-//       let __Locs = __lcstrng.split('.');
-
-//       if (point.traffic_type == 'Empty') {
-//         let status_make_m_draggable = py2js(
-//           (str_func_name = 'make_m_draggable'),
-//           (dct_params = {
-//             page_num: window.currPage,
-//             movement: point.object_id,
-//           }),
-//           (url = '/drivers')
-//         );
-
-//         load_driver_shift_chart((dct_chart_data = status_make_m_draggable));
-//         return;
-//       }
-
-//       document.getElementById('id-right-clicked-movement-id').value =
-//         point.object_id;
-//       set_right_click_id(point.object_id);
-
-//       disp_mov_modify_movement_details();
-//       document.getElementById('id-mov-loc-string-modify').value =
-//         __Locs.join('.');
-
-//       selectElement((id = 'id-mov-tu-dest-modify'), (valueToSelect = point.tu));
-//       selectElement(
-//         (id = 'id-mov-traffic-type-modify'),
-//         (valueToSelect = point.traffic_type)
-//       );
-//       selectElement(
-//         (id = 'id-mov-vehicle-type-modify'),
-//         (valueToSelect = point.vehicle.split('.')[0])
-//       );
-//       selectElement(
-//         (id = 'id-modify-mov-dep-day'),
-//         (valueToSelect = point.depday)
-//       );
-//     }
-//   }
-// };
-
 function build_tours_map_div(page_size = undefined) {
   if (page_size === undefined) {
     if (options) {
@@ -607,12 +532,13 @@ function build_tours_map_div(page_size = undefined) {
   // let h = Math.min(options.n_drivers + 5, page_size) * 6.5
   let h = page_size * 6.5;
   hvh = h.toString() + 'vh';
+  let w = '97vw';
 
-  if (document.getElementById('id-remove-map').checked) {
-    w = '97vw';
-  } else {
-    w = '77vw';
-  }
+  // if (document.getElementById('id-remove-map').checked) {
+  //   w = '97vw';
+  // } else {
+  //   w = '77vw';
+  // }
 
   let toursMap = document.getElementById('tours_map');
   if (toursMap) toursMap.remove();
@@ -648,21 +574,21 @@ function build_tours_map_div(page_size = undefined) {
   newDiv.style.overflow = 'auto';
   parentChartAssignDrivers.appendChild(newDiv);
 
-  if (!document.getElementById('id-remove-map').checked) {
-    let parentDrawTour = document.getElementById('parent-draw-tour');
-    if (!parentDrawTour) {
-      parentDrawTour = document.createElement('div');
-      parentDrawTour.id = 'parent-draw-tour';
-      full_disp_div.append(parentDrawTour);
-    }
+  // if (!document.getElementById('id-remove-map').checked) {
+  //   let parentDrawTour = document.getElementById('parent-draw-tour');
+  //   if (!parentDrawTour) {
+  //     parentDrawTour = document.createElement('div');
+  //     parentDrawTour.id = 'parent-draw-tour';
+  //     full_disp_div.append(parentDrawTour);
+  //   }
 
-    let newDiv2 = document.createElement('div');
-    newDiv2.id = 'tours_map';
-    newDiv2.style.width = '20vw';
-    newDiv2.style.height = hvh;
-    newDiv2.style.verticalAlign = 'top';
-    parentDrawTour.appendChild(newDiv2);
-  }
+  //   let newDiv2 = document.createElement('div');
+  //   newDiv2.id = 'tours_map';
+  //   newDiv2.style.width = '20vw';
+  //   newDiv2.style.height = hvh;
+  //   newDiv2.style.verticalAlign = 'top';
+  //   parentDrawTour.appendChild(newDiv2);
+  // }
 
   build_tour_desc_div();
 }
@@ -819,11 +745,11 @@ function clean_up_map() {
     return;
   }
 
-  $('#tours_map').remove();
-  $('#parent-draw-tour').append(
-    '<div id="tours_map" style="width: 15vw; height: 85vh; vertical-align: top"></div>'
-  );
-  load_map();
+  // $('#tours_map').remove();
+  // $('#parent-draw-tour').append(
+  //   '<div id="tours_map" style="width: 15vw; height: 85vh; vertical-align: top"></div>'
+  // );
+  // load_map();
 }
 
 function disp_filter_tours_div() {
@@ -3037,22 +2963,22 @@ function unfix_shift_rightclick() {
   set_default_title();
 }
 
-function draw_tour_rightclick() {
-  let tour_draw_data = py2js(
-    (str_func_name = 'draw_tour'),
-    (dct_params = {}),
-    (url = '/drivers')
-  );
+// function draw_tour_rightclick() {
+//   let tour_draw_data = py2js(
+//     (str_func_name = 'draw_tour'),
+//     (dct_params = {}),
+//     (url = '/drivers')
+//   );
 
-  document.getElementById('id-display-shift-on-map').style.display = 'block';
+//   document.getElementById('id-display-shift-on-map').style.display = 'block';
 
-  $('#id-tours-map').remove();
-  $('#parent-draw-tour-rightclick').append(
-    '<div id="id-tours-map" style="width: 50vw; height: 50vh; vertical-align: top"></div>'
-  );
+//   $('#id-tours-map').remove();
+//   $('#parent-draw-tour-rightclick').append(
+//     '<div id="id-tours-map" style="width: 50vw; height: 50vh; vertical-align: top"></div>'
+//   );
 
-  load_map((tours_vis_data = tour_draw_data), (id = 'id-tours-map'));
-}
+//   load_map((tours_vis_data = tour_draw_data), (id = 'id-tours-map'));
+// }
 
 async function refresh_shift_rightclick() {
   let dct_shift_data = sync_post(

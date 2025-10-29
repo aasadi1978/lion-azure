@@ -42,8 +42,8 @@ def get_chart_data(**dct_params):
 
             return {}
 
-        drivers = dct_params.get('drivers', [])
         page_num = int(dct_params.get('page_num', UI_PARAMS.PAGE_NUM))
+        drivers = dct_params.get('drivers', [])
 
         if not drivers:
             if page_num:
