@@ -1,5 +1,11 @@
 import os
 from pathlib import Path
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('directory', required=False)
+parser.add_argument('project', required=False)
+args = parser.parse_args()
 
 def generate(dir_path=Path(".").resolve(), prefix=""):
     """The module genenrate a tree-style .md document of a directory.
@@ -25,18 +31,18 @@ def generate(dir_path=Path(".").resolve(), prefix=""):
 
     return tree_str
 
-if __name__ == '__main__':
-
-    dir_path = Path(__file__).parent.resolve()
+try:
+    dir_path = args.directory or Path(__file__).parent.resolve()
     if not dir_path.exists():
         print(f'Error: Directory {dir_path} does not exist.')
         exit(1)
 
-    project_name = 'lion-azure'
+    dir_path = Path(dir_path)
+    project_name = args.project or dir_path.name() 
 
     tree_str = generate(dir_path=dir_path)
 
-    output_file = 'project_tree_view.txt'
+    output_file = f'scaffold-{project_name}.txt'
     if os.path.exists(output_file):
         os.remove(output_file)
 
@@ -45,3 +51,6 @@ if __name__ == '__main__':
 
     with open(output_file, "w", encoding="utf-8") as f:
         f.write(tree_output)
+
+except Exception as e:
+    print(f"Failed to generate scaffold: {e}")

@@ -1,10 +1,8 @@
-import getpass
 from os import environ, getenv
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
 
-from lion.bootstrap.get_user_name import full_name
 from lion.logger.exception_logger import log_exception
 from lion.logger.status_logger import log_message
 
@@ -12,7 +10,7 @@ from lion.logger.status_logger import log_message
 # Current directory of the project decided by the user. Note that this is not necessarily where the python package sits.
 LION_PROJECT_HOME = Path(getenv('LION_PROJECT_HOME', str(Path().resolve()))).resolve()
 LION_ENV_FILE_PATH = LION_PROJECT_HOME / '.env'
-LION_BING_API_KEY = getenv('LION_BING_API_KEY', getenv('BING_API_KEY')) # Allows to use user's Bing API key if set on device level
+LION_BING_API_KEY = getenv('LION_BING_API_KEY', 'GET_MAP_KEY') # Allows to use user's Bing API key if set on device level
 # load_dotenv override will not override this variable if set on device level instead of .env
 
 # Directory where the lion package modules sit, e.g., lion\static, lion\templates, lion\sqldb etc.
