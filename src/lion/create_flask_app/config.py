@@ -1,8 +1,7 @@
 from datetime import timedelta
 import logging
-from os import getenv
 
-from lion.bootstrap import LION_BOOTSTRAP_CONFIG as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
+from lion.bootstrap import LION_ENVIRONMENT_VARIABLES as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
 from lion.config import paths
 from lion.create_flask_app.azure_sql_manager import SQLALCHEMY_DATABASE_URI
 
