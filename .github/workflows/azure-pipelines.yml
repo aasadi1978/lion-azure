@@ -35,16 +35,17 @@ jobs:
           python -m venv antenv
           source antenv/bin/activate
           pip install --upgrade pip setuptools
-          pip install -r requirements.txt
           pip install .
           pip show $AZURE_WEBAPP_NAME
-          echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
+          echo $AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars.
+          echo =============================================================
 
       - name: Create wheel distribution
         run: |
           source antenv/bin/activate
-          python -m pip install --upgrade build
-          python -m build --wheel
+          python -m pip install --upgrade build wheel
+          python setup.py bdist_wheel --dist-dir=dist/ --python-tag py3
+          echo =============================================================
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
@@ -135,7 +136,7 @@ jobs:
     
       - name: Set startup command with package installation
         run: |
-          az webapp config set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --startup-file "pip install -r requirements.txt && pip install . && gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
+          az webapp config set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP --startup-file "pip install dist/lion-latest-py3-none-any.whl && gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
 
       - name: Verify startup command
         run: |
