@@ -43,8 +43,9 @@ jobs:
       - name: Create wheel distribution
         run: |
           source antenv/bin/activate
-          python -m pip install --upgrade build wheel
-          python setup.py bdist_wheel --dist-dir=dist/ --python-tag py3
+          python -m pip install --upgrade pip setuptools wheel build
+          python -m build --wheel --outdir dist/
+          ls -la dist/
           echo =============================================================
 
       - name: Upload artifact for deployment
