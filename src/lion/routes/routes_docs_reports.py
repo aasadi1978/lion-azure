@@ -8,7 +8,6 @@ from lion.ui.driver_ui import DRIVERS_UI
 from lion.ui.ui_params import UI_PARAMS
 from lion.utils.kill_file import kill_file
 from lion.logger.exception_logger import log_exception
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from flask import Blueprint, render_template, request
 
 from lion.orm.drivers_info import DriversInfo
@@ -16,6 +15,7 @@ from lion.utils.get_week_num import get_week_num
 from lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
 
 from lion.utils.popup_notifier import show_error, show_popup
+from lion.utils.session_manager import SESSION_MANAGER
 
 docs_reports_bp = Blueprint('docs_reports', __name__)
 
@@ -115,7 +115,7 @@ def view_report(shiftname):
                                         'remarks': remarks,
                                         'vehiclename': vehiclename,
                                         'report_title': report_title,
-                                        'user_name': LION_FLASK_APP.config['LION_USER_FULL_NAME'],
+                                        'user_name': SESSION_MANAGER.get('user_name'),
                                         'last_update': last_update})
 
             if report_data:
@@ -167,7 +167,7 @@ def view_report(shiftname):
                                             'remarks': remarks,
                                             'vehiclename': vehiclename,
                                             'report_title': report_title,
-                                            'user_name': LION_FLASK_APP.config['LION_USER_FULL_NAME'],
+                                            'user_name': SESSION_MANAGER.get('user_name'),
                                             'last_update': last_update})
 
                 if report_data:

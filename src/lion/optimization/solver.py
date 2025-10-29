@@ -5,7 +5,7 @@ from lion.optimization.opt_params import OPT_PARAMS
 from lion.ui.ui_params import UI_PARAMS
 from lion.optimization.gurobi.grb_optimize import Optimize as GrbOptimize
 from lion.optimization.or_tools.ortools_optimize import Optimize as CbcOptimize
-from lion.create_flask_app.create_app import LION_FLASK_APP
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 class SolveMIP():
@@ -18,7 +18,7 @@ class SolveMIP():
 
         try:
 
-            message = f"MIP Solver log. When: {str(datetime.now())[:19]}. Solver: {solver} By: {LION_FLASK_APP.config['LION_USER_FULL_NAME']}"
+            message = f"MIP Solver log. When: {str(datetime.now())[:19]}. Solver: {solver} By: {SESSION_MANAGER.get('user_name')}"
 
             self.__mip_optimizer = None
 

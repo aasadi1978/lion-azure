@@ -2,12 +2,12 @@ from datetime import datetime
 from lion.logger.status_logger import log_message
 from lion.orm.scenarios import Scenarios
 from lion.orm.shift_movement_entry import ShiftMovementEntry
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.shift_data.refreshshift import evaluate_shift
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 from lion.utils.clean_filename import clean_file_name
 from lion.logger.exception_logger import log_exception
 from lion.utils.safe_copy import secure_copy
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.split_string import split_string
 
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
@@ -47,7 +47,7 @@ def save_final_version_of_schedule(**dct_params):
 
             scn_doc_header = f"When: {_now2}"
             scn_doc_header = f"{scn_doc_header} | When: {_now2}"
-            scn_doc_header = f"{scn_doc_header} | Who: {LION_FLASK_APP.config['LION_USER_FULL_NAME']}"
+            scn_doc_header = f"{scn_doc_header} | Who: {SESSION_MANAGER.get('user_name')}"
             scn_doc_header = f"{scn_doc_header} | ScheduleName: {scn_name}"
 
             scn_note = split_string(txt=scn_note, line_length=120)

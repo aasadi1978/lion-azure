@@ -30,7 +30,6 @@ from lion.orm.location import Location
 from lion.orm.vehicle_type import VehicleType
 from lion.orm.drivers_info import DriversInfo
 from lion.config.paths import LION_LOCAL_DRIVER_REPORT_PATH
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from os import path as os_path, makedirs
 from openpyxl.utils.dataframe import dataframe_to_rows
 from datetime import datetime
@@ -38,6 +37,7 @@ from lion.utils.dict2class import Dict2Class
 from lion.utils.get_week_num import get_week_num
 from lion.config.paths import LION_IMAGES_PATH
 from lion.logger.trigger_async_log_upload import trigger_async_log_upload
+from lion.utils.session_manager import SESSION_MANAGER
 
 LION_STATION_REPORT_17Inch_Spotfire = 'https://euremars-lvl1-tss.emea.fedex.com:8001/spotfire/wp/OpenAnalysis?file=ec200e26-aa13-41ce-a2f0-6c291b5fd9ce'
 
@@ -59,7 +59,7 @@ class DriverReport():
 
         try:
             self.__df_driver_report_base = DataFrame()
-            self.__active_user_name = LION_FLASK_APP.config['LION_USER_FULL_NAME']
+            self.__active_user_name = SESSION_MANAGER.get('user_name')
             self.__dct_footprint = Location.to_dict()
             self.__my_hdr_fill = openpyxl.styles.fills.PatternFill(
                 patternType='solid', start_color='FF6600')

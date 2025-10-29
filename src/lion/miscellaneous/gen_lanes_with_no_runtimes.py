@@ -3,10 +3,10 @@ from os import makedirs, path as os_path
 from lion.config.paths import LION_ARCGIS_PATH
 from lion.utils.dfgroupby import groupby as df_grpby
 from lion.orm.orm_runtimes_mileages import RuntimesMileages
+from lion.utils.session_manager import SESSION_MANAGER
 from lion.xl.write_excel import write_excel as xlwriter
 from lion.utils.popup_notifier import show_error
 from lion.logger.exception_logger import log_exception
-from lion.create_flask_app.create_app import LION_FLASK_APP
 
 def get_lanes_xlsx_file(df_lanes=DataFrame(
         columns=['Origin', 'Destination', 'VehicleType']), scenario='Default', overwrite_existing_lanes=False):
@@ -35,7 +35,7 @@ def get_lanes_xlsx_file(df_lanes=DataFrame(
                             'Origin', 'Destination'])
 
         pr_egis_data_path = os_path.join(
-            *[LION_ARCGIS_PATH, 'user', LION_FLASK_APP.config['LION_USER_FULL_NAME']])
+            *[LION_ARCGIS_PATH, 'user', SESSION_MANAGER.get('user_name')])
 
         makedirs(pr_egis_data_path, exist_ok=True)
 

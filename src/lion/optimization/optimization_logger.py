@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from datetime import datetime
-import logging
 
 from lion.config import paths
 from lion.logger.exception_logger import log_exception as exc_logger
 from lion.logger.status_logger import log_message as log_status
 from lion.utils.singleton_meta import SingletonMeta
 from lion.status_n_progress_bar.status_bar_manager import STATUS_CONTROLLER
-from lion.create_flask_app.create_app import LION_FLASK_APP
+from lion.utils.session_manager import SESSION_MANAGER
 
 
 @dataclass
@@ -30,7 +29,7 @@ class OptimizationLogFile(metaclass=SingletonMeta):
             self.OPT_GLOBAL_ERROR = ''
             self.OPT_GLOBAL_WARNING = ''
 
-            message = f"Optimization module log initialised. on {str(datetime.now())[:19]} By: {LION_FLASK_APP.config['LION_USER_FULL_NAME']}"
+            message = f"Optimization module log initialised. on {str(datetime.now())[:19]} By: {SESSION_MANAGER.get('user_name')}"
 
             with open(self._log_file, mode) as f:
                 f.write(message)

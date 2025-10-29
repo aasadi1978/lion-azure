@@ -6,12 +6,12 @@ from os import path as os_path
 from lion.config.paths import LION_PROJECT_HOME, LION_SHARED_DIR
 from lion.utils.login_required import login_required
 from lion.logger.exception_logger import log_exception
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from flask import Blueprint, request
 
 
 from lion.config.paths import LION_STATIC_PATH
 from lion.utils.popup_notifier import show_popup
+from lion.utils.session_manager import SESSION_MANAGER
 
 user_docs_blueprint = Blueprint('bp_docs', __name__)
 
@@ -51,7 +51,7 @@ def update_comments():
         section_id = request_data['sec_id']
         section_id = section_id.replace('id-user-comment-', '')
 
-        txt_no_line = f'On {when}, {LION_FLASK_APP.config['LION_USER_FULL_NAME']} commented on {
+        txt_no_line = f'On {when}, {SESSION_MANAGER.get('user_name')} commented on {
             _filename}-{section_id}:\n{comnt}'
         txt_no_line = f"{txt_no_line}\nFilename: {os_path.join(
             LION_SHARED_DIR, 'user_manual_comments.log')}"
