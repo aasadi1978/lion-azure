@@ -106,9 +106,11 @@ function is_chart_data_ok(dct_chart_data) {
 }
 
 async function validate_chart_data(dct_chart_data) {
-  let chart_data_is_valid = await is_chart_data_ok(dct_chart_data);
-  if (chart_data_is_valid) {
-    return dct_chart_data;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    if (is_chart_data_ok(dct_chart_data)) return dct_chart_data;
+    console.log(`Chart data not ready (attempt ${attempt + 1})`);
+    await new Promise(r => setTimeout(r, 1000)); // wait 1 sec before retry
   }
 
   let status_cold_start_notification = await create_popup_async(
