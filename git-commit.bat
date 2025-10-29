@@ -30,11 +30,12 @@ echo Make sure the version in pyproject.toml is updated if applicable.
 echo To delete a tag, use git tag -d tagname
 echo ------------------------------------------------------------
 
-set /p tag=Enter tag name (or press Enter to skip tagging -  will delete the tag if exists):
-if ("%tag%"=="") (
-    set "tag=lion-app-latest"
-)
+@REM set /p tag=Enter tag name (or press Enter to skip tagging -  will delete the tag if exists):
+@REM if ("%tag%"=="") (
+@REM     set "tag=lion-app-latest"
+@REM )
 
+set "tag=lion-py3-latest"
 if "%tag%" neq "" (
 
     git tag -d "%tag%" 2>nul
@@ -74,7 +75,9 @@ echo You can now push your changes using 'git push' command.
 echo The following remotes are available:
 git remote -v
 
-set /p push_confirm=Do you want to push now? (y/n):
+@REM set /p push_confirm=Do you want to push now? (y/n):
+set push_confirm=y
+
 if /i "%push_confirm%"=="y" (
     
     echo Pushing to remote repository origin
