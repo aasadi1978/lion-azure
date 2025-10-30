@@ -14,7 +14,7 @@ env:
   WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
   WEBSITES_PORT: 8000
   FLASK_ENV: production
-  LION_APP_VERSION: '1.0.2'
+  LION_APP_VERSION: '1.0.3'
 
 jobs:
   build:
