@@ -63,163 +63,8 @@
 </style>
 {% endblock %} {% block NewScriptsTop %}
 
-<script >
-  function set_ui_params() {
-
-    // Execute a function when the user releases a key on the keyboard
-    document
-      .getElementById('id-page-to-form')
-      .addEventListener('keyup', function (event) {
-        if (event.keyCode === 13) {
-          event.preventDefault();
-          let v = Number($('#id-page-to-form').val());
-
-          if (Number.isInteger(v)) {
-            if (v <= window.n_pages && v > 0) {
-              update_page_num(v);
-              get_chart_data();
-            }
-          }
-        }
-      });
-
-    $(document).ready(function () {
-      refresh_options();
-    });
-
-    window.onload = function () {
-      document.getElementById('chart-assign-drivers').style.display = 'block';
-    };
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
-        e.preventDefault();
-        show_popup((id = 'id-manage-optimization'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'm' || e.key === 'M')) {
-        e.preventDefault();
-        show_popup('id-insert-movement-frame');
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
-        e.preventDefault();
-        export_local_schedule();
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
-        e.preventDefault();
-        undo();
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
-        e.preventDefault();
-        show_popup((id = 'id-insert-driver-frame'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
-        e.preventDefault();
-        show_popup((id = 'id-insert-location-frame'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'r' || e.key === 'R')) {
-        e.preventDefault();
-        show_popup((id = 'id-manage-runtimes'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.keyCode === 116) {
-        e.preventDefault();
-        refresh_all();
-      }
-    });
-
-    let slider2 = document.getElementById('id-utilisation-double-slider');
-    if (slider2 && !slider2.noUiSlider) {
-      noUiSlider.create(slider2, {
-        start: Array.isArray(window.utilisation_range)
-          ? window.utilisation_range.map(Number)
-          : [0, 100],
-        connect: true,
-        range: { min: 0, max: 100 },
-      });
-
-      slider2.noUiSlider.on('update', function (values) {
-        document.getElementById(
-          'id-slider-shift-utilisation-value'
-        ).innerText = `Time Utilisation: between ${Math.ceil(
-          values[0]
-        )}% and ${Math.ceil(values[1])}%`;
-      });
-
-      slider2.noUiSlider.on('end', function (values) {
-        set_utilisation_slider_range([
-          Math.ceil(Number(values[0])),
-          Math.ceil(Number(values[1])),
-        ]);
-      });
-    }
-
-  }
-</script>
-<script>
-  document.addEventListener('optionsLoaded', () => {
-
-    let options = window.options;
-    if(!options){
-      console.log("options was not loaded through fetching. Laoding through ninja ...")
-      options = '{{ options | tojson | safe }}';
-      console.log(options.vsn)
-    }
-    
-    if(options){
-      window.options = options;
-    }
-    
-    if (options && Object.keys(options).length > 0) {
-      document.addEventListener('DOMContentLoaded', function () {
-        load_available_vehicle_types();
-        clear_selected_tours_to_take_action();
-        load_available_scenarios();
-        load_available_master_plans();
-        refresh_tour_string();
-        clear_user_changes();
-        connection_status();
-        set_ui_params();
-      });
-    }
-
-    window.utilisation_range = options.utilisation_range;
-    window.loc_string_spliter = '.';
-    window.selected_tours_to_take_action = [];
-    window.selected_movements_to_take_action = []; // [(t, m)]
-    window.n_all_drivers = options.n_all_drivers;
-    window.n_pages = options.n_pages;
-    window.n_drivers = options.n_drivers;
-    window.LION_BING_API_KEY = options.LION_BING_API_KEY;
-    window.currPage = options.page_num;
-    window.dct_user_changes = {
-      dct_timechanges: {},
-      dct_shiftchanges: {},
-      deletedshifts: [],
-    };
-    document.title = options.title;
-    window.default_title = options.title;
-
-  });
+<script id="options-data" type="application/json">
+  {{ options | tojson | safe }}
 </script>
 
 <link rel="stylesheet" href="/static/css/dnd-styles.css" />
@@ -241,7 +86,7 @@
 <script src="/static/js/process-user-changes.js"></script>
 
 <script type="text/javascript" src="/static/js/speechRecognitions.js"></script>
-<!-- <script type="text/javascript" src="/static/js/load_map.js"></script> -->
+<script type="text/javascript" src="/static/js/init_schedule.js"></script>
 
 {% endblock %} {% block NewContent %}
 
@@ -602,8 +447,67 @@
 </div>
 
 <script>
-
   document.addEventListener('DOMContentLoaded', function () {
+
+    window.onload = function () {
+      document.getElementById('chart-assign-drivers').style.display = 'block';
+    };
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        show_popup((id = 'id-manage-optimization'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'm' || e.key === 'M')) {
+        e.preventDefault();
+        show_popup('id-insert-movement-frame');
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
+        e.preventDefault();
+        export_local_schedule();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        undo();
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
+        e.preventDefault();
+        show_popup((id = 'id-insert-driver-frame'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
+        e.preventDefault();
+        show_popup((id = 'id-insert-location-frame'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.ctrlKey && (e.key === 'r' || e.key === 'R')) {
+        e.preventDefault();
+        show_popup((id = 'id-manage-runtimes'));
+      }
+    });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.keyCode === 116) {
+        e.preventDefault();
+        refresh_all();
+      }
+    });
 
     let prebutton2 = document.getElementById('btn-Previous');
     prebutton2.onclick = function () {
@@ -625,7 +529,6 @@
       document.getElementById('btn-Previous').disabled = false;
       get_chart_data(page_num=curpg);
     };
-
   
     let curpg = window.currPage;
     if (!curpg){
