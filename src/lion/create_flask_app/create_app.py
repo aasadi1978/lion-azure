@@ -1,13 +1,13 @@
 import logging
 from os import getenv
+from pathlib import Path
 
-from lion.config import paths
 from flask_bootstrap import Bootstrap
 from flask import Flask
 from flask_bcrypt import Bcrypt
 import warnings
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
-from lion.create_flask_app.config import LION_CONFIG
+from lion.create_flask_app.config import LION_CONFIG # No lion dependency
 
 warnings.filterwarnings("ignore")
 
@@ -78,8 +78,8 @@ class CreateAPP:
         
         try:
             lion_app = Flask(__name__,
-                        template_folder=paths.LION_TEMPLATES_PATH,
-                        static_folder=paths.LION_STATIC_PATH)
+                        template_folder=Path(getenv('LION_PKG_MODULES_PATH')).resolve() / 'templates',
+                        static_folder=Path(getenv('LION_PKG_MODULES_PATH')).resolve() / 'static')
             
             Bootstrap(lion_app)
 

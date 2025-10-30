@@ -104,9 +104,9 @@
       get_chart_data();
     };
 
-    document.addEventListener('DOMContentLoaded', function () {
-      get_chart_data();
-    });
+    // document.addEventListener('DOMContentLoaded', function () {
+    //   get_chart_data();
+    // });
 
     $(document).ready(function () {
       refresh_options();
@@ -651,4 +651,10 @@
   </div>
 </div>
 
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    get_chart_data();
+  });
+
+</script>
 {% endblock %} {% block NewScript %} {% endblock %}

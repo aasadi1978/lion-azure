@@ -6,9 +6,9 @@ from sqlalchemy.exc import SQLAlchemyError
 # Make sure bootstrap is imported first to setup env variables and logging
 # bootstrap does not have any circular dependencies
 # from lion.create_flask_app.create_tables import create_all
-from lion.logger.exception_logger import log_exception
-import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
+# from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
+import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
 from lion.routes.blueprints import register_blueprints
 import lion.routes.initialize_global_instances as  initialize_global_instances
 
@@ -57,7 +57,7 @@ def main():
         try:
             s.bind(("127.0.0.1", port))
         except Exception:
-            log_exception(popup=True, remarks=f"Port {port} is already in use. Please free the port and try again.")
+            logging.error(popup=True, remarks=f"Port {port} is already in use. Please free the port and try again.")
         
     serve(LION_FLASK_APP, host="127.0.0.1", port=8000, threads=10, _quiet=True)
 

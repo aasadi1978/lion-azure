@@ -1,5 +1,5 @@
+import logging
 from flask import g, session
-from lion.logger.exception_logger import log_exception
 from flask import has_request_context
 
 class SessionManager:
@@ -37,7 +37,7 @@ class SessionManager:
                 session['user'] = user
 
         except Exception:
-            log_exception(f"Failed to update session and g context")
+            logging.error(f"Failed to update session and g context")
 
     def get(self, *args):
         try:
@@ -50,7 +50,7 @@ class SessionManager:
                 return session.get('user', {}).get(args[0], args[1]) or g.get('user', {}).get(args[0], args[1])
         
         except Exception as e:
-            log_exception(f"Failed to update session arguemnts.")
+            logging.error(f"Failed to update session arguemnts.")
 
             return None
 

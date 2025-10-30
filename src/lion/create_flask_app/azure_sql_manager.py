@@ -7,9 +7,9 @@ from urllib.parse import quote_plus
 import pyodbc
 import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
-from lion.logger.exception_logger import log_exception
+from dotenv import load_dotenv
 
-
+load_dotenv()
 TENANT_ID = getenv("AZURE_LION_APP_TENANT_ID")
 CLIENT_ID = getenv("AZURE_LION_APP_CLIENT_ID")
 CLIENT_SECRET = getenv("AZURE_LION_APP_CLIENT_SECRET")
@@ -39,13 +39,13 @@ def validate_db_connection(app: Flask):
         LION_SQLALCHEMY_DB.session.execute(text("SELECT 1"))
         return
     except SQLAlchemyError as e:
-        log_exception(f"Database connection is not live!")
+        logging.error(f"Database connection is not live!")
 
     try:
         if not asyncio.run(azure_connection_with_retry(app)):
             raise Exception('asyncio run azure_connection_with_retry failed!')
     except Exception:
-        log_exception("Failed to establish sql database connection.")
+        logging.error("Failed to establish sql database connection.")
 
 async def is_azure_db_connection_ok(app: Flask):
     try:

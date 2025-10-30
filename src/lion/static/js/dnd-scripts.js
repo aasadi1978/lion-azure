@@ -39,16 +39,8 @@ function clear_user_changes() {
   );
 }
 
-function get_chart_data(...args) {
-  // Support Python-like *args and **kwargs:
-  // - positional args go into dct_params.args (array)
-  // - if the last arg is a plain object it's treated as kwargs and merged into dct_params
-
-
-  let dct_params = {};
-  if (args.length > 0) dct_params.args = args;
-
-  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = dct_params));
+function get_chart_data() {
+  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {}));
 
   load_driver_shift_chart((dct_chart_data = get_chart_data_status));
   scrollIntoDiv((getElementById = 'id-all_maps'));

@@ -10,7 +10,7 @@ from shutil import copyfile
 from pandas import DataFrame
 import tempfile
 from typing import Optional
-from lion.utils.storage_manager import LionStorageManager
+from lion.utils.storage_manager import STORAGE_MANAGER, LionStorageManager
 
 
 def save_wb(wb, xlpath):
@@ -82,7 +82,7 @@ def write_excel(df,
 
     try:
 
-        storage = storage or LionStorageManager(container_name='logs')
+        storage = storage or STORAGE_MANAGER
 
         is_blob_target = storage is not None and storage.in_azure
         local_tmp_path = None
@@ -149,7 +149,7 @@ def write_excel(df,
         # if Azure, upload to blob
         if is_blob_target:
             blob_path = xlpath if isinstance(xlpath, str) else str(xlpath)
-            storage.upload_file(local_tmp_path, *blob_path.split("/"))
+            storage.upload_file(local_tmp_path, container_name='logs', *blob_path.split("/"))
 
     except Exception:
         show_error(f"Creating {path.basename(str(xlpath))} failed! {log_exception()}")

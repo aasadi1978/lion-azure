@@ -4,7 +4,7 @@ import threading
 from flask import jsonify
 from lion.config.paths import LION_LOGS_PATH, LION_LOG_FILE_PATH
 from lion.logger.exception_logger import log_exception
-from lion.utils.storage_manager import LionStorageManager
+from lion.utils.storage_manager import STORAGE_MANAGER
 
 
 def upload_logs_to_blob(src_path: Path, container_name: str, *blob_parts: str):
@@ -16,19 +16,17 @@ def upload_logs_to_blob(src_path: Path, container_name: str, *blob_parts: str):
         if src_path is None:
             src_path = LION_LOGS_PATH
 
-        storage = LionStorageManager(container_name=container_name)
-
         errmsg = ''
 
         list_logs = listdir(src_path)
         for log_file in list_logs:
             try:
                 args = [*blob_parts, log_file]
-                storage.upload_file(local_path=src_path / log_file, *args)
+                STORAGE_MANAGER.upload_file(local_path=src_path / log_file, container_name=container_name, *args)
             except Exception as e:
                 errmsg = f"{errmsg}{log_exception(remarks=f"Failed to upload log file {log_file} to Blob Storage: {str(e)}")}. "
 
-        storage.upload_file(local_path=LION_LOG_FILE_PATH, *blob_parts, blob_name=LION_LOG_FILE_PATH.name)
+        STORAGE_MANAGER.upload_file(local_path=LION_LOG_FILE_PATH, *blob_parts, blob_name=LION_LOG_FILE_PATH.name)
 
         if errmsg:
             raise Exception(errmsg)

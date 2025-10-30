@@ -1,4 +1,4 @@
-from flask import g, session
+from flask import g, has_request_context, session
 from sqlalchemy.exc import SQLAlchemyError
 from lion.bootstrap.constants import LION_DDEMO_SCN_NAME, LION_DEFAULT_GROUP_NAME
 from lion.create_flask_app.create_app import BCRYPT, LION_FLASK_APP
@@ -77,7 +77,8 @@ class User(LION_SQLALCHEMY_DB.Model):
             dct_lion_user.pop('password_hash', None)
             dct_lion_user.pop('_sa_instance_state', None)
 
-            session['user'] = dct_lion_user
+            if has_request_context():
+                session['user'] = dct_lion_user
 
             LION_FLASK_APP.config['LION_USER_ID'] = dct_lion_user['user_id']
             LION_FLASK_APP.config['LION_USER_GROUP_NAME'] = dct_lion_user['group_name']

@@ -1,10 +1,8 @@
+import logging
 from os import environ, getenv
 from pathlib import Path
 import sys
 from dotenv import load_dotenv
-
-from lion.logger.exception_logger import log_exception
-from lion.logger.status_logger import log_message
 
 
 # Current directory of the project decided by the user. Note that this is not necessarily where the python package sits.
@@ -41,9 +39,6 @@ try:
     # To avoid using the local version in production, remove the LION_TEMP_SHARED_DIR environment variable from the .env file.
     LION_SHARED_DIR_NAME = getenv('LION_TEMP_SHARED_DIR', 'LION-Shared')
     LION_TEMP_SHARED_DIR = LION_PROJECT_HOME / LION_SHARED_DIR_NAME
-    LION_SHARED_DIR = LION_TEMP_SHARED_DIR if Path(LION_TEMP_SHARED_DIR).exists() else Path(getenv('LION_SHARED_DIR', str(
-        LION_PROJECT_HOME / LION_SHARED_DIR_NAME))).resolve()
-    LION_SHARED_DIR.mkdir(parents=True, exist_ok=True)
 
     # Making the following paths available for their consumer paths.py module
     environ['LION_PROJECT_HOME'] = str(LION_PROJECT_HOME)
@@ -57,13 +52,11 @@ try:
     
     # Potentially coming from .env file or else set to default values
     environ['LION_ENV'] = getenv('LION_ENV', 'local')  # 'local' or 'cloud'
-    environ['LION_SHARED_DIR'] = str(LION_SHARED_DIR)
-
 
 except Exception:
-   log_exception(remarks="Failed to initialize env variables. Exiting with code 1.", level='critical')
+   logging.error(remarks="Failed to initialize env variables. Exiting with code 1.", level='critical')
    sys.exit(1)
 
 LION_ENVIRONMENT_VARIABLES: dict = {name: value for name, value in environ.items() if name.startswith('LION_')}
-log_message(f"Bootstrap environment variables loaded successfully.")
+logging.info(f"Bootstrap environment variables loaded successfully.")
 

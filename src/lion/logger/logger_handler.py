@@ -1,9 +1,7 @@
 import logging
 import logging.handlers
-from os import getenv, getpid
 from pathlib import Path
 import sys
-
 
 
 def initialize_logger(
@@ -11,7 +9,8 @@ def initialize_logger(
     log_level: int = logging.DEBUG,
     max_bytes: int = 10 * 1024 * 1024,  # 10MB
     backup_count: int = 1,
-    console_output: bool = True
+    console_output: bool = True,
+    user_name: str = 'lion-app'
 ) -> logging.Logger:
     """
     Initialize logger with file and optional console output.
@@ -28,7 +27,7 @@ def initialize_logger(
     """
 
     if log_file_path is None or not Path(log_file_path).exists():
-        log_file_path = Path(getenv('LION_PROJECT_HOME', str(Path().resolve()))) / 'status.log'
+        log_file_path = Path().resolve() / 'status.log'
         
     # Ensure log directory exists
     log_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -50,14 +49,8 @@ def initialize_logger(
         return success_code
 
     try:
-        # Create formatter with process name from getproctitle()
-        # try:
-        #     process_name = getproctitle()
-        # except ImportError:
-        process_name = getpid()
-
         formatter = logging.Formatter(
-            f"{process_name} | %(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(message)s",
+            f"{user_name} | %(asctime)s | %(levelname)-8s | %(name)s | %(filename)s:%(lineno)d | %(message)s",
             datefmt="%Y-%m-%d %H:%M:%S"
         )
 

@@ -206,6 +206,7 @@ TAG_NAME = f"lion-{version('lion')}"
 
 LION_STRG_CONTAINER_DRIVER_REPORT: str = 'driver-reports'
 LION_STRG_CONTAINER_LOGS: str = 'logs'
+LION_STRG_CONTAINER_UPLOADS: str = 'uploads'
 LION_STRG_CONTAINER_OPTIMIZATION: str = 'optimization'
 
 LION_DEFAULT_GROUP_NAME:str='fedex-lion-demo'

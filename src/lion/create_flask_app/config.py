@@ -1,11 +1,8 @@
 from datetime import timedelta
 import logging
-
-from lion.bootstrap import LION_ENVIRONMENT_VARIABLES as lion_config # Loaded first to setup env variables and logging in bootstrap\__init__.py
-from lion.config import paths
+from os import getenv
+from pathlib import Path
 from lion.create_flask_app.azure_sql_manager import SQLALCHEMY_DATABASE_URI
-
-LION_DEFAULT_SQLDB_PATH_BIND = f"sqlite:///{paths.LION_DEFAULT_SQLDB_PATH / 'data.db'}"
 
 def configure_lion_app() -> dict:
     """
@@ -14,8 +11,11 @@ def configure_lion_app() -> dict:
 
     try:
 
-        lion_config.setdefault('SQLALCHEMY_BINDS', {})
-        lion_config['SQLALCHEMY_BINDS'].update({'local_data_bind':  LION_DEFAULT_SQLDB_PATH_BIND})
+        db_path = Path(getenv('LION_PKG_MODULES_PATH')) / 'sqldb'/ 'data.db'
+        LION_DEFAULT_SQLDB_PATH_BIND = f"sqlite:///{db_path}"
+
+        lion_config = {}
+        lion_config['SQLALCHEMY_BINDS'] = {'local_data_bind':  LION_DEFAULT_SQLDB_PATH_BIND}
 
         lion_config.update({
             'SQLALCHEMY_DATABASE_URI': SQLALCHEMY_DATABASE_URI,

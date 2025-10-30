@@ -1,7 +1,7 @@
+import logging
 from sqlalchemy.orm import Query as BaseQuery
 from flask import has_request_context
 from sqlalchemy import and_
-from lion.logger.exception_logger import log_exception
 from lion.utils.session_manager import SESSION_MANAGER
 
 class AutoScopedQuery(BaseQuery):
@@ -56,7 +56,7 @@ class AutoScopedQuery(BaseQuery):
             return self.enable_assertions(False).filter(condition)
         
         except Exception:
-            log_exception('_apply_scope failed.')
+            logging.error('_apply_scope failed.')
             return self
 
     # --- Same helper overrides ---
