@@ -5,30 +5,30 @@ from lion.bootstrap.get_user import retrieve_current_user
 # The following paths are calculated and assigned to environment variables in lion\__init__.py when the lion package is loaded.
 # We need them to be available as early as possible, i.e., when the app and db are created in create_flask_app/create_app.py
 
-user_id, user_name, group_name = retrieve_current_user()
-user_id = str(user_id).replace(' ','')
-user_name = str(user_name).replace(' ','')
-group_name = str(group_name).replace(' ','')
+USER_ID, USER_NAME, GROUP_NAME = retrieve_current_user()
+USER_ID = str(USER_ID).replace(' ','')
+USER_NAME = str(USER_NAME).replace(' ','')
+GROUP_NAME = str(GROUP_NAME).replace(' ','')
 
 PREFIX_MAP = {}
 
 LION_PROJECT_HOME = Path().resolve()
-LION_USER_HOME = LION_PROJECT_HOME / user_name
+LION_USER_HOME = LION_PROJECT_HOME / USER_NAME
 
-LION_LOG_FILE_PATH = LION_USER_HOME / 'status.log'
 LION_LOGS_PATH = LION_USER_HOME / 'logs'
 
 LION_DRIVER_REPORT_DIST_PATH = LION_PROJECT_HOME / "DriverReportDist"
-PREFIX_MAP[LION_DRIVER_REPORT_DIST_PATH] = f"{group_name}"
+PREFIX_MAP[LION_DRIVER_REPORT_DIST_PATH] = f"{GROUP_NAME}"
 
 LION_ARCGIS_PATH = LION_PROJECT_HOME / "ArcGIS"
 LION_CONSOLIDATED_REPORT_PATH = LION_PROJECT_HOME / "ConsolidatedReports"
-PREFIX_MAP[LION_CONSOLIDATED_REPORT_PATH] = f"{group_name}"
+PREFIX_MAP[LION_CONSOLIDATED_REPORT_PATH] = f"{GROUP_NAME}"
 
 LION_OPTIMIZATION_PATH = LION_USER_HOME / "optimisation"
-PREFIX_MAP[LION_OPTIMIZATION_PATH] = f"{group_name}/{user_name}"
+PREFIX_MAP[LION_OPTIMIZATION_PATH] = f"{GROUP_NAME}/{USER_NAME}"
 
 DELTA_DATA_PATH = LION_USER_HOME / "DeltaData"
+
 DELTA_DATA_LOG_PATH = DELTA_DATA_PATH / "logs"
 
 LION_LOCAL_DRIVER_REPORT_PATH = LION_LOGS_PATH / "DriverReport"
@@ -46,5 +46,15 @@ TEMP_APP_DATA_FOLDER = LION_USER_HOME / 'tmp-lion'
 LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'TempOptimizationDataDump'
 LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta-tmp'
 
+LION_LOG_FILE_PATH = LION_USER_HOME / 'status.log'
+
+
+for pth in [TEMP_APP_DATA_FOLDER, LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH, LION_TEMP_DELTA_DATA_DUMP_PATH,
+            LION_DIAGNOSTICS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, DELTA_DATA_LOG_PATH, DELTA_DATA_PATH,
+            LION_OPTIMIZATION_PATH, LION_CONSOLIDATED_REPORT_PATH, LION_DRIVER_REPORT_DIST_PATH, LION_LOGS_PATH, 
+            LION_USER_HOME]:
+    
+    pth.mkdir(parents=True, exist_ok=True)
+
 from lion.logger.logger_handler import initialize_logger
-initialize_logger(log_file_path=LION_LOG_FILE_PATH, user_name=user_name)
+initialize_logger(log_file_path=LION_LOG_FILE_PATH, user_name=USER_NAME)

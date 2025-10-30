@@ -8,7 +8,7 @@ from sqlalchemy.exc import SQLAlchemyError
 # from lion.create_flask_app.create_tables import create_all
 # from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.create_app import LION_FLASK_APP
-import lion.bootstrap.validate_paths as validate_paths # bootstrap gets loaded in validate_paths through bootstrap\__init__.py
+import lion.config.paths
 from lion.routes.blueprints import register_blueprints
 import lion.routes.initialize_global_instances as  initialize_global_instances
 
@@ -16,7 +16,6 @@ list_non_db_endpoints = ["health_check"]
 
 def _create_app():
 
-    validate_paths.validate_all()
     initialize_global_instances.initialize_all(app=LION_FLASK_APP)
     register_blueprints(app=LION_FLASK_APP)
 
