@@ -42,6 +42,7 @@ function clear_user_changes() {
 function get_chart_data() {
   let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {}));
 
+  build_schedule_gantt_chart();
   load_driver_shift_chart((dct_chart_data = get_chart_data_status));
   scrollIntoDiv((getElementById = 'id-all_maps'));
 }
@@ -512,7 +513,7 @@ function save_filter_params(dctparams_data = {}) {
   return sync_post('/refresh-schedule-filter', (dct_params = dctparams_data));
 }
 
-function build_tours_map_div(page_size = undefined) {
+function build_schedule_gantt_chart(page_size = undefined) {
   if (page_size === undefined) {
     if (options) {
       page_size = options.page_size;
@@ -566,28 +567,12 @@ function build_tours_map_div(page_size = undefined) {
   newDiv.style.overflow = 'auto';
   parentChartAssignDrivers.appendChild(newDiv);
 
-  // if (!document.getElementById('id-remove-map').checked) {
-  //   let parentDrawTour = document.getElementById('parent-draw-tour');
-  //   if (!parentDrawTour) {
-  //     parentDrawTour = document.createElement('div');
-  //     parentDrawTour.id = 'parent-draw-tour';
-  //     full_disp_div.append(parentDrawTour);
-  //   }
-
-  //   let newDiv2 = document.createElement('div');
-  //   newDiv2.id = 'tours_map';
-  //   newDiv2.style.width = '20vw';
-  //   newDiv2.style.height = hvh;
-  //   newDiv2.style.verticalAlign = 'top';
-  //   parentDrawTour.appendChild(newDiv2);
-  // }
-
   build_tour_desc_div();
 }
 
 function build_tour_desc_div(parent_div_id = 'id-disp-drag-full') {
   let page_size = 15;
-  if (options) {
+  if (window.options) {
     page_size = options.page_size;
   }
 
@@ -637,25 +622,6 @@ function build_tour_desc_div(parent_div_id = 'id-disp-drag-full') {
   innerDiv.appendChild(label);
 }
 
-function hide_map_on_click() {
-  if (!document.getElementById('id-remove-map').checked) {
-    document.getElementById('id-remove-map').click();
-  }
-  add_remove_map();
-}
-
-function add_remove_map(load_chart = true) {
-  if (document.getElementById('id-remove-map').checked) {
-    build_tours_map_div();
-  } else {
-    build_tours_map_div();
-    load_map();
-  }
-
-  if (load_chart == true) {
-    get_chart_data();
-  }
-}
 
 function insert_disp_drag_double() {
   let tmpDiv = document.getElementById('id-tour-desc-container');
@@ -729,7 +695,7 @@ function insert_disp_drag_full() {
   let tmpDiv3 = document.getElementById('id-disp-drag-full');
   if (tmpDiv3) tmpDiv3.remove();
 
-  build_tours_map_div();
+  build_schedule_gantt_chart();
 }
 
 function clean_up_map() {
@@ -2203,7 +2169,7 @@ function set_number_of_drivers_per_page() {
     (url = '/drivers')
   );
 
-  build_tours_map_div((page_size = page_size));
+  build_schedule_gantt_chart((page_size = page_size));
   load_driver_shift_chart((dct_chart_data = status_pgsize));
   load_chart_on_full_page_load();
 }

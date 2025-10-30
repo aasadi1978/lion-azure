@@ -166,14 +166,6 @@
     });
 
     window.addEventListener('keydown', function (e) {
-      if (e.altKey && (e.key === 'm' || e.key === 'M')) {
-        e.preventDefault();
-        document.getElementById('id-remove-map').click();
-        add_remove_map();
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
       if (e.keyCode === 116) {
         e.preventDefault();
         refresh_all();
@@ -286,7 +278,7 @@
           color: white;
           font-size: 16px;
           font-family: FedEx Sans;
-          display: none;
+          display: block;
         "
         id="id-tooltip-info"
         onclick="close_tooltip_lbl()"
@@ -490,19 +482,6 @@
         </div>
 
         <div class="col-md-1" style="display: none">
-          <p class="category">Hide map</p>
-          <input
-            type="checkbox"
-            checked
-            class="bootstrap-switch"
-            data-on-label="Yes"
-            data-off-label="No"
-            id="id-remove-map"
-            onchange="add_remove_map()"
-          />
-        </div>
-
-        <div class="col-md-1" style="display: none">
           <p class="category">Labels</p>
           <input
             type="checkbox"
@@ -582,7 +561,6 @@
       <div
         class="row"
         style="
-          margin-top: -20px;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -613,22 +591,6 @@
               style="width: 97vw; height: 85vh; overflow: auto"
             ></div>
           </div>
-
-          <!-- <div
-            id="parent-draw-tour"
-            onclick="hide_map_on_click()"
-            title="Click to hide"
-          >
-            <div
-              id="tours_map"
-              style="
-                width: 15vw;
-                height: 85vh;
-                vertical-align: top;
-                display: none;
-              "
-            ></div>
-          </div> -->
         </div>
       </div>
 
