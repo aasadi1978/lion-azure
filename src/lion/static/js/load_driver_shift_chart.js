@@ -154,10 +154,12 @@ async function validate_chart_data(dct_chart_data) {
   return {};
 }
 
+
 async function load_driver_shift_chart(
   dct_chart_data = undefined,
   render_to = 'chart-assign-drivers'
 ) {
+
   startHealthCheck();
   if ('message' in dct_chart_data) {
     create_popup((title = 'Chart data'), (message = dct_chart_data.message));
@@ -177,15 +179,6 @@ async function load_driver_shift_chart(
     console.log('dct_chart_data was not provided or is not valid');
     return;
   }
-
-  await load_highchart(dct_chart_data=dct_chart_data, render_to=render_to)
-}
-
-
-async function load_highchart(
-  dct_chart_data = undefined,
-  render_to = 'chart-assign-drivers'
-) {
 
   let show_labels_flag = document.getElementById('id-show-labels').checked;
   if (render_to == 'chart-assign-drivers') {
