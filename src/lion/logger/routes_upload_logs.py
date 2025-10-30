@@ -7,13 +7,13 @@ from lion.utils.flask_request_manager import retrieve_form_data
 
 bp_copy_logs = Blueprint('logger_upload_logs', __name__)
 
-@bp_copy_logs.route("/push-logs", methods=["POST", "GET"])
+@bp_copy_logs.route("/upload-logs", methods=["POST", "GET"])
 def push_logs():
     trigger_async_log_upload(src_path=LION_LOGS_PATH, container_name=LION_STRG_CONTAINER_LOGS)
     return jsonify({"status": "started", "message": "Uploading logs in background"})
 
 
-@bp_copy_logs.route("/push-optimization-logs", methods=["POST", "GET"])
+@bp_copy_logs.route("/upload-optimization-logs", methods=["POST", "GET"])
 def push_optimization_logs():
     trigger_async_log_upload(src_path=LION_OPTIMIZATION_PATH, container_name=LION_STRG_CONTAINER_OPTIMIZATION)
     return jsonify({"status": "started", "message": "Uploading logs in background"})

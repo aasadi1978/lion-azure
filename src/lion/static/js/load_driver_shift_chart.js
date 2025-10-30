@@ -991,6 +991,16 @@ async function load_highchart(
               },
             },
             {
+              text: 'upload logs',
+              onclick: function () {
+                let uplaoding_status = sync_post('/upload-logs')
+                create_popup(
+                  (title = 'Upload logs'),
+                  (message = uplaoding_status.message)
+                );
+              },
+            },
+            {
               text: 'Refresh shift indices (Reboot)',
               onclick: function () {
                 refresh_shift_index();
