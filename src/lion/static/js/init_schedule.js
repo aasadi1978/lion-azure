@@ -87,7 +87,7 @@ function initSchedule() {
   set_ui_params();
 
   // Load initial chart
-  get_chart_data({ page_num: window.currPage });
+  get_chart_data(page_num= window.currPage);
 }
 
 document.addEventListener("DOMContentLoaded", initSchedule);
