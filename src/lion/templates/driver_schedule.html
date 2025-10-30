@@ -614,8 +614,35 @@
 </div>
 
 <script>
+
+  let prebutton2 = document.getElementById('btn-Previous');
+  prebutton2.onclick = function () {
+    prebutton2.focus();
+    let curpg = window.currPage;
+    curpg--;
+    window.currPage = curpg;
+    update_page_num(curpg);
+    get_chart_data(page_num=curpg);
+  };
+
+  let nxtbutton2 = document.getElementById('btn-Next');
+  nxtbutton2.onclick = function () {
+    nxtbutton2.focus();
+    let curpg = window.currPage;
+    curpg++;
+    window.currPage = curpg;
+    update_page_num(curpg);
+    document.getElementById('btn-Previous').disabled = false;
+    get_chart_data(page_num=curpg);
+  };
+
   document.addEventListener('DOMContentLoaded', function () {
-    get_chart_data();
+    let curpg = window.currPage;
+    if (!curpg){
+      curpg = 1
+    }
+    window.currPage = curpg;
+    get_chart_data(page_num=curpg);
   });
 
 </script>

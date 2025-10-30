@@ -10,17 +10,6 @@ function load_chart_on_full_page_load(chart_data) {
 function update_page_num(pagenum) {
   window.currPage = Number(pagenum);
   document.getElementById('id-page-to-form').value = window.currPage;
-
-  let page_status = sync_post(
-    '/update-page-number',
-    (dct_params = { page_num: window.currPage })
-  );
-  if (page_status.code != 200) {
-    create_popup(
-      (message = page_status.message),
-      (title = 'Error updating page')
-    );
-  }
 }
 
 function clear_user_changes() {
@@ -39,8 +28,8 @@ function clear_user_changes() {
   );
 }
 
-function get_chart_data() {
-  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {}));
+function get_chart_data(page_num=window.currPage) {
+  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {page_num: page_num}));
 
   build_schedule_gantt_chart();
   load_driver_shift_chart((dct_chart_data = get_chart_data_status));

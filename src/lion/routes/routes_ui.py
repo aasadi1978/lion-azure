@@ -127,19 +127,6 @@ def cold_schedule_reload():
 
     return jsonify({'chart_data': get_chart_data(), 'code': 200, 'message': 'Schedule reloaded successfully.'})
 
-@ui_bp.route('/update-page-number', methods=['POST'])
-def update_page_num():
-    try:
-        dct_params = retrieve_form_data()
-        page_num = dct_params.get('page_num', 1)
-        UI_PARAMS.PAGE_NUM = page_num
-        return jsonify({'code': 200})
-    except Exception:
-        return jsonify({'code': 400, 
-                        'message': f'Setting page number failed!\n{log_exception(popup=False)}'})
-    finally:
-        pass
-
 @ui_bp.route('/options', methods=['GET', 'POST'])
 def get_options():
     try:
