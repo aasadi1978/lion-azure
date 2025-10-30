@@ -512,7 +512,7 @@ function build_schedule_gantt_chart(page_size = undefined) {
   }
 
   // let h = Math.min(options.n_drivers + 5, page_size) * 6.5
-  let h = page_size * 6.5;
+  let h = 85;
   hvh = h.toString() + 'vh';
   let w = '97vw';
 
