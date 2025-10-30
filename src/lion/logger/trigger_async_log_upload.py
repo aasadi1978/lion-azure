@@ -1,7 +1,6 @@
 from os import listdir
 from pathlib import Path
 import threading
-from flask import jsonify
 from lion.config.paths import LION_LOGS_PATH, LION_LOG_FILE_PATH
 from lion.logger.exception_logger import log_exception
 from lion.utils.storage_manager import STORAGE_MANAGER
@@ -32,9 +31,9 @@ def upload_logs_to_blob(src_path: Path, container_name: str, *blob_parts: str):
             raise Exception(errmsg)
 
     except Exception:
-        return jsonify({"message": log_exception(), 'code': 400})
+        return {"message": log_exception(), 'code': 400}
     
-    return jsonify({"status": "success", "message": "Logs uploaded to Blob Storage", 'code': 200})
+    return {"status": "success", "message": "Logs uploaded to Blob Storage", 'code': 200}
 
 def trigger_async_log_upload(src_path: Path, container_name: str, *blob_parts: str):
 

@@ -6,6 +6,9 @@ from lion.bootstrap.get_user import retrieve_current_user
 # We need them to be available as early as possible, i.e., when the app and db are created in create_flask_app/create_app.py
 
 user_id, user_name, group_name = retrieve_current_user()
+user_id = str(user_id).repalce(' ','')
+user_name = str(user_name).repalce(' ','')
+group_name = str(group_name).repalce(' ','')
 
 PREFIX_MAP = {}
 
@@ -46,3 +49,8 @@ LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta-tmp'
 
 from lion.logger.logger_handler import initialize_logger
 initialize_logger(log_file_path=LION_LOG_FILE_PATH, user_name=user_name)
+import logging
+logging.info("===================================================")
+logging.info(f"Username: {user_name}")
+logging.info(f"UserId: {user_id}")
+logging.info("===================================================")
