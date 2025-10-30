@@ -1,73 +1,12 @@
 {% extends "base.html" %} {% block NewStyle %}
-<style>
-  .highcharts-menu-item {
-    font-size: 16px !important;
-    font-family: FedEx Sans !important;
-    font-weight: bold !important;
-  }
-
-  .fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 9999;
-    overflow: auto;
-  }
-
-  .popup-div {
-    position: fixed;
-    display: none;
-    font-size: 18px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10000; /* puts it on top of other content */
-    padding: 20px;
-    width: 88vw;
-    height: 80vh;
-    overflow: auto;
-    background-color: #1e1e2f;
-    border: 16px solid #ff6200;
-    background-image: url(/static/images/fdx-img-background-street-small.png);
-    background-repeat: no-repeat;
-    background-size: 100%;
-  }
-
-  .popup-div-no-img {
-    position: fixed;
-    display: none;
-    font-size: 18px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 10000; /* puts it on top of other content */
-    padding: 20px;
-    width: 88vw;
-    height: 80vh;
-    overflow: auto;
-    background-color: #1e1e2f;
-    border: 16px solid #ff6200;
-  }
-
-  .popup-header {
-    padding: 10px;
-    background-color: #4d148c;
-    /* purple */
-    color: #fff;
-    /* white text */
-    font-size: 22px;
-    font-family: FedEx Sans;
-  }
-</style>
+<link rel="stylesheet" href="/static/css/dnd-styles.css" />
 {% endblock %} {% block NewScriptsTop %}
 
 <script id="options-data" type="application/json">
   {{ options | tojson | safe }}
 </script>
 
-<link rel="stylesheet" href="/static/css/dnd-styles.css" />
+
 <!-- Highcharts local libraries -->
 <script src="/static/js/highcharts-code/highcharts.js"></script>
 <script src="/static/js/highcharts-code/modules/xrange.js"></script>
@@ -75,10 +14,8 @@
 <script src="/static/js/highcharts-code/modules/exporting.js"></script>
 <script src="/static/js/highcharts-code/modules/accessibility.js"></script>
 <script src="/static/js/highcharts-code/modules/pattern-fill.js"></script>
-
 <script src="https://blacklabel.github.io/custom_events/js/customEvents.js"></script>
 <script src="https://code.iconify.design/iconify-icon/1.0.1/iconify-icon.min.js"></script>
-<link rel="stylesheet" href="/static/css/dnd-styles.css" />
 
 <!-- lion libraries /> -->
 <script src="/static/js/dnd-scripts.js" defer></script>
@@ -87,6 +24,8 @@
 
 <script type="text/javascript" src="/static/js/speechRecognitions.js"></script>
 <script type="text/javascript" src="/static/js/init_schedule.js"></script>
+<script type="text/javascript" src="/static/js/driver_schedule_listeners.js"></script>
+
 
 {% endblock %} {% block NewContent %}
 
@@ -446,98 +385,5 @@
   </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
 
-    window.onload = function () {
-      document.getElementById('chart-assign-drivers').style.display = 'block';
-    };
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'p' || e.key === 'P')) {
-        e.preventDefault();
-        show_popup((id = 'id-manage-optimization'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'm' || e.key === 'M')) {
-        e.preventDefault();
-        show_popup('id-insert-movement-frame');
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'e' || e.key === 'E')) {
-        e.preventDefault();
-        export_local_schedule();
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
-        e.preventDefault();
-        undo();
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'd' || e.key === 'D')) {
-        e.preventDefault();
-        show_popup((id = 'id-insert-driver-frame'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'l' || e.key === 'L')) {
-        e.preventDefault();
-        show_popup((id = 'id-insert-location-frame'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.ctrlKey && (e.key === 'r' || e.key === 'R')) {
-        e.preventDefault();
-        show_popup((id = 'id-manage-runtimes'));
-      }
-    });
-
-    window.addEventListener('keydown', function (e) {
-      if (e.keyCode === 116) {
-        e.preventDefault();
-        refresh_all();
-      }
-    });
-
-    let prebutton2 = document.getElementById('btn-Previous');
-    prebutton2.onclick = function () {
-      prebutton2.focus();
-      let curpg = window.currPage;
-      curpg--;
-      window.currPage = curpg;
-      update_page_num(curpg);
-      get_chart_data(page_num=curpg);
-    };
-
-    let nxtbutton2 = document.getElementById('btn-Next');
-    nxtbutton2.onclick = function () {
-      nxtbutton2.focus();
-      let curpg = window.currPage;
-      curpg++;
-      window.currPage = curpg;
-      update_page_num(curpg);
-      document.getElementById('btn-Previous').disabled = false;
-      get_chart_data(page_num=curpg);
-    };
-  
-    let curpg = window.currPage;
-    if (!curpg){
-      curpg = 1
-    }
-    window.currPage = curpg;
-    get_chart_data(page_num=curpg);
-
-  });
-
-</script>
-{% endblock %} {% block NewScript %} {% endblock %}
+{% endblock %}

@@ -1,64 +1,60 @@
-/* @import url("//unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css"); */
+.highcharts-menu-item {
+    font-size: 16px !important;
+    font-family: FedEx Sans !important;
+    font-weight: bold !important;
+  }
 
-< !-- HTML !--><button class="button-19" role="button">Button 19</button>
-
-/* CSS */
-.button-19 {
-    appearance: button;
-    background-color: #1899D6;
-    border: solid transparent;
-    border-radius: 16px;
-    border-width: 0 0 4px;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    display: inline-block;
-    font-family: din-round, sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: .8px;
-    line-height: 20px;
-    margin: 0;
-    outline: none;
-    overflow: visible;
-    padding: 13px 16px;
-    text-align: center;
-    text-transform: uppercase;
-    touch-action: manipulation;
-    transform: translateZ(0);
-    transition: filter .2s;
-    user-select: none;
-    -webkit-user-select: none;
-    vertical-align: middle;
-    white-space: nowrap;
-    width: 100%;
-}
-
-.button-19:after {
-    background-clip: padding-box;
-    background-color: #1CB0F6;
-    border: solid transparent;
-    border-radius: 16px;
-    border-width: 0 0 4px;
-    bottom: -4px;
-    content: "";
-    left: 0;
-    position: absolute;
-    right: 0;
+  .fullscreen {
+    position: fixed;
     top: 0;
-    z-index: -1;
-}
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: auto;
+  }
 
-.button-19:main,
-.button-19:focus {
-    user-select: auto;
-}
+  .popup-div {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+    background-image: url(/static/images/fdx-img-background-street-small.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
 
-.button-19:hover:not(:disabled) {
-    filter: brightness(1.1);
-    -webkit-filter: brightness(1.1);
-}
+  .popup-div-no-img {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+  }
 
-.button-19:disabled {
-    cursor: auto;
-}
+  .popup-header {
+    padding: 10px;
+    background-color: #4d148c;
+    /* purple */
+    color: #fff;
+    /* white text */
+    font-size: 22px;
+    font-family: FedEx Sans;
+  }

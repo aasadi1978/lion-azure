@@ -76,3 +76,64 @@
   .btn {
     color: black
   }
+
+  .highcharts-menu-item {
+    font-size: 16px !important;
+    font-family: FedEx Sans !important;
+    font-weight: bold !important;
+  }
+
+  .fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    overflow: auto;
+  }
+
+  .popup-div {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+    background-image: url(/static/images/fdx-img-background-street-small.png);
+    background-repeat: no-repeat;
+    background-size: 100%;
+  }
+
+  .popup-div-no-img {
+    position: fixed;
+    display: none;
+    font-size: 18px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000; /* puts it on top of other content */
+    padding: 20px;
+    width: 88vw;
+    height: 80vh;
+    overflow: auto;
+    background-color: #1e1e2f;
+    border: 16px solid #ff6200;
+  }
+
+  .popup-header {
+    padding: 10px;
+    background-color: #4d148c;
+    /* purple */
+    color: #fff;
+    /* white text */
+    font-size: 22px;
+    font-family: FedEx Sans;
+  }
