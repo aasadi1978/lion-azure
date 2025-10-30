@@ -175,7 +175,18 @@
 </script>
 <script>
   document.addEventListener('optionsLoaded', () => {
+
     let options = window.options;
+    if(!options){
+      console.log("options was not loaded through fetching. Laoding through ninja ...")
+      options = '{{ options | tojson | safe }}';
+      console.log(options.vsn)
+    }
+    
+    if(options){
+      window.options = options;
+    }
+    
     if (options && Object.keys(options).length > 0) {
       document.addEventListener('DOMContentLoaded', function () {
         load_available_vehicle_types();
