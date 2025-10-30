@@ -349,6 +349,8 @@ function update_suppliers() {
 function refresh_options(opts = undefined) {
   if (opts != undefined) {
     options = opts;
+  } else {
+    options = window.options
   }
 
   // Check if options is defined, if not return early
@@ -384,11 +386,12 @@ function refresh_options(opts = undefined) {
   selectElement('id-mov-traffic-type', traffic_type);
   set_default_title();
 
+  // Safe, explicit
+  let n_bsket = Array.isArray(options.basket_drivers) ? options.basket_drivers.length : 0;
   document.getElementById('id-basket-btn').innerHTML =
     '<i class="tim-icons icon-cart"></i> My Basket' +
     ' (' +
-    options.basket_drivers.length +
-    ')';
+    n_bsket + ')';
 }
 
 function set_default_title(opts = undefined) {
