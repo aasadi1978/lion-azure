@@ -590,11 +590,9 @@
 
 <script>
 
-  $(document).ready(function () {
-    refresh_options();
-  });
-
   document.addEventListener('DOMContentLoaded', function () {
+
+    refresh_options();
 
     let prebutton2 = document.getElementById('btn-Previous');
     prebutton2.onclick = function () {
@@ -624,7 +622,7 @@
     }
     window.currPage = curpg;
     get_chart_data(page_num=curpg);
-    
+
   });
 
 </script>

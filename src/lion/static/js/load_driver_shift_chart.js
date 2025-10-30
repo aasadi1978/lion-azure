@@ -178,7 +178,14 @@ async function load_driver_shift_chart(
     return;
   }
 
-  // resetDoubleClick();
+  await load_highchart(dct_chart_data=dct_chart_data, render_to=render_to)
+}
+
+
+async function load_highchart(
+  dct_chart_data = undefined,
+  render_to = 'chart-assign-drivers'
+) {
 
   let show_labels_flag = document.getElementById('id-show-labels').checked;
   if (render_to == 'chart-assign-drivers') {

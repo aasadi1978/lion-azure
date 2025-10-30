@@ -77,7 +77,7 @@ def schedule():
 
         if status.get('code', 200) == 200:
             return render_template('driver_schedule.html', options=UI_PARAMS.OPTIONS)
-        
+
         return render_template('driver_schedule.html', options={})
 
     except Exception as e:
