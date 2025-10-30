@@ -12,8 +12,8 @@ group_name = str(group_name).replace(' ','')
 
 PREFIX_MAP = {}
 
-LION_PROJECT_HOME = Path(getenv('LION_PROJECT_HOME')).resolve()
-LION_USER_HOME = Path(getenv('LION_PROJECT_HOME')).resolve() / user_name
+LION_PROJECT_HOME = Path().resolve()
+LION_USER_HOME = LION_PROJECT_HOME / user_name
 
 LION_LOG_FILE_PATH = LION_USER_HOME / 'status.log'
 LION_LOGS_PATH = LION_USER_HOME / 'logs'
@@ -25,9 +25,6 @@ LION_ARCGIS_PATH = LION_PROJECT_HOME / "ArcGIS"
 LION_CONSOLIDATED_REPORT_PATH = LION_PROJECT_HOME / "ConsolidatedReports"
 PREFIX_MAP[LION_CONSOLIDATED_REPORT_PATH] = f"{group_name}"
 
-LION_TEMPLATES_PATH=Path(getenv('LION_PKG_MODULES_PATH')).resolve() / 'templates'
-LION_STATIC_PATH=Path(getenv('LION_PKG_MODULES_PATH')).resolve() / 'static'
-
 LION_OPTIMIZATION_PATH = LION_USER_HOME / "optimisation"
 PREFIX_MAP[LION_OPTIMIZATION_PATH] = f"{group_name}/{user_name}"
 
@@ -37,6 +34,8 @@ DELTA_DATA_LOG_PATH = DELTA_DATA_PATH / "logs"
 LION_LOCAL_DRIVER_REPORT_PATH = LION_LOGS_PATH / "DriverReport"
 LION_DIAGNOSTICS_PATH = LION_LOGS_PATH / "diagnostics"
 
+lio_pkg_path = Path(getenv('LION_PKG_MODULES_PATH')).resolve()
+LION_STATIC_PATH=lio_pkg_path / 'static'
 LION_JS_PATH = LION_STATIC_PATH / 'js'
 LION_FILES_PATH = LION_STATIC_PATH / 'files'
 LION_IMAGES_PATH = LION_STATIC_PATH / 'images'
@@ -49,8 +48,3 @@ LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta-tmp'
 
 from lion.logger.logger_handler import initialize_logger
 initialize_logger(log_file_path=LION_LOG_FILE_PATH, user_name=user_name)
-import logging
-logging.info("===================================================")
-logging.info(f"Username: {user_name}")
-logging.info(f"UserId: {user_id}")
-logging.info("===================================================")

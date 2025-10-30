@@ -1,4 +1,3 @@
-import logging
 from lion.changeovers import changeover_shifts
 from lion.bootstrap.constants import MOVEMENT_TYPE_COLOR
 from lion.logger.status_logger import log_message

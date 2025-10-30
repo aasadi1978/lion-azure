@@ -1,1 +1,0 @@
-from lion.bootstrap.load_bootstrap import LION_ENVIRONMENT_VARIABLES

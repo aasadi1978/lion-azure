@@ -63,7 +63,7 @@ def refresh_options(**kwargs):
         _all_locs = update_all_locs(_dict_footprint)
         
         dct_options.update({"vsn": LATEST_JS_MODIFICATION_TIME,
-                            'LION_BING_API_KEY': getenv('LION_BING_API_KEY'),
+                            'LION_BING_API_KEY': getenv('LION_BING_API_KEY', 'GET_API_KEY'),
                             'n_drivers': len(set(UI_PARAMS.LIST_FILTERED_SHIFT_IDS)),
                             'weekday': '/'.join(UI_PARAMS.FILTERING_WKDAYS) if UI_PARAMS.FILTERING_WKDAYS else '',
                             'n_all_drivers': n_all_drivers - 2,
