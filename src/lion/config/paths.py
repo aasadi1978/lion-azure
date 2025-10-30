@@ -6,9 +6,9 @@ from lion.bootstrap.get_user import retrieve_current_user
 # We need them to be available as early as possible, i.e., when the app and db are created in create_flask_app/create_app.py
 
 user_id, user_name, group_name = retrieve_current_user()
-user_id = str(user_id).repalce(' ','')
-user_name = str(user_name).repalce(' ','')
-group_name = str(group_name).repalce(' ','')
+user_id = str(user_id).replace(' ','')
+user_name = str(user_name).replace(' ','')
+group_name = str(group_name).replace(' ','')
 
 PREFIX_MAP = {}
 
