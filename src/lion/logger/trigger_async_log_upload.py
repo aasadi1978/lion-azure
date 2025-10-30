@@ -21,11 +21,11 @@ def upload_logs_to_blob(src_path: Path, container_name: str, *blob_parts: str):
         for log_file in list_logs:
             try:
                 args = [*blob_parts, log_file]
-                STORAGE_MANAGER.upload_file(local_path=src_path / log_file, container_name=container_name, *args)
+                STORAGE_MANAGER.upload_file(src_path / log_file, container_name, *args)
             except Exception as e:
                 errmsg = f"{errmsg}{log_exception(remarks=f"Failed to upload log file {log_file} to Blob Storage: {str(e)}")}. "
 
-        STORAGE_MANAGER.upload_file(local_path=LION_LOG_FILE_PATH, *blob_parts, blob_name=LION_LOG_FILE_PATH.name)
+        STORAGE_MANAGER.upload_file(LION_LOG_FILE_PATH, container_name, *blob_parts, LION_LOG_FILE_PATH.name)
 
         if errmsg:
             raise Exception(errmsg)

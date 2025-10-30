@@ -49,46 +49,81 @@ class LionStorageManager:
 
         return container_client
 
-    def upload_file(self, local_path: str | Path, container_name: str, *blob_parts: str):
+    def upload_file(
+            self, 
+            local_path: str | Path, 
+            container_name: str, 
+            *blob_parts: str,
+            blob_name: Optional[str] = None):
         """
         Uploads file to the storage container
         """
-        if not blob_parts:
-            raise ValueError("Please provide a blob path (folder/subfolder/filename)")
 
-        prefix = str(PREFIX_MAP.get(Path(local_path), f"{self._group_name}")).replace(' ', '')
-        blob_name = f"{prefix}/" + "/".join(blob_parts)
+        try:
+            if not blob_name and not blob_parts:
+                raise ValueError("Provide either 'blob_name' or path parts via '*blob_parts'")
 
-        if self.in_azure:
-            container_name = container_name or LION_STRG_CONTAINER_LOGS
-            container_client = self.get_container_client(container_name)
-            with open(local_path, "rb") as f:
-                container_client.upload_blob(blob_name, f, overwrite=True)
-            logging.info(f"Uploaded {local_path} → Azure blob {container_name}/{blob_name}")
-        else:
-            dest_path = self.local_root / container_name / Path(*blob_parts)
-            dest_path.parent.mkdir(parents=True, exist_ok=True)
-            Path(local_path).replace(dest_path)
-            logging.info(f"Copied {local_path} → Local {dest_path}")
+            prefix = str(PREFIX_MAP.get(Path(local_path), f"{self._group_name}")).replace(' ', '')
+            blob_name = blob_name or f"{prefix}/" + "/".join(blob_parts)
 
-    def download_file(self, container_name: str, *blob_parts: str, local_path: str | Path):
+            if self.in_azure:
+                container_name = container_name or LION_STRG_CONTAINER_LOGS
+                container_client = self.get_container_client(container_name)
+                with open(local_path, "rb") as f:
+                    container_client.upload_blob(blob_name, f, overwrite=True)
+                logging.info(f"Uploaded {local_path} → Azure blob {container_name}/{blob_name}")
+            else:
+                dest_path = self.local_root / container_name / Path(*blob_parts)
+                dest_path.parent.mkdir(parents=True, exist_ok=True)
+                Path(local_path).replace(dest_path)
+                logging.info(f"Copied {local_path} → Local {dest_path}")
+        
+        except Exception:
+            log_exception('Uploading failed!')
 
-        blob_name = f"{self._group_name}/" + "/".join(blob_parts)
+    def download_file(
+        self,
+        container_name: str,
+        *blob_parts: str,
+        local_path: str | Path,
+        blob_name: Optional[str] = None,
+    ):
+        """
+        Downloads a blob from Azure Storage or a local container.
 
-        if self.in_azure:
-            """
-            Downloads the full contents of the blob with .readall() and writes it to local_path in binary mode ("wb").
-            """
-            container_name = container_name or LION_STRG_CONTAINER_UPLOADS
-            container_client = self.get_container_client(container_name)
-            with open(local_path, "wb") as f:
-                data = container_client.download_blob(blob_name).readall()
-                f.write(data)
-            logging.info(f"Downloaded Azure blob {container_name}/{blob_name} → {local_path}")
-        else:
-            src_path = self.local_root / container_name / Path(*blob_parts)
-            Path(src_path).replace(local_path)
-            logging.info(f"Copied Local {src_path} → {local_path}")
+        You can specify either:
+        • blob_parts → pieces of the blob path, e.g. ("group", "logs", "file.log")
+        • blob_name  → full blob path string (overrides blob_parts)
+
+        Example:
+            download_file("logs", "group1", "file.log", local_path="output.log")
+            download_file("logs", local_path="output.log", blob_name="group1/file.log")
+        """
+
+        try:
+            if not blob_name and not blob_parts:
+                raise ValueError("Provide either 'blob_name' or path parts via '*blob_parts'")
+
+            prefix = f"{self._group_name}/"
+            blob_name = blob_name or f"{prefix}" + "/".join(blob_parts)
+
+            if self.in_azure:
+                container_name = container_name or LION_STRG_CONTAINER_UPLOADS
+                container_client = self.get_container_client(container_name)
+
+                with open(local_path, "wb") as f:
+                    data = container_client.download_blob(blob_name).readall()
+                    f.write(data)
+
+                logging.info(f"Downloaded Azure blob {container_name}/{blob_name} → {local_path}")
+            else:
+                src_path = self.local_root / container_name / Path(*blob_parts)
+                Path(src_path).replace(local_path)
+                logging.info(f"Copied Local {src_path} → {local_path}")
+
+        except Exception:
+            log_exception('Downloading failed!')
+
 
     def list_files(self, container_name: str, prefix: str = ""):
 
