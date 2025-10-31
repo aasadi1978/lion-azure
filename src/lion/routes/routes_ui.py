@@ -31,7 +31,7 @@ from lion.ui.filter_tours import apply_filters
 from lion.ui.driver_ui import DRIVERS_UI
 from lion.ui.options import refresh_options
 from lion.logger.exception_logger import log_exception, return_exception_code
-from lion.utils.validate_uploaded_file import receive_file_upload
+from lion.upload_file.validate_uploaded_file import receive_file_upload
 from lion.utils.warnnings_off import flaskWarningsOff
 from lion.create_flask_app.create_app import FLASK_APP_INSTANCE, LION_FLASK_APP
 import lion.reporting.extract_dep_arrivals as extract_dep_arrivals

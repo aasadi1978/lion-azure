@@ -14,7 +14,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from lion.utils.popup_notifier import show_error
 from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
-from lion.config.paths import LION_PROJECT_HOME
+from lion.config.paths import LION_PROJECT_HOME, LION_USER_UPLOADS
 from lion.ui.ui_params import UI_PARAMS
 
 drivers_info_cache = TTLCache(maxsize=1000, ttl=3600 * 8)
@@ -982,68 +982,65 @@ class OptimizationDriversInfo(LION_SQLALCHEMY_DB.Model):
         If employed, please use 'FedEx Express'
         """
 
-        if UI_PARAMS.UPDATE_SUPPLIERS:
-            UI_PARAMS.UPDATE_SUPPLIERS = False
+        try:
 
-            try:
+            file_path = LION_USER_UPLOADS / 'suppliers.csv'
+            if file_path.exists():
 
-                file_path = LION_PROJECT_HOME / 'suppliers.csv'
-                if file_path.exists():
+                df_data = read_csv(file_path, sep=',', header=0)
+                df_data.fillna('Unattached')
+                df_data.rename(
+                    columns={c: c.lower() for c in df_data.columns.tolist()}, inplace=True)
 
-                    df_data = read_csv(file_path, sep=',', header=0)
-                    df_data.fillna('Unattached')
-                    df_data.rename(
-                        columns={c: c.lower() for c in df_data.columns.tolist()}, inplace=True)
+                df_data['shiftname'] = df_data.shiftname.apply(
+                    lambda x: str(x).strip())
 
-                    df_data['shiftname'] = df_data.shiftname.apply(
-                        lambda x: str(x).strip())
+                df_data['supplier'] = df_data.supplier.apply(
+                    lambda x: str(x).strip())
 
-                    df_data['supplier'] = df_data.supplier.apply(
-                        lambda x: str(x).strip())
+                df_data['supplier'] = df_data.supplier.apply(
+                    lambda x: 'Unattached' if str(x).lower() in [
+                        'nan', '', 'unattached', 'null'] else str(x))
 
-                    df_data['supplier'] = df_data.supplier.apply(
-                        lambda x: 'Unattached' if str(x).lower() in [
-                            'nan', '', 'unattached', 'null'] else str(x))
+                df_data.set_index('shiftname', inplace=True)
+                dct_data = df_data.supplier.to_dict()
 
-                    df_data.set_index('shiftname', inplace=True)
-                    dct_data = df_data.supplier.to_dict()
+                shiftnames = set(dct_data.keys())
+                operators = set(dct_data.values())
 
-                    shiftnames = set(dct_data.keys())
-                    operators = set(dct_data.values())
+                Operator.add_operators(list_of_operators=list(operators))
 
-                    Operator.add_operators(list_of_operators=list(operators))
+                records = cls.query.filter(
+                    cls.shiftname.in_(list(shiftnames))).all()
 
-                    records = cls.query.filter(
-                        cls.shiftname.in_(list(shiftnames))).all()
+                if records:
 
-                    if records:
+                    for rcrd in records:
+                        sname = rcrd.shiftname
+                        new_supplier = dct_data[sname]
+                        rcrd.operator = 1 if str(new_supplier).lower() in ['employed', 'fedex express'] else (
+                            Operator.get_operator_id(new_supplier))
 
-                        for rcrd in records:
-                            sname = rcrd.shiftname
-                            new_supplier = dct_data[sname]
-                            rcrd.operator = 1 if str(new_supplier).lower() in ['employed', 'fedex express'] else (
-                                Operator.get_operator_id(new_supplier))
+                    LION_SQLALCHEMY_DB.session.commit()
 
-                        LION_SQLALCHEMY_DB.session.commit()
+                    Operator.to_dict(clear_cache=True)
+                    cls.to_dict_all()
 
-                        Operator.to_dict(clear_cache=True)
-                        cls.to_dict_all()
+        except SQLAlchemyError as err:
+            exc_logger.log_exception(
+                popup=False, remarks=f'update_suppliers failed! {str(err)}')
+            LION_SQLALCHEMY_DB.session.rollback()
 
-            except SQLAlchemyError as err:
-                exc_logger.log_exception(
-                    popup=False, remarks=f'update_suppliers failed! {str(err)}')
-                LION_SQLALCHEMY_DB.session.rollback()
+        except UnpicklingError as err:
+            exc_logger.log_exception(
+                popup=False, remarks=f'update_suppliers failed! {str(err)}')
+            LION_SQLALCHEMY_DB.session.rollback()
 
-            except UnpicklingError as err:
-                exc_logger.log_exception(
-                    popup=False, remarks=f'update_suppliers failed! {str(err)}')
-                LION_SQLALCHEMY_DB.session.rollback()
+        except Exception as err:
 
-            except Exception as err:
-
-                exc_logger.log_exception(popup=False)
-                log_message(f'update_suppliers failed! {str(err)}')
-                LION_SQLALCHEMY_DB.session.rollback()
+            exc_logger.log_exception(popup=False)
+            log_message(f'update_suppliers failed! {str(err)}')
+            LION_SQLALCHEMY_DB.session.rollback()
 
     @classmethod
     def disable_shiftids_running_days(cls, 

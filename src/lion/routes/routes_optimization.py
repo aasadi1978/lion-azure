@@ -11,7 +11,7 @@ from lion.optimization.orm.opt_movements import OptMovements
 from lion.utils.flask_request_manager import retrieve_form_data
 from lion.optimization.optimization_logger import OPT_LOGGER
 
-import lion.utils.validate_uploaded_file as validate_uploaded_file
+import lion.upload_file.validate_uploaded_file as validate_uploaded_file
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.read_user_movements.clean_up_changeovers import purge_invalid_changeover_ids
 from lion.optimization.read_user_movements.to_opt_movements import save_movements_on_opt_movements

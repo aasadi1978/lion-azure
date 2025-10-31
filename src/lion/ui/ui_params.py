@@ -42,9 +42,7 @@ class UIParams(metaclass=SingletonMeta):
     SHIFT_INFO: str = ''
     SORT_BY_TOUR_LOCSTRING: bool = False
     
-    # UPDATE_SUPPLIERS is a flag to indicate if suppliers need to be updated. When user has a list of shiftnames after tender process 
     # with attached suppliers. Used in driveres_info.update_suppliers
-    UPDATE_SUPPLIERS: bool = False 
     LOCATION_COLLOCATION_THRESHOLD: float = 0.0001 # This is a threshold for determining if two locations are colocated based on their coordinates.
 
     MAXIMUM_DOWNTIME: int = 360

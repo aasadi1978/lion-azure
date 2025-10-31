@@ -241,7 +241,7 @@ class DriversUI():
         """
 
         try:
-            return update_traffic_types(force_update=True)
+            return update_traffic_types()
         except Exception:
             return {'code': 400, 'message': log_exception(popup=False, remarks='Updating traffic types failed!')}
 
@@ -2734,18 +2734,6 @@ class DriversUI():
         except Exception:
             log_exception(False)
             return {}
-
-    def update_suppliers(self, **dct_params):
-
-        try:
-            UI_SHIFT_DATA.reset()
-            UI_PARAMS.UPDATE_SUPPLIERS = True
-
-        except Exception:
-            return {'err': log_exception(False)}
-
-        return {}
-
 
     def review_shifts(self, **dct_params):
 

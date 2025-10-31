@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lion"
-version = "1.0.13"
+version = "1.0.14"
 description = "Linehaul Optimization for Network"
 readme = "README.md"
 requires-python = ">=3.12"

@@ -1,5 +1,6 @@
+from os import remove
 from pandas import read_excel
-from lion.config.paths import LION_FILES_PATH, LION_PROJECT_HOME
+from lion.config.paths import LION_USER_UPLOADS
 from lion.logger.exception_logger import log_exception
 from lion.orm.vehicle_type import VehicleType
 
@@ -11,14 +12,17 @@ def update_vehicle_types():
     Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
     """
 
-    _filepath = LION_PROJECT_HOME / 'vehicles.xlsx'
+    _filepath = LION_USER_UPLOADS / 'vehicles.xlsx'
 
     if not _filepath.exists():
-        _filepath = LION_FILES_PATH / 'vehicles.xlsx'
+        return
 
     try:
         _df_vhcle_types = read_excel(
             _filepath, sheet_name='vehicles')
+
+        if 'vehicle_name' not in _df_vhcle_types.columns or 'ShortName' not in _df_vhcle_types.columns:
+            return {'code': 400, 'message': "The 'vehicles.xlsx' file is missing required columns: 'vehicle_name' and 'ShortName'."}
 
         _df_vhcle_types.set_index(['vehicle_name'], inplace=True)
         _dct = _df_vhcle_types.to_dict(orient='index')
@@ -26,6 +30,8 @@ def update_vehicle_types():
         for vname, dct in _dct.items():
             VehicleType.update(vehicle_name=vname,
                                vehicle_short_name=dct.get('ShortName', vname))
+        
+        remove(_filepath)
 
     except Exception:
         _err = log_exception(
