@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify, render_template
-from build.lib.lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
+from lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
 from lion.config.paths import LION_LOCAL_DRIVER_REPORT_PATH, LION_LOG_FILE_PATH, LION_LOGS_PATH, LION_OPTIMIZATION_PATH
 from lion.logger.exception_logger import log_exception
 from lion.logger.trigger_async_log_upload import trigger_async_log_upload

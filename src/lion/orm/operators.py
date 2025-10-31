@@ -21,6 +21,9 @@ class Operator(LION_SQLALCHEMY_DB.Model):
     group_name = LION_SQLALCHEMY_DB.Column(LION_SQLALCHEMY_DB.String(225), nullable=True)
 
     def __init__(self, **attrs):
+        if 'operator_id' in attrs:
+            self.operator_id = attrs.get('operator_id')
+
         self.operator = attrs.get('operator', '')
         self.group_name = attrs.get('group_name', SESSION_MANAGER.get('group_name'))
 
