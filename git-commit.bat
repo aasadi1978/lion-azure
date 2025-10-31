@@ -4,6 +4,24 @@ setlocal enabledelayedexpansion
 echo Do not forget to update pyproject.toml version if applicable before committing.
 echo Press any key to continue ...
 
+call .venv/Scripts/activate
+echo ------------------------------------------------------------
+echo Updating app version on pyproject.toml ...
+rem Run Python once, capture both output and exit code
+for /f "delims=" %%v in ('python increment_version.py 2^>^&1') do set "APP_VERSION=%%v"
+set "EXITCODE=%ERRORLEVEL%"
+
+if %EXITCODE% neq 0 (
+    echo Failed to run increment_version.py. Please check the error messages above.
+    exit /b %EXITCODE%
+)
+
+SETX LION_AZURE_APP_VERSION "%APP_VERSION%" >nul
+echo Updated LION_AZURE_APP_VERSION to %APP_VERSION%
+
+gh variable set LION_AZURE_APP_VERSION --body "%APP_VERSION%"
+echo
+
 git init
 git status
 

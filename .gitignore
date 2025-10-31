@@ -18,12 +18,13 @@ __pycache__/
 !.env.example
 !.debug_mode_on
 !orchestrator
-!.github
+!.github/
 !*.toml
 !.deploy
+!Dockerfile
 
 
-
+secret_*
 
 # Ignore specific directories
 secrets.sh

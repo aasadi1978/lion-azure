@@ -1,12 +1,22 @@
+# Copy and paste the content of the secret_variables.sh file here
+source ./secret_variables.sh
+
 # Define your variables
+AZURE_SUBSCRIPTION="AzureSubscription-V1.0"
+AZURE_RESOURCE_GROUP="rg-lion-app"
 RESOURCE_GROUP="rg-lion-app"
 APP_PLAN="lion-app-plan"
 APP_NAME="lion"
 LOCATION="westeurope"
 RUNTIME="PYTHON|3.12"
-# NOTE: az webapp list-runtimes --os linux --output table
-DEPLOY_APPROACH="Docker"
-# or Github CI/CD
+DEPLOY_APPROACH="CI/CD"
+FLASK_ENV="production"
+WEBSITES_CONTAINER_START_TIME_LIMIT=188
+WEBSITES_ENABLE_APP_SERVICE_STORAGE=false
+WEBSITES_PORT=8000
+
+SCM_DO_BUILD_DURING_DEPLOYMENT=$DEPLOY_APPROACH == "CI/CD"
+WEBSITES_DISABLE_ORYX=$DEPLOY_APPROACH == "Docker"
 
 # Create the Resource Group if required
 az group create --name $RESOURCE_GROUP --location $LOCATION
@@ -19,7 +29,7 @@ az appservice plan create \
   --sku B1 \ 
   --is-linux
 
-# Create the Web App (Python runtime example)
+Create the Web App (Python runtime example)
 az webapp create \
   --name $APP_NAME \
   --resource-group $RESOURCE_GROUP \
@@ -27,53 +37,14 @@ az webapp create \
   --runtime $RUNTIME
 
 
-# The following app settings have to be set based on deployment approach
-if [ "$DEPLOY_APPROACH" = "Docker" ]; then
+SCM_DO_BUILD_DURING_DEPLOYMENT=false
+WEBSITES_DISABLE_ORYX=true
 
-    SCM_DO_BUILD_DURING_DEPLOYMENT=false
-    WEBSITES_DISABLE_ORYX=true
-
-    az webapp create \
-    --name $APP_NAME \
-    --resource-group $RESOURCE_GROUP \
-    --plan $APP_PLAN \
-    --deployment-container-image-name https://index.docker.io/$DOCKER_IMAGE
-
-else
-  SCM_DO_BUILD_DURING_DEPLOYMENT=true
-  WEBSITES_DISABLE_ORYX=false
-fi
 
 # Verify
 echo "Configuring app settings for deployment approach: $DEPLOY_APPROACH"
 echo "→ SCM_DO_BUILD_DURING_DEPLOYMENT=$SCM_DO_BUILD_DURING_DEPLOYMENT"
 echo "→ WEBSITES_DISABLE_ORYX=$WEBSITES_DISABLE_ORYX"
-
-# Secrets: Env Variables
-# =======================================
-# Copy secret keys from secrets.sh or github repo secrets
-AZURE_LION_APP_TENANT_ID="0f1f6ccxxxxxxxxxxxxxxxxx2b4c1d"
-AZURE_LION_APP_CLIENT_ID="d72880exxxxxxxxxxxxxxxxxx168e3397c0"
-AZURE_LION_APP_OBJECT_ID="e25dd9abxxxxxxxxxxxxxxxxxc220cf1b"
-AZURE_LION_APP_CLIENT_SECRET="Z~A8QxxxxxxxxxxxxxxxxxxxxxddnHRWh~bjZ"
-FLASK_SECRET_KEY="tAig8gl-n7xxxxxxxxxxxxxxxxxxxxx-z2BMo5JPN0"
-AZURE_SUBSCRIPTION_ID="96c96b4xxxxxxxxxxxxxxxx10e6bd3"
-DOCKER_IMAGE=asadi197xxxxxxxxxxxxxxxxp:latest
-AZURE_SQL_USER="SECRET"
-AZURE_SQL_PASS="SECRET"
-AZURE_SQL_SERVER="lixxxxxxxxxxxxxxxxxxxxxdows.net"
-AZURE_SQL_DB="lion-sql-db"
-AZURE_STORAGE_CONNECTION_STRING="DefaultEndpoxxxxxxxxxxxxxxxxxxxxxxxxxMk987plulZCvn+ASt1vCiTA==;EndpointSuffix=core.windows.net"
-
-# =======================================
-
-# Env variables
-AZURE_RESOURCE_GROUP="rg-lion-app"
-AZURE_SUBSCRIPTION="AzureSubscription-V1.0"
-FLASK_ENV="produnction"
-WEBSITES_CONTAINER_START_TIME_LIMIT=188
-WEBSITES_ENABLE_APP_SERVICE_STORAGE=false
-WEBSITES_PORT=8000
 
 # Update system settings
 az webapp config appsettings set \
@@ -94,13 +65,6 @@ az webapp config appsettings list \
   --resource-group $RESOURCE_GROUP \
   --output table
 
-
-if [ "$DEPLOY_APPROACH" = "Docker" ]; then
-    az webapp create \
-    --name $APP_NAME \
-    --resource-group $RESOURCE_GROUP \
-    --plan $APP_PLAN \
-    --deployment-container-image-name https://index.docker.io/$DOCKER_IMAGE
 
 # Enable logging
 az webapp log config \

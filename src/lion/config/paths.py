@@ -2,9 +2,6 @@ from os import getenv
 from pathlib import Path
 from lion.bootstrap.get_user import retrieve_current_user
 
-# The following paths are calculated and assigned to environment variables in lion\__init__.py when the lion package is loaded.
-# We need them to be available as early as possible, i.e., when the app and db are created in create_flask_app/create_app.py
-
 USER_ID, USER_NAME, GROUP_NAME = retrieve_current_user()
 USER_ID = str(USER_ID).replace(' ','')
 USER_NAME = str(USER_NAME).replace(' ','')
@@ -28,7 +25,6 @@ LION_OPTIMIZATION_PATH = LION_USER_HOME / "optimisation"
 PREFIX_MAP[LION_OPTIMIZATION_PATH] = f"{GROUP_NAME}/{USER_NAME}"
 
 DELTA_DATA_PATH = LION_USER_HOME / "DeltaData"
-
 DELTA_DATA_LOG_PATH = DELTA_DATA_PATH / "logs"
 
 LION_LOCAL_DRIVER_REPORT_PATH = LION_LOGS_PATH / "DriverReport"
@@ -47,7 +43,6 @@ LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'TempOptimization
 LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta-tmp'
 
 LION_LOG_FILE_PATH = LION_USER_HOME / 'status.log'
-
 
 for pth in [TEMP_APP_DATA_FOLDER, LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH, LION_TEMP_DELTA_DATA_DUMP_PATH,
             LION_DIAGNOSTICS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, DELTA_DATA_LOG_PATH, DELTA_DATA_PATH,

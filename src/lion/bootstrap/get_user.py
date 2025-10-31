@@ -40,5 +40,5 @@ def retrieve_current_user():
     except Exception:
         pass
     
-    tnow = utcnow()
+    tnow = utcnow().replace(':', '')
     return 1, f'lion-user-{tnow}', f'lion-group-{tnow}'

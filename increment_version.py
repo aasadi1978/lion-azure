@@ -1,9 +1,10 @@
 import os, tomllib, tomli_w
-import argparse
+# import argparse
+import sys
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--version", required=False)
-args = parser.parse_args()
+# parser = argparse.ArgumentParser()
+# parser.add_argument("--increment-version", required=False)
+# args = parser.parse_args()
 
 def expand_env_vars_in_toml(config: dict) -> dict:
 
@@ -21,14 +22,24 @@ def expand_env_vars_in_toml(config: dict) -> dict:
     return expand(config)
 
 try:
-
-    version=os.getenv('LION_APP_VERSION', args.version)
-
     with open("pyproject.toml", "rb") as f:
         config = tomllib.load(f)
 
-    old_version = config['project']['version']
-    config['project']['version'] = version or old_version
+    current_version = config['project']['version']
+    major, minor, patch = map(int, current_version.split('.'))
+
+    if patch >= 99:
+        patch = 0
+        minor += 1
+
+        if minor >= 99:
+            minor = 0
+            major += 1
+    else:
+        patch += 1
+
+    version = f"{major}.{minor}.{patch}"
+    config['project']['version'] = version or current_version
 
     expanded_config = expand_env_vars_in_toml(config)
 
@@ -40,9 +51,8 @@ try:
     with open("pyproject.toml", "rb") as f:
         config_copied = tomllib.load(f)
     
-    print(f"APP version: {config_copied['project']['version']}")
+    print(version)  
 
-except Exception as e:
-    print(f"toml expansion failed: {str(e)}")
-
-print('------------------------------------------------------')
+except Exception:
+    print(f"Error updating version in pyproject.toml: {sys.exc_info()[0]}")
+    sys.exit(1)

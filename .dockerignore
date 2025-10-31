@@ -15,3 +15,4 @@ user-manual/
 technical-doc/
 *.log
 *.bat
+secret_*
