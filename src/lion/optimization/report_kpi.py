@@ -1,4 +1,5 @@
 from lion.config.libraries import OS_PATH
+from lion.config.paths import LION_OPTIMIZATION_PATH
 from lion.optimization.opt_params import OPT_PARAMS
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.reporting.kpi_report import kpi_report
@@ -69,19 +70,19 @@ def dump_kpi_reports():
         dct_kpi_data = {}
 
         xlwriter(df=df_kpi, sheetname='kpis',  xlpath=OS_PATH.join(
-            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'kpi-report.xlsx'), echo=False)
+            LION_OPTIMIZATION_PATH, 'kpi-report.xlsx'), echo=False)
 
         xlwriter(df=df_loc, sheetname='LocDrivers',  xlpath=OS_PATH.join(
-            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'kpi-report.xlsx'), keep=True, echo=False)
+            LION_OPTIMIZATION_PATH, 'kpi-report.xlsx'), keep=True, echo=False)
 
         OPT_LOGGER.update(
             message='Appending unplanned movements to kpi-report ...')
 
         UI_SHIFT_DATA.extract_dct_unplanned_movements(
-            xlFilepath=OS_PATH.join(OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'kpi-report.xlsx'))
+            xlFilepath=OS_PATH.join(LION_OPTIMIZATION_PATH, 'kpi-report.xlsx'))
 
         OPT_LOGGER.update(
-            message=f'KPI reports have been successfully dumped in {OPT_PARAMS.OPTIMIZATION_TEMP_DIR}')
+            message=f'KPI reports have been successfully dumped in {LION_OPTIMIZATION_PATH}')
 
         display_in_console(obj=df_kpi, pause=False)
         display_in_console(obj=df_loc, pause=False)

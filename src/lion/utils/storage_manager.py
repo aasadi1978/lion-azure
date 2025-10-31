@@ -1,13 +1,16 @@
 import logging
 from os import getenv
 from pathlib import Path
+import shutil
 from typing import Optional
 from azure.storage.blob import BlobServiceClient
 from azure.core.exceptions import ResourceNotFoundError
 from functools import lru_cache
+from werkzeug.datastructures import FileStorage
+from typing import Union
 
 from lion.bootstrap.constants import LION_STRG_CONTAINER_LOGS, LION_STRG_CONTAINER_UPLOADS
-from lion.config.paths import LION_PROJECT_HOME, PREFIX_MAP
+from lion.config.paths import LION_PROJECT_HOME, RECOMMENDED_BLOB_CONTAINER
 from lion.logger.exception_logger import log_exception
 from lion.utils.session_manager import SESSION_MANAGER
 
@@ -17,12 +20,16 @@ class LionStorageManager:
 
         self.local_root = local_root or LION_PROJECT_HOME
         self._group_name = SESSION_MANAGER.get('group_name')
+        self._user_id = SESSION_MANAGER.get('user_id')
 
         conn_str = getenv("AZURE_STORAGE_CONNECTION_STRING")
         self.in_azure = conn_str is not None
 
         if self.in_azure:
             self.blob_service = BlobServiceClient.from_connection_string(conn_str)
+
+            # Every group has its own container
+            self.create_container(self._group_name)
     
     def create_container(self, container_name):
         try:
@@ -51,10 +58,9 @@ class LionStorageManager:
 
     def upload_file(
             self, 
-            local_path: str | Path, 
-            container_name: str, 
+            local_path: Union[str, Path, FileStorage], 
             *blob_parts: str,
-            blob_name: Optional[str] = None):
+            blob_name: Optional[str] = None) -> bool:
         """
         Uploads file to the storage container
         """
@@ -63,31 +69,62 @@ class LionStorageManager:
             if not blob_name and not blob_parts:
                 raise ValueError("Provide either 'blob_name' or path parts via '*blob_parts'")
 
-            prefix = str(PREFIX_MAP.get(Path(local_path), f"{self._group_name}")).replace(' ', '')
-            blob_name = blob_name or f"{prefix}/" + "/".join(blob_parts)
+            container_name = str(self._group_name).replace(' ', '')
+
+            is_shared = False
+            for pth, prfx in RECOMMENDED_BLOB_CONTAINER.items():
+                if isinstance(local_path, (str, Path)) and str(local_path).lower().startswith(str(pth).lower()):
+                    prefix = local_path.replace(str(pth), str(prfx)).strip("/").replace(' ', '')
+                    blob_parts = (prefix, *blob_parts)
+                    is_shared = True
+                    break
+
+            # Determine prefix for blob path
+            if not is_shared:
+                prefix = str(f"{self._user_id}").replace(' ', '')
+
+            blob_path_parts = [prefix, *blob_parts]
+            if blob_name:
+                blob_path_parts.append(blob_name)
+
+            blob_name = "/".join(part.strip("/") for part in blob_path_parts if part)
 
             if self.in_azure:
-                container_name = container_name or LION_STRG_CONTAINER_LOGS
                 container_client = self.get_container_client(container_name)
-                with open(local_path, "rb") as f:
-                    container_client.upload_blob(blob_name, f, overwrite=True)
+
+                if isinstance(local_path, FileStorage):
+                    container_client.upload_blob(blob_name, local_path.stream, overwrite=True)
+                else:
+                    with open(local_path, "rb") as f:
+                        container_client.upload_blob(blob_name, f, overwrite=True)
+
                 logging.info(f"Uploaded {local_path} → Azure blob {container_name}/{blob_name}")
             else:
-                dest_path = self.local_root / container_name / Path(*blob_parts)
+
+                dest_path = self.local_root / Path(*blob_parts)
                 dest_path.parent.mkdir(parents=True, exist_ok=True)
-                Path(local_path).replace(dest_path)
-                logging.info(f"Copied {local_path} → Local {dest_path}")
+
+                if isinstance(local_path, FileStorage):
+                    local_path.save(dest_path)
+                else:
+                    shutil.copy2(local_path, dest_path)
+
+                logging.info(f"Copied {getattr(local_path, 'filename', local_path)} → Local {dest_path}")
+
+            
+            return True
         
         except Exception:
-            log_exception('Uploading failed!')
+            log_exception(f'Uploading failed for {local_path}!')
+
+        return False
 
     def download_file(
         self,
-        container_name: str,
         *blob_parts: str,
         local_path: str | Path,
         blob_name: Optional[str] = None,
-    ):
+    ) -> bool:
         """
         Downloads a blob from Azure Storage or a local container.
 
@@ -101,6 +138,8 @@ class LionStorageManager:
         """
 
         try:
+
+            container_name = str(self._group_name).replace(' ', '')
             if not blob_name and not blob_parts:
                 raise ValueError("Provide either 'blob_name' or path parts via '*blob_parts'")
 
@@ -108,7 +147,6 @@ class LionStorageManager:
             blob_name = blob_name or f"{prefix}" + "/".join(blob_parts)
 
             if self.in_azure:
-                container_name = container_name or LION_STRG_CONTAINER_UPLOADS
                 container_client = self.get_container_client(container_name)
 
                 with open(local_path, "wb") as f:
@@ -120,9 +158,13 @@ class LionStorageManager:
                 src_path = self.local_root / container_name / Path(*blob_parts)
                 Path(src_path).replace(local_path)
                 logging.info(f"Copied Local {src_path} → {local_path}")
+            
+            return True
 
         except Exception:
             log_exception('Downloading failed!')
+
+        return False
 
 
     def list_files(self, container_name: str, prefix: str = ""):

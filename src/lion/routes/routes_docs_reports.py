@@ -1,7 +1,7 @@
 from datetime import datetime
 from json import loads as json_loads
 from os import makedirs, path as os_path
-from lion.config.paths import LION_DRIVER_REPORT_DIST_PATH, LION_PROJECT_HOME, LION_LOG_FILE_PATH
+from lion.config.paths import LION_DRIVER_REPORT_DIST_PATH, LION_PROJECT_HOME
 from lion.orm.scenarios import Scenarios
 from lion.reporting.consolidate_driver_reprots import generate_consolidated_driver_report
 from lion.ui.driver_ui import DRIVERS_UI
@@ -201,16 +201,6 @@ def view_report(shiftname):
     return render_template('message.html', message={
         'error': '',
         'info': f'Driver plan was successfully exported in {minutes} minutes!'})
-
-@docs_reports_bp.route('/status_page', methods=['GET'])
-def status_page():
-    with open(LION_LOG_FILE_PATH, 'r') as f:
-        log_content = f.readlines()
-
-    return render_template('status_page.html', 
-                           options={'vsn': LATEST_JS_MODIFICATION_TIME, 
-                                    'status': log_content})
-
 
 @docs_reports_bp.route('/disp_popup', methods=['POST'])
 def disp_popup():

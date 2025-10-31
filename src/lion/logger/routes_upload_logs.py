@@ -1,11 +1,21 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, render_template
+from build.lib.lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
 from lion.bootstrap.constants import LION_STRG_CONTAINER_DRIVER_REPORT, LION_STRG_CONTAINER_LOGS, LION_STRG_CONTAINER_OPTIMIZATION
-from lion.config.paths import LION_LOCAL_DRIVER_REPORT_PATH, LION_LOGS_PATH, LION_OPTIMIZATION_PATH
+from lion.config.paths import LION_LOCAL_DRIVER_REPORT_PATH, LION_LOG_FILE_PATH, LION_LOGS_PATH, LION_OPTIMIZATION_PATH
 from lion.logger.exception_logger import log_exception
 from lion.logger.trigger_async_log_upload import trigger_async_log_upload
 from lion.utils.flask_request_manager import retrieve_form_data
 
 bp_copy_logs = Blueprint('logger_upload_logs', __name__)
+
+@bp_copy_logs.route('/status_page', methods=['GET'])
+def status_page():
+    with open(LION_LOG_FILE_PATH, 'r') as f:
+        log_content = f.readlines()
+
+    return render_template('status_page.html', 
+                           options={'vsn': LATEST_JS_MODIFICATION_TIME, 
+                                    'status': log_content})
 
 @bp_copy_logs.route("/upload-logs", methods=["POST", "GET"])
 def push_logs():

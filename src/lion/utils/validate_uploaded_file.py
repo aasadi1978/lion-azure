@@ -3,7 +3,10 @@ from flask import request
 import logging
 from werkzeug.datastructures import FileStorage
 
-def receive_file_upload(allowed_extensions={'xlsx', 'xlsm'}) -> Union[FileStorage, str]:
+from lion.utils.session_manager import SESSION_MANAGER
+from lion.utils.storage_manager import STORAGE_MANAGER
+
+def receive_file_upload(allowed_extensions={'xlsx', 'xlsm', 'csv'}) -> Union[FileStorage, str]:
     """
     Endpoint to receive an Excel file upload from frontend, 
     It validate the file extension and returns the FileStorage object if valid.
@@ -16,6 +19,11 @@ def receive_file_upload(allowed_extensions={'xlsx', 'xlsm'}) -> Union[FileStorag
         uploaded_file: FileStorage = request.files['file']
         if uploaded_file.filename == '':
             return 'Invalid filename.'
+
+        if STORAGE_MANAGER.upload_file(
+            uploaded_file,  
+            *['uploads', uploaded_file.filename]):
+            logging.info(f"File {uploaded_file.filename} uploaded to Azure Blob Storage.")
 
     except Exception as e:
         logging.error(f"File upload failed: {str(e)}")

@@ -1,5 +1,7 @@
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, render_template
+from lion.config.js_modification_trigger import LATEST_JS_MODIFICATION_TIME
+from lion.config.paths import LION_OPTIMIZATION_LOG_FILE_PATH
 from lion.optimization import run_optimization_from_delta
 from lion.optimization.cache_params import cache_optimization_params
 from lion.optimization import run_optimization
@@ -16,6 +18,15 @@ from lion.optimization.read_user_movements.to_opt_movements import save_movement
 from lion.optimization.read_user_movements.validate_and_import_user_movements import validate_user_movements_file
 
 optim_bp = Blueprint('optimization', __name__)
+
+@optim_bp.route('/optimization-status-log', methods=['GET'])
+def optimization_status_log():
+    with open(LION_OPTIMIZATION_LOG_FILE_PATH, 'r') as f:
+        log_content = f.readlines()
+
+    return render_template('status_page.html', 
+                           options={'vsn': LATEST_JS_MODIFICATION_TIME, 
+                                    'status': log_content})
 
 @optim_bp.route('/run-optimization', methods=['POST'])
 def run_optimization_module():

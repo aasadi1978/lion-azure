@@ -2,8 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 from os import getenv, listdir, path
 from lion.optimization.opt_params import OPT_PARAMS
-from lion.orm.drivers_info import DriversInfo
-from lion.config.paths import LION_OPTIMIZATION_PATH
+from lion.config.paths import LION_OPTIMIZATION_LOG_FILE_PATH, LION_OPTIMIZATION_PATH
 from lion.orm.shiftid_sequence import ShiftIdSequence
 from lion.tour.dct_tour import DctTour
 from lion.utils.elapsed_time import ElapsedTime
@@ -37,7 +36,7 @@ class Optimize():
 
     def __init__(self, log_file=None):
 
-        self.__optimization_output_dir = OPT_PARAMS.OPTIMIZATION_TEMP_DIR
+        self.__optimization_output_dir = LION_OPTIMIZATION_PATH
         self.__dict_shift_variable_cost = {}
 
         self.__optimization_log_file = log_file
@@ -179,8 +178,7 @@ class Optimize():
 
         if not self.__optimization_log_file:
 
-            self.__optimization_log_file = join(
-                self.__optimization_output_dir, 'optimization.log')
+            self.__optimization_log_file = LION_OPTIMIZATION_LOG_FILE_PATH
 
             with open(self.__optimization_log_file, 'w', errors="ignore", encoding="utf8") as f1:
                 f1.writelines(

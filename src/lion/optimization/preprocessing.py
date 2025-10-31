@@ -1,5 +1,6 @@
 
 from collections import defaultdict
+from lion.config.paths import LION_OPTIMIZATION_PATH
 from lion.driver_loc.location_finder import LocationFinder
 from lion.optimization.cluster_movements import cluster_movements
 from lion.optimization.get_proposed_locs_for_movement import ProposedLocationsOptimizer
@@ -102,7 +103,7 @@ def pre_processing():
         
     try:
         if not df_mov_cnt.empty:
-            df_mov_cnt.to_csv(OPT_PARAMS.OPTIMIZATION_TEMP_DIR / 'NumberOfAllocatedMovementsPerDriverLoc.csv', index=False)
+            df_mov_cnt.to_csv(LION_OPTIMIZATION_PATH / 'NumberOfAllocatedMovementsPerDriverLoc.csv', index=False)
     except Exception as e:
         OPT_LOGGER.log_info(
             message=f'NumberOfAllocatedMovementsPerDriverLoc could be created: {str(e)}')

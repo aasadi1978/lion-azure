@@ -1,7 +1,6 @@
+from lion.config.paths import LION_OPTIMIZATION_LOG_FILE_PATH
 from lion.optimization.gurobi.grb_output import GrbOutput
-from os import path as os_path
 from datetime import datetime
-from lion.optimization.opt_params import OPT_PARAMS
 from lion.ui.ui_params import UI_PARAMS
 from lion.optimization.gurobi.grb_optimize import Optimize as GrbOptimize
 from lion.optimization.or_tools.ortools_optimize import Optimize as CbcOptimize
@@ -13,8 +12,7 @@ class SolveMIP():
     def __init__(self):
 
         solver = UI_PARAMS.MIP_SOLVER
-        logFile = os_path.join(
-            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'optimization.log')
+        logFile = LION_OPTIMIZATION_LOG_FILE_PATH
 
         try:
 

@@ -1,5 +1,6 @@
 from collections import defaultdict
 from copy import deepcopy
+from lion.config.paths import LION_OPTIMIZATION_PATH
 from lion.optimization.opt_params import OPT_PARAMS
 from lion.movement.movements_manager import UI_MOVEMENTS
 from lion.utils.order_dict_by_value import order_dict_by_value
@@ -224,7 +225,7 @@ class DriverOptimization():
                         )
                         
                         df_mov_cnt.to_csv(os_path.join(
-                            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'NumberOfAllocatedMovementsPerDriverLocII.csv'), index=False)
+                            LION_OPTIMIZATION_PATH, 'NumberOfAllocatedMovementsPerDriverLocII.csv'), index=False)
 
                 # Enf of while loop
 
@@ -249,7 +250,7 @@ class DriverOptimization():
 
                     df = DataFrame(lanes, columns=['movement_id' ,'loc_string', 'driving_time'])
                     df.to_csv(os_path.join(
-                            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'MovementsWithNoFeasTour.csv'), index=False)
+                            LION_OPTIMIZATION_PATH, 'MovementsWithNoFeasTour.csv'), index=False)
                     
                     OPT_LOGGER.log_info(
                         f"\nNOTE: There are {len(_list_not_scheduled_movs)} movements with no associated feasible tours!")

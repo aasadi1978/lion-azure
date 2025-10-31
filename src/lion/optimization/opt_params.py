@@ -13,7 +13,6 @@ from lion.utils.singleton_meta import SingletonMeta
 @dataclass
 class OptimizationParams(metaclass=SingletonMeta):
 
-    OPTIMIZATION_TEMP_DIR: Path = LION_OPTIMIZATION_PATH
     DICT_DRIVERS_PER_PAGE: Dict= field(default_factory=dict)
     SET_IMPACTED_SHIFTS: Set[str]= field(default_factory=set)
     LIST_FILTERED_DRIVERS_ALL_WEEK: List[str]= field(default_factory=list)

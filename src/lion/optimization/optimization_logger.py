@@ -14,7 +14,6 @@ class OptimizationLogFile(metaclass=SingletonMeta):
 
     OPT_GLOBAL_ERROR: str = ''
     OPT_GLOBAL_WARNING: str = ''
-    TEMP_DIR = paths.LION_OPTIMIZATION_PATH 
 
     def _initialize(self, mode='w'):
 
@@ -22,9 +21,7 @@ class OptimizationLogFile(metaclass=SingletonMeta):
             return
 
         try:
-            self.TEMP_DIR = paths.LION_OPTIMIZATION_PATH
-            self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
-            self._log_file = self.TEMP_DIR / 'optimization.log'
+            self._log_file = paths.LION_OPTIMIZATION_LOG_FILE_PATH
 
             self.OPT_GLOBAL_ERROR = ''
             self.OPT_GLOBAL_WARNING = ''

@@ -87,10 +87,12 @@ def write_excel(df,
         is_blob_target = storage is not None and storage.in_azure
         local_tmp_path = None
 
+        file_name = Path(xlpath).name if isinstance(xlpath, (str, Path)) else 'unknown.xlsx'
+
         # If writing to blob, create a temporary local path first
         if is_blob_target:
             tmpdir = tempfile.gettempdir()
-            local_tmp_path = Path(tmpdir) / Path(xlpath).name
+            local_tmp_path = Path(tmpdir) / file_name
             local_target = local_tmp_path
         else:
             local_target = Path(xlpath)
@@ -149,7 +151,7 @@ def write_excel(df,
         # if Azure, upload to blob
         if is_blob_target:
             blob_path = xlpath if isinstance(xlpath, str) else str(xlpath)
-            storage.upload_file(local_tmp_path, container_name='logs', *blob_path.split("/"))
+            storage.upload_file(local_tmp_path, *['logs', blob_path])
 
     except Exception:
         show_error(f"Creating {path.basename(str(xlpath))} failed! {log_exception()}")

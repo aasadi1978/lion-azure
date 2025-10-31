@@ -1,4 +1,5 @@
 from datetime import datetime
+from lion.config.paths import LION_OPTIMIZATION_PATH
 from lion.optimization.dump_dct_drivers_per_loc import dump_dct_drivers_per_location
 from lion.optimization.optimization_logger import OPT_LOGGER
 from lion.optimization.opt_params import OPT_PARAMS
@@ -153,10 +154,10 @@ def extract_locs_data():
 
         xlwriter(df=_df_locs_opt.copy(),
                     sheetname='params',  xlpath=os_path.join(
-            OPT_PARAMS.OPTIMIZATION_TEMP_DIR, 'Location_params.xlsx'), echo=False)
+            LION_OPTIMIZATION_PATH, 'Location_params.xlsx'), echo=False)
 
         OPT_LOGGER.log_info(
-            message=f'Location_params.xlsx has been dumped in {OPT_PARAMS.OPTIMIZATION_TEMP_DIR}')
+            message=f'Location_params.xlsx has been dumped in {LION_OPTIMIZATION_PATH}')
 
         _df_locs_opt.set_index(['loc_code'], inplace=True)
 

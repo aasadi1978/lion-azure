@@ -40,7 +40,6 @@ def initialize_optimization(**kwargs):
         OPT_LOGGER.reset()
         STATUS_CONTROLLER.reset()
 
-        OPT_PARAMS.OPTIMIZATION_TEMP_DIR = OPT_LOGGER.TEMP_DIR
         OPT_PARAMS.DCT_LANE_RUNTIMES_INFO = defaultdict(dict)
         
         OPT_PARAMS.PAGE_NUM = kwargs.get('page_num', 1)
