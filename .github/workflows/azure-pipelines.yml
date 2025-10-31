@@ -16,7 +16,7 @@ env:
   WEBSITES_ENABLE_APP_SERVICE_STORAGE: false
   WEBSITES_PORT: 8000
   FLASK_ENV: production
-  LION_AZURE_APP_VERSION: ${{ vars.LION_AZURE_APP_VERSION }}
+  LION_AZURE_APP_VERSION: ${{ vars.LION_AZURE_APP_VERSION }} # e.g., 0.1.0 which is set in GitHub Repo Settings > Environment Variables
 
 jobs:
   build:

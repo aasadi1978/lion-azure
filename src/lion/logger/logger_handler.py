@@ -2,6 +2,7 @@ import logging
 import logging.handlers
 from pathlib import Path
 import sys
+from lion.bootstrap.constants import STATUS_LOG_FILE_NAME
 
 
 def initialize_logger(
@@ -16,7 +17,7 @@ def initialize_logger(
     Initialize logger with file and optional console output.
     
     Args:
-        log_file_path: Path to log file (defaults to 'status.log' in current directory)
+        log_file_path: Path to log file (defaults to STATUS_LOG_FILE_NAME in current directory)
         log_level: Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         max_bytes: Maximum size of log file before rotation
         backup_count: Number of backup files to keep
@@ -27,7 +28,7 @@ def initialize_logger(
     """
 
     if log_file_path is None or not Path(log_file_path).exists():
-        log_file_path = Path().resolve() / 'status.log'
+        log_file_path = Path().resolve() / 'logs' / STATUS_LOG_FILE_NAME
         
     # Ensure log directory exists
     log_file_path.parent.mkdir(parents=True, exist_ok=True)

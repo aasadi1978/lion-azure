@@ -25,8 +25,6 @@ def upload_logs_to_blob(src_path: Path, container_name: str, *blob_parts: str):
             except Exception as e:
                 errmsg = f"{errmsg}{log_exception(remarks=f"Failed to upload log file {log_file} to Blob Storage: {str(e)}")}. "
 
-        STORAGE_MANAGER.upload_file(LION_LOG_FILE_PATH, container_name, *blob_parts, LION_LOG_FILE_PATH.name)
-
         if errmsg:
             raise Exception(errmsg)
 

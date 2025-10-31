@@ -1,5 +1,6 @@
 from os import getenv
 from pathlib import Path
+from lion.bootstrap.constants import STATUS_LOG_FILE_NAME
 from lion.bootstrap.get_user import retrieve_current_user
 
 USER_ID, USER_NAME, GROUP_NAME = retrieve_current_user()
@@ -42,7 +43,7 @@ TEMP_APP_DATA_FOLDER = LION_USER_HOME / 'tmp-lion'
 LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'TempOptimizationDataDump'
 LION_TEMP_DELTA_DATA_DUMP_PATH = TEMP_APP_DATA_FOLDER / 'delta-tmp'
 
-LION_LOG_FILE_PATH = LION_USER_HOME / 'status.log'
+LION_LOG_FILE_PATH = LION_LOGS_PATH / STATUS_LOG_FILE_NAME
 
 for pth in [TEMP_APP_DATA_FOLDER, LION_TEMP_OPTIMIZATION_DATA_DUMP_PATH, LION_TEMP_DELTA_DATA_DUMP_PATH,
             LION_DIAGNOSTICS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, DELTA_DATA_LOG_PATH, DELTA_DATA_PATH,
