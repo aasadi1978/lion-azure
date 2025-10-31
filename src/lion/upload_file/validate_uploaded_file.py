@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Union
 from flask import request
 import logging
@@ -40,14 +39,13 @@ def receive_file_upload(allowed_extensions={'xlsx', 'xlsm', 'csv'}) -> Union[Fil
     # Special handling for suppliers.csv
     if filename.lower() in ['suppliers.csv', 'traffic_types.xlsx', 'vehicles.xlsx']:
         try:
-            local_dir = LION_USER_UPLOADS
-            local_dir.mkdir(parents=True, exist_ok=True)
+            LION_USER_UPLOADS.mkdir(parents=True, exist_ok=True)
 
-            local_path = local_dir / filename
+            local_path = LION_USER_UPLOADS / filename
             uploaded_file.save(local_path)
 
             logging.info(f"'{filename}' saved locally at {local_path}")
-            
+
         except Exception as e:
             logging.error(f"Failed to save '{filename}' locally: {str(e)}")
             return f'Failed to save {filename} locally.'

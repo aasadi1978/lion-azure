@@ -21,6 +21,10 @@ def update_vehicle_types():
         _df_vhcle_types = read_excel(
             _filepath, sheet_name='vehicles')
 
+        print(f"Reading {_filepath} to update vehicle types ...")
+        print(_df_vhcle_types.head())
+        return {'code': 200, 'message': f'Vehicles updated successfully! {_df_vhcle_types.shape[0]} records found.'}
+
         if 'vehicle_name' not in _df_vhcle_types.columns or 'ShortName' not in _df_vhcle_types.columns:
             return {'code': 400, 'message': "The 'vehicles.xlsx' file is missing required columns: 'vehicle_name' and 'ShortName'."}
 

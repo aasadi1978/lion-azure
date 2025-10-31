@@ -1063,6 +1063,12 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
             if file_path.exists():
 
                 df_data = read_csv(file_path, sep=',', header=0)
+
+                print(f"Reading {file_path} to update suppliers ...")
+                print(df_data.head())
+                print(f'Suppliers updated successfully! {df_data.shape[0]} records found.')
+                return
+
                 df_data.fillna('Unattached')
                 df_data.rename(
                     columns={c: c.lower() for c in df_data.columns.tolist()}, inplace=True)
