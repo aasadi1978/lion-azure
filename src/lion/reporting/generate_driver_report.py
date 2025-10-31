@@ -1,7 +1,6 @@
 from collections import defaultdict
 import logging
-from lion.bootstrap.constants import LION_STRG_CONTAINER_DRIVER_REPORT
-from lion.config.paths import LION_CONSOLIDATED_REPORT_PATH, LION_FONTS_PATH
+from lion.config.paths import LION_CONSOLIDATED_REPORT_PATH, LION_DRIVER_REPORT_DIST_PATH, LION_FONTS_PATH
 from lion.shift_data.shift_data import UI_SHIFT_DATA
 from lion.utils import utcnow
 from lion.utils.km2mile import km2mile
@@ -128,8 +127,7 @@ class DriverReport():
             blob_parts.append(utctimenow)
 
             trigger_async_log_upload(
-                src_path=LION_STRG_CONTAINER_DRIVER_REPORT,
-                container_name=LION_STRG_CONTAINER_DRIVER_REPORT,
+                src_path=LION_DRIVER_REPORT_DIST_PATH,
                 *blob_parts,
             )
         

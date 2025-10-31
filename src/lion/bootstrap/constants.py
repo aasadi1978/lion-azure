@@ -204,11 +204,6 @@ LOC_STRING_SEPERATOR = '.'
 LION_SQLITE_LOCAL_DATABASE = 'data.db'
 TAG_NAME = f"lion-{version('lion')}"
 
-LION_STRG_CONTAINER_DRIVER_REPORT: str = 'driver-reports'
-LION_STRG_CONTAINER_LOGS: str = 'logs'
-LION_STRG_CONTAINER_UPLOADS: str = 'uploads'
-LION_STRG_CONTAINER_OPTIMIZATION: str = 'optimization'
-
 LION_DEFAULT_GROUP_NAME:str='fedex-lion-demo'
 LION_DDEMO_SCN_NAME: str = 'demo'
 STATUS_LOG_FILE_NAME = 'status.log'

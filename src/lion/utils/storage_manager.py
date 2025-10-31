@@ -9,7 +9,6 @@ from functools import lru_cache
 from werkzeug.datastructures import FileStorage
 from typing import Union
 
-from lion.bootstrap.constants import LION_STRG_CONTAINER_LOGS, LION_STRG_CONTAINER_UPLOADS
 from lion.config.paths import LION_PROJECT_HOME, RECOMMENDED_BLOB_CONTAINER
 from lion.logger.exception_logger import log_exception
 from lion.utils.session_manager import SESSION_MANAGER
