@@ -12,10 +12,10 @@ APP_NAME="lion"
 PORT=8000
 
 # Login to Azure and set subscription
-az account set --subscription "$AZURE_SUBSCRIPTION"
+# az account set --subscription "$AZURE_SUBSCRIPTION"
 
 # Create Resource Group
-az group create --name $RESOURCE_GROUP --location $LOCATION
+# az group create --name $RESOURCE_GROUP --location $LOCATION
 
 # Create Container Apps environment (only once per region)
 az containerapp env create \
