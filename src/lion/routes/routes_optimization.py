@@ -59,7 +59,7 @@ def upload_movements_file():
 
     if lion.optimization.validate_optimization_db.validate_optimization_database():
 
-        df_data_file_storage = validate_uploaded_file.receive_file_upload(allowed_extensions={'xlsx', 'xlsm'})
+        df_data_file_storage = validate_uploaded_file.receive_file_upload()
 
         if isinstance(df_data_file_storage, str):
             return jsonify({'code': 400, 'message': df_data_file_storage})

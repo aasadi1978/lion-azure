@@ -276,7 +276,7 @@ def import_delta():
 @ui_bp.route('/upload-delta-accdb', methods=['POST'])
 def upload_accdb_delta():
 
-    status = receive_file_upload(allowed_extensions={'.accdb', '.mdb'})
+    status = receive_file_upload()
     if isinstance(status, str):
         return jsonify({'code': 400, 'message': status})
 

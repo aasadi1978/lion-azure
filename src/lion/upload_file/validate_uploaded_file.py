@@ -1,3 +1,4 @@
+import json
 from typing import Union
 from flask import request
 import logging
@@ -5,8 +6,7 @@ from werkzeug.datastructures import FileStorage
 from lion.config.paths import LION_USER_UPLOADS
 from lion.utils.storage_manager import STORAGE_MANAGER
 
-def receive_file_upload(allowed_extensions={
-    'xlsx', 'xlsm', 'csv', 'xls', 'accdb', 'mdb'}) -> Union[FileStorage, str]:
+def receive_file_upload() -> Union[FileStorage, str]:
     """
     Endpoint to receive an Excel file upload from frontend, 
     It validate the file extension and returns the FileStorage object if valid.
@@ -17,26 +17,35 @@ def receive_file_upload(allowed_extensions={
     try:
         if 'file' not in request.files:
             return None
-
+        
         uploaded_file: FileStorage | None = request.files['file']
+        client_extensions = request.form.get('allowedExtensions')
+        allowed_extensions = set()
+
+        if client_extensions:
+            try:
+                allowed_extensions = set(json.loads(client_extensions))
+            except Exception:
+                logging.warning("Failed to parse allowedExtensions from request.")
+                allowed_extensions = set()
+
         filename = f"{uploaded_file.filename}" if uploaded_file else ''
 
         if filename == '':
             return 'Invalid filename.'
 
         if STORAGE_MANAGER.upload_file(
-            local_path=uploaded_file,
+            uploaded_file,
             *['uploads', filename]):
 
             logging.info(f"File {filename} uploaded to Azure Blob Storage.")
 
     except Exception as e:
-        logging.error(f"File upload failed: {str(e)}")
+        logging.error(f"File upload to storage failed: {str(e)}")
         return 'File upload failed.'
 
-    if not filename.lower().endswith(tuple(allowed_extensions)):
+    if allowed_extensions and not filename.lower().endswith(tuple(allowed_extensions)):
         return 'Invalid file type. Allowed file extensions are: ' + ', '.join(allowed_extensions)
-    
 
     # Special handling for suppliers.csv
     if filename.lower() in ['suppliers.csv', 'traffic_types.xlsx', 'vehicles.xlsx']:
