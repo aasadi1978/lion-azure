@@ -17,9 +17,7 @@ SETX LION_AZURE_APP_VERSION "%APP_VERSION%" >nul
 echo Updated LION_AZURE_APP_VERSION to %APP_VERSION%
 
 gh variable set LION_AZURE_APP_VERSION --body "%APP_VERSION%"
-@REM gh variable set DOCKER_IMAGE --body "asadi1978/lion-azure-lion-app:latest"
-@REM gh secret set DOCKERHUB_USERNAME --body "asadi1978"
-@REM gh secret set DOCKERHUB_PWD --body "Radan@2020"
+
 
 git init
 git status

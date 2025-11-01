@@ -23,7 +23,7 @@ __pycache__/
 !.deploy
 !Dockerfile
 
-
+git-commit.bat
 secret_*
 
 # Ignore specific directories

@@ -25,8 +25,7 @@ WORKDIR /lion
 COPY . .
 
 RUN pip install --upgrade pip setuptools
-RUN pip install . && \
-    pip show lion
+RUN pip install . && pip show lion
 
 # Env variabloes - Docker internal use only
 # Azure App Service expects the container to listen on port 8000 or 8080 by default.
