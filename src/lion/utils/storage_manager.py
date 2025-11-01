@@ -42,6 +42,11 @@ class LionStorageManager:
                 return None
             
             container_name = container_name or self._group_name or SESSION_MANAGER.get('group_name')
+            if not container_name:
+                logging.debug(f"Validating {container_name} failed group_name: {self._group_name}/{SESSION_MANAGER.get('group_name')}")
+
+                return None
+
             self._validated_root_container_name = re.sub(r'[^a-z0-9-]', '', container_name.lower())
 
             if len(self._validated_root_container_name) < 3:
@@ -104,6 +109,8 @@ class LionStorageManager:
             if self.in_azure:
 
                 container_client = self._validate_storage_container_client()
+                if not container_client:
+                    return False
 
                 if isinstance(local_path, FileStorage):
                     local_path.stream.seek(0)
@@ -161,6 +168,8 @@ class LionStorageManager:
 
             if self.in_azure:
                 container_client = self._validate_storage_container_client()
+                if not container_client:
+                    return False
 
                 with open(local_path, "wb") as f:
                     data = container_client.download_blob(blob_name).readall()

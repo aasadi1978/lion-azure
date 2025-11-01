@@ -1,5 +1,5 @@
-# pip install tomli-w
-# python app_config.py --version $LION_AZURE_APP_VERSION
+# This workflow is to apply CI/CD to create Azure App services (App services) which runs
+# on VM; Do not use this workflow for container app
 name: Build and deploy Python app to Azure Web App - lion
 
 on:

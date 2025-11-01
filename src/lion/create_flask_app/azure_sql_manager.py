@@ -10,9 +10,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from dotenv import load_dotenv
 
 load_dotenv()
-TENANT_ID = getenv("AZURE_LION_APP_TENANT_ID")
-CLIENT_ID = getenv("AZURE_LION_APP_CLIENT_ID")
-CLIENT_SECRET = getenv("AZURE_LION_APP_CLIENT_SECRET")
+
 AZURE_SQL_SERVER = getenv("AZURE_SQL_SERVER", "lion-server.database.windows.net")
 AZURE_SQL_DB = getenv("AZURE_SQL_DB", "lion-sql-db")
 AZURE_SQL_USER = getenv("AZURE_SQL_USER")
