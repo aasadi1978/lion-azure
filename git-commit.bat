@@ -1,8 +1,6 @@
 setlocal enabledelayedexpansion
 @echo off
 
-echo Do not forget to update pyproject.toml version if applicable before committing.
-
 call .venv/Scripts/activate
 echo ------------------------------------------------------------
 echo Updating app version on pyproject.toml ...
@@ -19,7 +17,6 @@ SETX LION_AZURE_APP_VERSION "%APP_VERSION%" >nul
 echo Updated LION_AZURE_APP_VERSION to %APP_VERSION%
 
 gh variable set LION_AZURE_APP_VERSION --body "%APP_VERSION%"
-echo
 
 git init
 git status

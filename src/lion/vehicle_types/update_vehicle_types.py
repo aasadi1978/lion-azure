@@ -27,10 +27,6 @@ def update_vehicle_types():
             _df_vehicle_types = read_excel(
                 _filepath, sheet_name='vehicles', engine='openpyxl')
 
-        print(f"Reading {_filepath} to update vehicle types ...")
-        print(_df_vehicle_types.head())
-        return {'code': 200, 'message': f'Vehicles updated successfully! {_df_vehicle_types.shape[0]} records found.'}
-
         if 'vehicle_name' not in _df_vehicle_types.columns or 'ShortName' not in _df_vehicle_types.columns:
             return {'code': 400, 'message': "The 'vehicles.xlsx' file is missing required columns: 'vehicle_name' and 'ShortName'."}
 
@@ -53,9 +49,3 @@ def update_vehicle_types():
             return {'code': 400, 'message': _err}
 
     return {'code': 200, 'message': 'Vehicles updated successfully!'}
-
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        update_vehicle_types()
