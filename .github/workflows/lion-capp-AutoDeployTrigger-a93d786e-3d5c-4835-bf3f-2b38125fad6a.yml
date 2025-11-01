@@ -1,0 +1,49 @@
+name: Trigger auto deployment for lion-capp
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ master ]
+    paths:
+    - '**'
+    - '.github/workflows/lion-capp-AutoDeployTrigger-a93d786e-3d5c-4835-bf3f-2b38125fad6a.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.LIONCAPP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.LIONCAPP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.LIONCAPP_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: index.docker.io
+          registryUsername: ${{ secrets.LIONCAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.LIONCAPP_REGISTRY_PASSWORD }}
+          containerAppName: lion-capp
+          resourceGroup: rg-lion-app
+          imageToBuild: index.docker.io/lion-capp:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
