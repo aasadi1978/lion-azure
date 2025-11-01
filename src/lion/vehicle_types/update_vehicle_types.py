@@ -1,5 +1,5 @@
 from os import remove
-from pandas import read_excel
+from pandas import read_csv, read_excel
 from lion.config.paths import LION_USER_UPLOADS
 from lion.logger.exception_logger import log_exception
 from lion.orm.vehicle_type import VehicleType
@@ -20,18 +20,22 @@ def update_vehicle_types():
         return
 
     try:
-        _df_vhcle_types = read_excel(
-            _filepath, sheet_name='vehicles')
+        if _filepath.suffix.lower() == '.csv':
+            _df_vehicle_types = read_csv(_filepath, sep=',', header=0)
+
+        else:
+            _df_vehicle_types = read_excel(
+                _filepath, sheet_name='vehicles', engine='openpyxl')
 
         print(f"Reading {_filepath} to update vehicle types ...")
-        print(_df_vhcle_types.head())
-        return {'code': 200, 'message': f'Vehicles updated successfully! {_df_vhcle_types.shape[0]} records found.'}
+        print(_df_vehicle_types.head())
+        return {'code': 200, 'message': f'Vehicles updated successfully! {_df_vehicle_types.shape[0]} records found.'}
 
-        if 'vehicle_name' not in _df_vhcle_types.columns or 'ShortName' not in _df_vhcle_types.columns:
+        if 'vehicle_name' not in _df_vehicle_types.columns or 'ShortName' not in _df_vehicle_types.columns:
             return {'code': 400, 'message': "The 'vehicles.xlsx' file is missing required columns: 'vehicle_name' and 'ShortName'."}
 
-        _df_vhcle_types.set_index(['vehicle_name'], inplace=True)
-        _dct = _df_vhcle_types.to_dict(orient='index')
+        _df_vehicle_types.set_index(['vehicle_name'], inplace=True)
+        _dct = _df_vehicle_types.to_dict(orient='index')
 
         for vname, dct in _dct.items():
             VehicleType.update(vehicle_name=vname,

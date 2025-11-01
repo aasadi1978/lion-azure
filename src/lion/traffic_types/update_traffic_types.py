@@ -1,6 +1,6 @@
 from os import remove
 from lion.logger.exception_logger import log_exception
-from pandas import read_excel
+from pandas import read_csv, read_excel
 from lion.config.paths import LION_USER_UPLOADS
 from lion.orm.traffic_type import TrafficType
 from lion.logger.status_logger import log_message
@@ -14,14 +14,21 @@ def update_traffic_types(*args, **kwargs):
     """
 
     _filepath = LION_USER_UPLOADS / 'traffic_types.xlsx'
+    _filepath = _filepath if _filepath.exists() else LION_USER_UPLOADS / 'traffic_types.csv'
+    _filepath = _filepath.resolve()
 
     if not _filepath.exists():
         return
 
     try:
 
-        _df_traffic_types = read_excel(_filepath, sheet_name='traffic_types')
+        if _filepath.suffix.lower() == '.csv':
+            _df_traffic_types = read_csv(_filepath, sep=',', header=0)
 
+        else:
+            _df_traffic_types = read_excel(
+                _filepath, sheet_name='traffic_types', engine='openpyxl')
+        
         if 'traffic_type' not in _df_traffic_types.columns or 'color' not in _df_traffic_types.columns:
             return {'code': 400, 'message': "The 'traffic_types.xlsx' file is missing required columns: 'traffic_type' and 'color'."}
 
