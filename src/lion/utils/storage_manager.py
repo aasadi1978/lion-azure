@@ -41,11 +41,14 @@ class LionStorageManager:
             raise RuntimeError("Azure connection string not set. Running in local mode.")
 
         self._group_name = self._group_name or SESSION_MANAGER.get('group_name')
+        container_name = container_name or str(self._group_name).replace(' ', '')
+
         container_client = self.blob_service.get_container_client(container_name)
 
         # Ensure container exists (idempotent)
         try:
             container_client.get_container_properties()
+            logging.debug(f"Container '{container_name}' exists in Azure Blob Storage.")
         except ResourceNotFoundError:
             self.create_container(container_name)
             log_exception()
@@ -67,7 +70,13 @@ class LionStorageManager:
         try:
             if not blob_name and not blob_parts:
                 raise ValueError("Provide either 'blob_name' or path parts via '*blob_parts'")
+            
+            self._group_name = self._group_name or SESSION_MANAGER.get('group_name')
 
+            if not self._group_name:
+                raise ValueError("Group name (container) not set for StorageManager instance.")
+            
+            logging.debug(f"Uploading file: {local_path} to the container {self._group_name} ....")
             container_name = str(self._group_name).replace(' ', '')
 
             is_shared = False
