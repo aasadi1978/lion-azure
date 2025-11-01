@@ -1,5 +1,4 @@
 from collections import defaultdict
-import logging
 
 from lion.config.paths import (LION_CONSOLIDATED_REPORT_PATH, LION_DIAGNOSTICS_PATH, LION_DRIVER_REPORT_DIST_PATH, 
                           LION_LOGS_PATH, LION_LOCAL_DRIVER_REPORT_PATH, LION_OPTIMIZATION_PATH)
@@ -33,7 +32,6 @@ from lion.orm.changeover import Changeover
 from lion.orm.drivers_info import DriversInfo
 from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.orm.shift_index import ShiftIndex
-from lion.create_flask_app.create_app import LION_FLASK_APP
 from lion.movement.dct_movement import DictMovement
 from lion.tour.dct_tour import DctTour
 from lion.orm.resources import Resources
@@ -60,8 +58,6 @@ from lion.shift_data.shift_manager import SHIFT_MANAGER
 from pandas import read_csv, DataFrame, read_excel
 from cachetools import TTLCache
 from sqlalchemy.exc import SQLAlchemyError
-from lion.traffic_types.update_traffic_types import update_traffic_types
-from lion.vehicle_types.update_vehicle_types import update_vehicle_types
 
 class DriversUI():
 
@@ -214,36 +210,6 @@ class DriversUI():
         except Exception:
             log_exception(popup=False)
 
-
-    def add_a_vehicle(self):
-        """
-        In order to update vehicle types, add/remove or modify, one has to
-        apply relevent changes on 'vehicles.xlsx' file in LION_FILES_PATHdirectory in LION-Shared SharePoint.
-        Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
-
-        Todo: not belong here
-        """
-
-        try:
-            return update_vehicle_types()
-        except Exception:
-            return {'code': 400, 'message': log_exception(popup=False)}
-
-
-    def add_a_traffic_type(self):
-        """
-        In order to update traffic types, add/remove or modify, one has to
-        apply relevent changes on 'traffic_types.xlsx' file in LION_FILES_PATHdirectory in LION-Shared SharePoint.
-        Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
-
-        Note: This is triggered by the 'update_traffic_types' button in the UI. Traffic types are automatically get updated
-        when 'traffic_types.xlsx' is updated
-        """
-
-        try:
-            return update_traffic_types()
-        except Exception:
-            return {'code': 400, 'message': log_exception(popup=False, remarks='Updating traffic types failed!')}
 
     def set_number_of_drivers_per_page(self, **dct_params):
 

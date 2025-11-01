@@ -44,10 +44,3 @@ def update_traffic_types(*args, **kwargs):
             return {'code': 400, 'message': _err}
 
     return {'code': 200, 'message': 'Traffic types updated successfully!'}
-
-
-
-if __name__ == '__main__':
-    from lion.create_flask_app.create_app import LION_FLASK_APP
-    with LION_FLASK_APP.app_context():
-        update_traffic_types(force_update=True)

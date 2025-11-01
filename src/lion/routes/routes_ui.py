@@ -320,7 +320,7 @@ def get_chart():
 def upload_external_file():
 
     try:
-        output = validate_uploaded_file.receive_file_upload(allowed_extensions={'xlsx', 'xlsm'})
+        output = validate_uploaded_file.receive_file_upload()
         if isinstance(output, str):
             return jsonify({'code': 400, 'message': output})
 

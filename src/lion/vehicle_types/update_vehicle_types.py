@@ -13,6 +13,8 @@ def update_vehicle_types():
     """
 
     _filepath = LION_USER_UPLOADS / 'vehicles.xlsx'
+    _filepath = _filepath if _filepath.exists() else LION_USER_UPLOADS / 'vehicles.csv'
+    _filepath = _filepath.resolve()
 
     if not _filepath.exists():
         return

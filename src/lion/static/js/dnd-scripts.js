@@ -4,7 +4,6 @@ function load_chart_on_full_page_load(chart_data) {
   }
 
   window.location.href = '/';
-
 }
 
 function update_page_num(pagenum) {
@@ -28,8 +27,11 @@ function clear_user_changes() {
   );
 }
 
-function get_chart_data(page_num=window.currPage) {
-  let get_chart_data_status = sync_post('/get-chart-data', (dct_params = {page_num: page_num}));
+function get_chart_data(page_num = window.currPage) {
+  let get_chart_data_status = sync_post(
+    '/get-chart-data',
+    (dct_params = { page_num: page_num })
+  );
 
   build_schedule_gantt_chart();
   load_driver_shift_chart((dct_chart_data = get_chart_data_status));
@@ -350,7 +352,7 @@ function refresh_options(opts = undefined) {
   if (opts != undefined) {
     options = opts;
   } else {
-    options = window.options
+    options = window.options;
   }
 
   // Check if options is defined, if not return early
@@ -387,11 +389,11 @@ function refresh_options(opts = undefined) {
   set_default_title();
 
   // Safe, explicit
-  let n_bsket = Array.isArray(options.basket_drivers) ? options.basket_drivers.length : 0;
+  let n_bsket = Array.isArray(options.basket_drivers)
+    ? options.basket_drivers.length
+    : 0;
   document.getElementById('id-basket-btn').innerHTML =
-    '<i class="tim-icons icon-cart"></i> My Basket' +
-    ' (' +
-    n_bsket + ')';
+    '<i class="tim-icons icon-cart"></i> My Basket' + ' (' + n_bsket + ')';
 }
 
 function set_default_title(opts = undefined) {
@@ -613,7 +615,6 @@ function build_tour_desc_div(parent_div_id = 'id-disp-drag-full') {
   label.style.color = 'black';
   innerDiv.appendChild(label);
 }
-
 
 function insert_disp_drag_double() {
   let tmpDiv = document.getElementById('id-tour-desc-container');
@@ -1194,7 +1195,6 @@ function reboot() {
   );
 }
 
-
 function extract_locations_info() {
   let config = window.options.api_config || loadConfig();
   const apiBaseURI = config.apiBaseURI ? config.apiBaseURI : '';
@@ -1401,7 +1401,6 @@ function sort_by_tourLocString() {
   }
 
   window.location.href = '/loading_schedule/';
-
 }
 
 function is_basket_empty() {
@@ -1897,26 +1896,6 @@ async function unfix_all_drivers() {
       );
     }
   }
-}
-
-function add_a_traffic_type() {
-  let status = py2js(
-    (str_func_name = 'add_a_traffic_type'),
-    (dct_params = {}),
-    (url = '/drivers')
-  );
-
-  create_popup((title = 'Add a vehicle'), (message = status.message));
-}
-
-function add_a_vehicle() {
-  let status = py2js(
-    (str_func_name = 'add_a_vehicle'),
-    (dct_params = {}),
-    (url = '/drivers')
-  );
-
-  create_popup((title = 'Add a vehicle'), (message = status.message));
 }
 
 function extract_movements_to_process(extract_all = false) {

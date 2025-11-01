@@ -2,7 +2,6 @@ setlocal enabledelayedexpansion
 @echo off
 
 echo Do not forget to update pyproject.toml version if applicable before committing.
-echo Press any key to continue ...
 
 call .venv/Scripts/activate
 echo ------------------------------------------------------------
