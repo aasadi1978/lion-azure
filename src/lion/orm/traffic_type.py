@@ -99,3 +99,16 @@ class TrafficType(LION_SQLALCHEMY_DB.Model):
 
         except Exception:
             return '#000000'
+    @classmethod
+    def delete(cls, traffic_type: str):
+
+        try:
+            existing_obj = TrafficType.query.filter_by(traffic_type=traffic_type).first()
+
+            if existing_obj is not None:
+                LION_SQLALCHEMY_DB.session.delete(existing_obj)
+                LION_SQLALCHEMY_DB.session.commit()
+
+        except Exception:
+            LION_SQLALCHEMY_DB.session.rollback()
+            log_exception()

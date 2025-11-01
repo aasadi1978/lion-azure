@@ -9,8 +9,10 @@ from lion.logger.status_logger import log_message
 def update_traffic_types(*args, **kwargs):
     """
     In order to update traffic types, add/remove or modify, one has to
-    apply relevent changes on 'traffic_types.xlsx' file in LION_FILES_PATHdirectory in LION-Shared SharePoint.
+    apply relevent changes on 'traffic_types.xlsx' or 'traffic_types.csv' file in LION_FILES_PATHdirectory in LION-Shared SharePoint.
     Once changes applied and saved, the corresponding button in LION can be clicked to apply the changes
+
+    To remove a traffic type, leave its color code empty in the file and save.
     """
 
     _filepath = LION_USER_UPLOADS / 'traffic_types.xlsx'
@@ -36,6 +38,10 @@ def update_traffic_types(*args, **kwargs):
         _dct = _df_traffic_types.color.to_dict()
 
         for tpe, col in _dct.items():
+            if not col:
+                TrafficType.delete(traffic_type=tpe)
+                continue
+
             TrafficType.update(traffic_type=tpe, traffic_type_color=col)
         
         log_message(message='Traffic types updated successfully!', module_name='update_traffic_types')

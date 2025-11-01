@@ -4,7 +4,7 @@ from flask import request
 import logging
 from werkzeug.datastructures import FileStorage
 from lion.config.paths import LION_USER_UPLOADS
-from lion.utils.storage_manager import STORAGE_MANAGER
+from lion.logger.trigger_async_log_upload import trigger_async_log_upload
 
 def receive_file_upload() -> Union[FileStorage, str]:
     """
@@ -34,11 +34,8 @@ def receive_file_upload() -> Union[FileStorage, str]:
         if filename == '':
             return 'Invalid filename.'
 
-        if STORAGE_MANAGER.upload_file(
-            uploaded_file,
-            *['uploads', filename]):
-
-            logging.info(f"File {filename} uploaded to Azure Blob Storage.")
+        local_path = LION_USER_UPLOADS / filename
+        uploaded_file.save(local_path)
 
     except Exception as e:
         logging.error(f"File upload to storage failed: {str(e)}")
@@ -48,34 +45,22 @@ def receive_file_upload() -> Union[FileStorage, str]:
         return 'Invalid file type. Allowed file extensions are: ' + ', '.join(allowed_extensions)
 
     # Special handling for suppliers.csv
-    if filename.lower() in ['suppliers.csv', 'traffic_types.xlsx', 'vehicles.xlsx']:
-        try:
-            LION_USER_UPLOADS.mkdir(parents=True, exist_ok=True)
+    if filename.lower() in ['suppliers.csv', 'traffic_types.xlsx', 'vehicles.xlsx',
+                            'traffic_types.csv', 'vehicles.csv']:
 
-            local_path = LION_USER_UPLOADS / filename
-            uploaded_file.save(local_path)
+        if filename.lower() in ['traffic_types.xlsx', 'traffic_types.csv']:
+            from lion.traffic_types.update_traffic_types import update_traffic_types
+            update_traffic_types()
 
-            logging.info(f"'{filename}' saved locally at {local_path}")
+        elif filename.lower() in ['vehicles.xlsx', 'vehicles.csv']:
+            from lion.vehicle_types.update_vehicle_types import update_vehicle_types
+            update_vehicle_types()
 
-        except Exception as e:
-            logging.error(f"Failed to save '{filename}' locally: {str(e)}")
-            return f'Failed to save {filename} locally.'
-        
-        if local_path.exists():
+        elif filename.lower() == 'suppliers.csv':
+            from lion.orm.drivers_info import DriversInfo
+            DriversInfo.update_suppliers()
 
-            if filename.lower() == 'traffic_types.xlsx':
-                from lion.traffic_types.update_traffic_types import update_traffic_types
-                update_traffic_types()
-
-            elif filename.lower() == 'vehicles.xlsx':
-                from lion.vehicle_types.update_vehicle_types import update_vehicle_types
-                update_vehicle_types()
-
-            elif filename.lower() == 'suppliers.csv':
-                from lion.orm.drivers_info import DriversInfo
-                DriversInfo.update_suppliers()
-
-        else:
-            return f'Local file {filename} does not exist after saving.'
+    if local_path.exists():
+        trigger_async_log_upload(src_path=LION_USER_UPLOADS, *['uploads'])
 
     return uploaded_file

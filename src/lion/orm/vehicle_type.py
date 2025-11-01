@@ -144,3 +144,17 @@ class VehicleType(LION_SQLALCHEMY_DB.Model):
             pass
 
         return None
+
+    @classmethod
+    def delete(cls, vehicle_type: str):
+
+        try:
+            existing_obj = VehicleType.query.filter_by(vehicle_type=vehicle_type).first()
+
+            if existing_obj is not None:
+                LION_SQLALCHEMY_DB.session.delete(existing_obj)
+                LION_SQLALCHEMY_DB.session.commit()
+
+        except Exception:
+            LION_SQLALCHEMY_DB.session.rollback()
+            log_exception()
