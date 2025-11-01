@@ -34,7 +34,7 @@ def upload_logs_to_blob(src_path: Path, *blob_parts: str):
     
     return {"status": "success", "message": "Logs uploaded to Blob Storage", 'code': 200}
 
-def trigger_async_log_upload(src_path: Path, *blob_parts: str):
+def trigger_async_log_upload(src_path: str | Path, *blob_parts: str):
 
     t = threading.Thread(
         target=upload_logs_to_blob,

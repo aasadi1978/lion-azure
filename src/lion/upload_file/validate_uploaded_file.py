@@ -61,6 +61,6 @@ def receive_file_upload() -> Union[FileStorage, str]:
             DriversInfo.update_suppliers()
 
     if local_path.exists():
-        trigger_async_log_upload(src_path=LION_USER_UPLOADS, *['uploads'])
+        trigger_async_log_upload(LION_USER_UPLOADS.resolve(), *['uploads'])
 
     return uploaded_file
