@@ -1,7 +1,11 @@
-<!-- <script>
-  let options =
-    window.config && window.config.options ? window.config.options : {};
-</script> -->
+<script src="/static/js/upload-files.js"></script>
+<script type="text/javascript">
+  {
+    {
+      options.all_locs | tojson | safe;
+    }
+  }
+</script>
 
 <div
   class="card popup-div-no-img"
@@ -483,16 +487,6 @@
       />
     </div>
   </div>
-  <!-- <div class="col-md-3 form-group">
-    <input
-      type="text"
-      class="form-control"
-      id="id-maxdowntime-maxrepostime-II"
-      style="font-size: 18px"
-      title="These values are used when a large number of movements have to be processed. We override default values for performance purposes."
-      value="90,90"
-    />
-  </div> -->
 
   <div class="col-md-10 row">
     <div class="col-md-10 row">
@@ -510,14 +504,14 @@
         <input
           class="form-control"
           type="file"
-          id="formFile"
+          id="id-opt-movement-file-type"
           accept=".xlsm, .xlsx"
         />
       </div>
       <button
         class="btn btn-primary btnrows2"
         style="padding: 5px 45px; width: 250px"
-        id="id-opt-uploadBtn"
+        id="id-opt-movs-uploadBtn"
         title="Upload an excel file containing movements info and resources file"
       >
         Upload supplementary files
@@ -558,52 +552,18 @@
       </button>
     </div>
   </div>
-
-  <script>
-    const fileInput = document.getElementById('formFile');
-    const uploadBtn = document.getElementById('id-opt-uploadBtn');
-
-    uploadBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length > 0) {
-        const file = fileInput.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
-
-        // document.getElementById('id-opt-run-btn').disabled = true;
-
-        fetch('/upload-movements-file', {
-          method: 'POST',
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            // document.getElementById('id-opt-run-btn').disabled =
-            //   data.code !== 200;
-
-            if (data.code === 400) {
-              hidePopup('id-manage-optimization');
-              create_popup(
-                (title = 'Uploading file'),
-                (message = data.message)
-              );
-            } else {
-              alert(data.message + ' You can now run the optimization.');
-            }
-          })
-          .catch((error) => {
-            console.error('Error uploading file:', error);
-            hidePopup('id-manage-optimization');
-            // document.getElementById('id-opt-run-btn').disabled = false;
-            create_popup(
-              (title = 'Uploading file'),
-              (message = 'Failed to upload file.')
-            );
-          });
-      }
-    });
-  </script>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('id-opt-movement-file-type');
+    const uploadBtn = document.getElementById('id-opt-movs-uploadBtn');
+
+    // when user clicks the button, open file chooser
+    uploadBtn.addEventListener('click', () => fileInput.click());
+
+    // when file is chosen, upload
+    fileInput.addEventListener('change', (e) =>
+      upload_external_file(e, ['xlsx', 'xlsm'])
+    );
+  });
+</script>

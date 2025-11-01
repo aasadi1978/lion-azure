@@ -21,6 +21,7 @@
     color: #ffffffee;
   }
 </style>
+<script src="/static/js/upload-files.js"></script>
 
 <div
   class="card-header"
@@ -377,4 +378,16 @@
     </div>
   </div>
 </div>
-<script src="/static/js/upload-files.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const uploadBtn2 = document.getElementById('id-1-uploadBtn');
+    const fileInput2 = document.getElementById('id-1-fileInput');
+
+    uploadBtn2.addEventListener('click', () => fileInput2.click());
+
+    fileInput2.addEventListener('change', (e) =>
+      upload_external_file(e, ['xlsx', 'csv'], 'id-1-fileLabel')
+    );
+  });
+</script>
