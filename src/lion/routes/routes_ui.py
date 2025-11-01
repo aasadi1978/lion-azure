@@ -10,6 +10,7 @@ from lion.orm.shift_movement_entry import ShiftMovementEntry
 from lion.orm.drivers_info import DriversInfo
 from lion.orm.user import User
 from lion.reporting.publish_driver_plan import gen_driver_report
+from lion.upload_file import validate_uploaded_file
 from lion.utils.session_manager import SESSION_MANAGER
 from lion.ui import changeover_chart
 from lion.ui.basket import basket_chart
@@ -313,6 +314,21 @@ def get_chart():
         return render_template('message.html', 
                                message={'title': 'ERROR',
                                         'error': f'Loading schedule failed!\n{log_exception(popup=False)}'})
+
+
+@ui_bp.route('/upload-external-file', methods=['POST'])
+def upload_external_file():
+
+    try:
+        output = validate_uploaded_file.receive_file_upload(allowed_extensions={'xlsx', 'xlsm'})
+        if isinstance(output, str):
+            return jsonify({'code': 400, 'message': output})
+
+    except Exception:
+        return jsonify({'code': 400, 'message': f'Upload failed: {log_exception(popup=False)}'})
+
+    return jsonify({'code': 200, 'message': f'{output.filename} has been successfully uploaded.'})
+
 
 @ui_bp.route('/load-selected-schedule', methods=['post'])
 def import_selected_schedule():

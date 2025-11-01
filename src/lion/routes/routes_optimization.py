@@ -52,8 +52,8 @@ def fresh_start():
     return jsonify({'code': 200 if status else 400, 
                     "message": "Optimization database initialized." if status else "Failed to initialize optimization database!"})
 
-@optim_bp.route('/upload-external-file', methods=['POST'])
-def upload_external_file():
+@optim_bp.route('/upload-movements-file', methods=['POST'])
+def upload_movements_file():
 
     OPT_LOGGER.OPT_GLOBAL_ERROR = ''
 

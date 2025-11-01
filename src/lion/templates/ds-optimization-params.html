@@ -12,7 +12,7 @@
     background-image: url(/static/images/office-fdx-blur-4.png);
     /* background-image: url(/static/images/liege-optimization.png); */
     background-repeat: no-repeat;
-    background-size: 100% 95vh;
+    background-size: 100% 100vh;
   "
 >
   <div class="card-header">
@@ -483,7 +483,6 @@
       />
     </div>
   </div>
-
   <!-- <div class="col-md-3 form-group">
     <input
       type="text"
@@ -576,7 +575,7 @@
 
         // document.getElementById('id-opt-run-btn').disabled = true;
 
-        fetch('/upload-external-file', {
+        fetch('/upload-movements-file', {
           method: 'POST',
           body: formData,
         })

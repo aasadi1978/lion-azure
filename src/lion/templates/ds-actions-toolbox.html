@@ -1,3 +1,27 @@
+<style>
+  /* Keep button + label aligned on one baseline */
+  .upload-row {
+    display: flex;
+    align-items: center; /* vertical centering */
+    flex-wrap: wrap; /* avoids overflow on small screens */
+  }
+  .upload-row .filename {
+    margin-left: 12px;
+    line-height: 1.25;
+    max-width: 60ch;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1rem; /* increased from default 0.875rem */
+    font-weight: 500; /* slightly bolder for readability */
+    color: #ffffffcc;
+  }
+
+  .upload-row .filename:hover {
+    color: #ffffffee;
+  }
+</style>
+
 <div
   class="card-header"
   style="background-color: #932da2"
@@ -317,6 +341,39 @@
       >
         Import demo Sch.
       </button>
+      <button
+        class="btn btn-danger btnrows2"
+        onclick="delete_changeovers()"
+        id="id-del-co-button"
+        title="Deletes the selected changeover. First select a c/o id from the dropdown list, load the data, then press this button. 
+        Please note that no movement or shiftID will be deleted during the process. Only connection between the movements
+        connected via the selected c/o id will be removed. If required, the changeover has to be recreated!"
+      >
+        Del selected C/O
+      </button>
+      <button class="btn btn-success btnrows2" onclick="set_axis_ranges_in()">
+        Zoom in
+      </button>
+      <button class="btn btn-success btnrows2" onclick="set_axis_ranges_out()">
+        Zoom out
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="upload-row">
+          <button type="button" id="id-1-uploadBtn" class="btn btn-primary">
+            <i class="tim-icons icon-upload"></i> Upload File
+          </button>
+
+          <span id="id-1-fileLabel" class="filename text-muted"
+            >No file selected</span
+          >
+
+          <!-- Hidden real input -->
+          <input type="file" id="id-1-fileInput" class="d-none" />
+        </div>
+      </div>
     </div>
 
     <div class="row col-md-12">
@@ -327,7 +384,7 @@
           Next
           <i class="tim-icons icon-minimal-right"></i>
         </button> -->
-      <button class="btn btn-success btnrows2" onclick="set_axis_ranges_in()">
+      <!-- <button class="btn btn-success btnrows2" onclick="set_axis_ranges_in()">
         Zoom in
       </button>
       <button class="btn btn-success btnrows2" onclick="set_axis_ranges_out()">
@@ -339,8 +396,8 @@
 
       <button class="btn btn-success btnrows2" onclick="barwith_shrink()">
         Barwidth-
-      </button>
-
+      </button> -->
+      <!-- 
       <button
         class="btn btn-danger btnrows2"
         onclick="delete_changeovers()"
@@ -350,9 +407,9 @@
         connected via the selected c/o id will be removed. If required, the changeover has to be recreated!"
       >
         Del selected C/O
-      </button>
+      </button> -->
 
-      <button
+      <!-- <button
         class="btn btn-success"
         onclick="add_a_vehicle()"
         style="padding: 5px 45px; width: 250px"
@@ -371,7 +428,7 @@
           save and close it. Then press this button!"
       >
         Update traffic types
-      </button>
+      </button> -->
     </div>
   </div>
 
@@ -400,3 +457,33 @@
       </div>
     </div> -->
 </div>
+<script>
+  const uploadBtn2 = document.getElementById('id-1-uploadBtn');
+  const fileInput2 = document.getElementById('id-1-fileInput');
+  const fileLabel2 = document.getElementById('id-1-fileLabel');
+
+  uploadBtn2.addEventListener('click', () => fileInput2.click());
+
+  fileInput2.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    fileLabel2.textContent = file ? file.name : 'No file selected';
+
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    fetch('/upload-external-file', {
+      method: 'POST',
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        create_popup('Uploading file', data.message);
+      })
+      .catch((error) => {
+        console.error('Error uploading file:', error);
+        create_popup('Uploading file', 'Failed to upload file.');
+      });
+  });
+</script>
