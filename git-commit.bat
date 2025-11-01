@@ -95,7 +95,7 @@ set push_confirm=y
 if /i "%push_confirm%"=="y" (
     
     echo Pushing to remote repository origin
-    git push origin master
+    git push origin master --force
     if errorlevel 1 (
         echo Push failed. Please check the error messages above.
         exit /b 1
