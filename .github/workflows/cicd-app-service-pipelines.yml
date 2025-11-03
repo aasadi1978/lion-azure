@@ -148,7 +148,12 @@ jobs:
       - name: Set startup command with package installation
         run: |
           az webapp config set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP \
-          --startup-file "pip uninstall lion && pip install dist/lion-$LION_AZURE_APP_VERSION-py3-none-any.whl && gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
+          --startup-file "gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
+
+      # - name: Set startup command with package installation
+      #   run: |
+      #     az webapp config set --name $AZURE_WEBAPP_NAME --resource-group $AZURE_RESOURCE_GROUP \
+      #     --startup-file "pip uninstall lion && pip install dist/lion-$LION_AZURE_APP_VERSION-py3-none-any.whl && gunicorn -w 4 -b 0.0.0.0:$WEBSITES_PORT $LION_APP"
 
       - name: Verify startup command
         run: |
