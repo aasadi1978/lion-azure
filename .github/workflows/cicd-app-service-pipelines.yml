@@ -38,7 +38,7 @@ jobs:
           python -m venv antenv
           source antenv/bin/activate
           pip install --upgrade pip setuptools
-          echo antenv/bin/python.exe --version
+          echo antenv/bin/python --version
           echo "============================================================="
 
       - name: Install dependencies and package
