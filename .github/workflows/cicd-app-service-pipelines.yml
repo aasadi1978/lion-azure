@@ -50,13 +50,16 @@ jobs:
           pip show $AZURE_WEBAPP_NAME
           echo "$AZURE_WEBAPP_NAME installed; skipping app import due to missing env vars."
           echo "============================================================="
-
-      - name: Create wheel distribution
-        run: |
-          source antenv/bin/activate
-          python -m pip install --upgrade build wheel
-          python -m build --wheel
+          echo "📁 Current directory contents:"
+          ls -alh
           echo "============================================================="
+
+      # - name: Create wheel distribution
+      #   run: |
+      #     source antenv/bin/activate
+      #     python -m pip install --upgrade build wheel
+      #     python -m build --wheel
+      #     echo "============================================================="
 
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
