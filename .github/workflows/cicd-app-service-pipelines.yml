@@ -61,14 +61,21 @@ jobs:
       #     python -m build --wheel
       #     echo "============================================================="
 
+      # - name: Upload artifact for deployment
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ env.AZURE_WEBAPP_NAME }}
+      #     path: |
+      #       .
+      #       dist/
+      #       !antenv/
+
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.AZURE_WEBAPP_NAME }}
           path: |
-            .
-            dist/
-            !antenv/
+            src/
 
   deploy:
     runs-on: ubuntu-latest
