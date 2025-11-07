@@ -4,7 +4,6 @@ from lion.logger.logger_handler import initialize_logger
 from dotenv import load_dotenv
 
 initialize_logger()
-
 environ['LION_PKG_MODULES_PATH'] = str(Path(__file__).resolve().parent)
 
 # Current directory of the project decided by the user. Note that this is not necessarily where the python package sits.

@@ -15,8 +15,7 @@ from lion.orm.scenarios import Scenarios
 from lion.utils.popup_notifier import show_error
 from pickle import dumps as pickle_dumps, loads as pickle_loads
 from cachetools import TTLCache
-from lion.config.paths import LION_PROJECT_HOME, LION_USER_UPLOADS
-from lion.ui.ui_params import UI_PARAMS
+from lion.config.paths import LION_USER_UPLOADS
 from lion.utils.session_manager import SESSION_MANAGER
 from lion.utils.utcnow import utcnow
 from lion.orm.shiftid_sequence import ShiftIdSequence
@@ -170,8 +169,12 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
     def get_all_valid_records(cls):
         try:
             scn_shift_ids_records = cls.query.filter(cls.data.isnot(None)).all()
+            if not scn_shift_ids_records:
+                raise ValueError('No valid records found!')
+            
         except Exception:
-            logging.error('get_all_valid_records failed!')
+            exc_logger.log_exception('get_all_valid_records failed!')
+            input('Press Enter to continue...')
             return []
         return scn_shift_ids_records
     
@@ -542,8 +545,7 @@ class DriversInfo(LION_SQLALCHEMY_DB.Model):
                 shift_id]['vehicle'])
 
         except Exception:
-            exc_logger.log_exception(popup=True, remarks=f'Vehicle type of {
-                           shift_id} could not be determiend!')
+            exc_logger.log_exception(popup=True, remarks=f'Vehicle type of {shift_id} could not be determined!')
 
         return 0
 

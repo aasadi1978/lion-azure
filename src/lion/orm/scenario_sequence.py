@@ -1,5 +1,3 @@
-from flask import g, session
-from lion.bootstrap.constants import LION_DEFAULT_GROUP_NAME
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.utils.session_manager import SESSION_MANAGER

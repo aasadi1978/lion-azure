@@ -3,6 +3,7 @@ from flask import Flask
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.logger.exception_logger import log_exception
 
+
 """
 In this module, we define a function to create all database tables. For those already setup, it will skip them gracefully.
 This makes it easy to ensure that all necessary tables are created without causing errors for existing ones or errors caused by
@@ -33,6 +34,8 @@ def create_all(app: Flask):
             from lion.orm.user_params import UserParams as AzureUserParams
             from lion.orm.user import User
             # from lion.orm.scenarios import Scenarios
+            from lion.orm.shiftid_sequence import ShiftIdSequence
+            from lion.orm.scenario_sequence import ScenarioSequence
             from lion.logger.log_entry import LogEntry
 
             LION_SQLALCHEMY_DB.create_all()

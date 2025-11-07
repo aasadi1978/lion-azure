@@ -15,9 +15,7 @@ if %EXITCODE% neq 0 (
 
 SETX LION_AZURE_APP_VERSION "%APP_VERSION%" >nul
 echo Updated LION_AZURE_APP_VERSION to %APP_VERSION%
-
 gh variable set LION_AZURE_APP_VERSION --body "%APP_VERSION%"
-
 
 git init
 git status
@@ -50,7 +48,7 @@ echo ------------------------------------------------------------
 @REM     set "tag=lion-app-latest"
 @REM )
 
-set "tag=lion-py3-latest"
+set "tag=lion-py3-%APP_VERSION%"
 if "%tag%" neq "" (
 
     git tag -d "%tag%" 2>nul

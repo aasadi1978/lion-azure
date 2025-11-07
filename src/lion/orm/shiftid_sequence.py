@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from lion.logger.exception_logger import log_exception
 from lion.create_flask_app.extensions import LION_SQLALCHEMY_DB
 from lion.utils.utcnow import utcnow
@@ -32,7 +33,7 @@ class ShiftIdSequence(LION_SQLALCHEMY_DB.Model):
         except Exception as e:
             log_exception(
                 popup=False,
-                remarks=f"Failed to get next scenario id: {e}"
+                remarks=f"Failed to get next shift id: {e}"
             )
             return None
     
@@ -63,3 +64,32 @@ class ShiftIdSequence(LION_SQLALCHEMY_DB.Model):
             log_exception(popup=False, remarks=f"Failed to reserve mapped shift IDs: {e}")
             LION_SQLALCHEMY_DB.session.rollback()
             return {}
+    
+    @classmethod
+    def reset_max_shift_id(cls, max_shift_id: int = 0):
+        """
+        This method ensures that the next generated shift ID will be at least max_shift_id + 1
+         to avoid conflicts with existing shift IDs.
+        """
+
+        if max_shift_id <= 0:
+            return
+        
+        max_id = cls.query.with_entities(func.max(cls.id)).scalar() or 0
+        if max_shift_id <= max_id:
+            return
+
+        # Insert a new entry with the specified max_shift_id
+        try:
+            new_seq = cls(id=max_shift_id)
+            LION_SQLALCHEMY_DB.session.add(new_seq)
+            LION_SQLALCHEMY_DB.session.flush()  # Ensures ID is generated immediately
+            return new_seq.id
+
+        except Exception as e:
+            log_exception(
+                popup=False,
+                remarks=f"Failed to get next shift id: {e}"
+            )
+            return None
+    

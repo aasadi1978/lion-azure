@@ -91,15 +91,12 @@ class CreateAPP:
                 return
             
             lion_app.config.from_mapping(LION_CONFIG)
-            lion_app.secret_key = getenv('FLASK_SECRET_KEY')
+            lion_app.secret_key = getenv('FLASK_SECRET_KEY', 'tAig8gl-n7XXHgTsBxsOShDbXquxFnOa-z2BMo5JPN0')
 
             LION_SQLALCHEMY_DB.init_app(lion_app)
             bcrypt = Bcrypt(lion_app)
 
             self._initialized = True
-            # init_azure_auth(lion_app)
-            # set_session_context(lion_app)
-
             self._app = lion_app
             self._bcrypt = bcrypt
 

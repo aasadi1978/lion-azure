@@ -51,7 +51,7 @@ try:
     with open("pyproject.toml", "rb") as f:
         config_copied = tomllib.load(f)
     
-    print(version)  
+    print(version)
 
 except Exception:
     print(f"Error updating version in pyproject.toml: {sys.exc_info()[0]}")

@@ -32,7 +32,7 @@ class User(LION_SQLALCHEMY_DB.Model):
         self.current_scn_id = SESSION_MANAGER.get('scn_name')
 
     @classmethod
-    def load_user_context(cls):
+    def load_user_context(cls, logged_in_as: str = None) -> dict:
         """
         Load and set the user context for the current session.
         This method retrieves the user data from the database, adds group information,
@@ -58,7 +58,8 @@ class User(LION_SQLALCHEMY_DB.Model):
         try:
             
             dct_lion_user: dict = {}
-            userobj = cls.query.first()
+            userobj = cls.query.first() if logged_in_as is None else cls.query.filter(
+                cls.user_id == logged_in_as).first()
 
             if userobj is not None:
                 dct_lion_user = userobj.__dict__
@@ -264,4 +265,32 @@ class User(LION_SQLALCHEMY_DB.Model):
             log_exception("Failed to set scn_id!")
         except Exception:
             log_exception("Failed to set scn_id!")
+    
+    @classmethod
+    def create_new_user(cls, **kwargs):
+        """
+        Factory method to create a new User instance.
+        Args:
+            **kwargs: Keyword arguments corresponding to User attributes.
+        Returns:
+            User: A new User instance initialized with provided attributes.
+        """
 
+        try:
+            existing_user = cls.query.filter(cls.user_id == kwargs.get('user_id')).first()
+            if existing_user:
+                return existing_user
+            
+            userObj = cls(**kwargs)
+            LION_SQLALCHEMY_DB.session.add(userObj)
+            LION_SQLALCHEMY_DB.session.commit()
+            return userObj if userObj else None
+        
+        except SQLAlchemyError as err:
+            log_exception(popup=False, remarks=str(err))
+            LION_SQLALCHEMY_DB.session.rollback()
+            return None
+        except Exception:
+            log_exception(popup=False)
+            LION_SQLALCHEMY_DB.session.rollback()
+            return None

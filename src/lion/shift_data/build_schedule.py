@@ -1,11 +1,14 @@
 from datetime import datetime
 import logging
+
+from sqlalchemy import func
 from lion.changeovers.validate_changeovers_data import validate_changeovers
 from lion.movement.movements_manager import UI_MOVEMENTS
 from lion.orm.drivers_info import DriversInfo
 from lion.movement.dct_movement import DictMovement
 from datetime import datetime, timedelta
 from lion.orm.shift_movement_entry import ShiftMovementEntry
+from lion.orm.shiftid_sequence import ShiftIdSequence
 from lion.shift_data.process_driver_info_record import transform_shift_record
 from lion.bootstrap.constants import LION_DATES, MOVEMENT_DUMP_AREA_NAME, RECYCLE_BIN_NAME
 from lion.orm.location import Location
@@ -107,6 +110,9 @@ class BuildSchedule():
             DriversInfo.update_suppliers()
             scn_shift_ids_records = DriversInfo.get_all_valid_records()
 
+            max_id = DriversInfo.query.with_entities(func.max(DriversInfo.shift_id)).scalar() + 1 or 1001
+            ShiftIdSequence.reset_max_shift_id(max_shift_id=max_id)
+
             transformed_shift_data_list = []
             for rec in scn_shift_ids_records:
                 try:
@@ -128,7 +134,7 @@ class BuildSchedule():
             return None
 
         if not _dct_baseline_schedule or not _dct_m_shift_id:
-            logging.warning("Baseline schedule or shift mapping is empty — returning None.")
+            logging.warning((f"Baseline schedule or shift mapping is empty — returning None. {_dct_baseline_schedule}"))
             return None
 
         return _dct_baseline_schedule, _dct_m_shift_id

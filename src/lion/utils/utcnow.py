@@ -2,7 +2,7 @@
 from datetime import datetime, timezone
 from lion.logger.exception_logger import log_exception
 
-def utcnow(format_str: str = '%Y-%m-%d %H:%M:%S', local: bool = False) -> str | datetime:
+def utcnow(format_str: str = None, local: bool = False) -> str | datetime:
     time_now = datetime.now(timezone.utc) if not local else datetime.now()
 
     try:
